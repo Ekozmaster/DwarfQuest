@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/eman/Projects/Cpp/DwarfQuest",
+  "command": "/usr/bin/g++    -g3 -gdwarf-2   -o CMakeFiles/DwarfQuest.dir/src/Main.cpp.o -c /home/eman/Projects/Cpp/DwarfQuest/src/Main.cpp",
+  "file": "/home/eman/Projects/Cpp/DwarfQuest/src/Main.cpp"
+}
+]

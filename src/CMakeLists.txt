@@ -1,0 +1,10 @@
+target_sources(DwarfQuest
+    PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}/Application.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/Input.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/Window.cpp
+    PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}/Application.h
+        ${CMAKE_CURRENT_LIST_DIR}/Input.h
+        ${CMAKE_CURRENT_LIST_DIR}/Window.h
+)

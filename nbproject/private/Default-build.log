@@ -1,0 +1,14 @@
+Scanning dependencies of target DwarfQuest
+[ 50%] Building CXX object CMakeFiles/DwarfQuest.dir/src/Main.cpp.o
+In file included from /home/eman/Projects/Cpp/DwarfQuest/src/Application.h:2:0,
+                 from /home/eman/Projects/Cpp/DwarfQuest/src/Main.cpp:2:
+/home/eman/Projects/Cpp/DwarfQuest/src/Window.h:2:9: fatal error: SDL.h: No such file or directory
+ #include"SDL.h"
+         ^~~~~~~
+compilation terminated.
+CMakeFiles/DwarfQuest.dir/build.make:62: recipe for target 'CMakeFiles/DwarfQuest.dir/src/Main.cpp.o' failed
+make[2]: *** [CMakeFiles/DwarfQuest.dir/src/Main.cpp.o] Error 1
+CMakeFiles/Makefile2:67: recipe for target 'CMakeFiles/DwarfQuest.dir/all' failed
+make[1]: *** [CMakeFiles/DwarfQuest.dir/all] Error 2
+Makefile:83: recipe for target 'all' failed
+make: *** [all] Error 2
