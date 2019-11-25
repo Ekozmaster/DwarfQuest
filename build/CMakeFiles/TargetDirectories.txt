@@ -1,3 +1,0 @@
-/home/eman/Projects/Cpp/DwarfQuest/build/CMakeFiles/rebuild_cache.dir
-/home/eman/Projects/Cpp/DwarfQuest/build/CMakeFiles/DwarfQuest.dir
-/home/eman/Projects/Cpp/DwarfQuest/build/CMakeFiles/edit_cache.dir

@@ -1,7 +1,5 @@
 nbproject/
-nbproject/*
 build/
-build/*
 
 compile_commands.json
 
