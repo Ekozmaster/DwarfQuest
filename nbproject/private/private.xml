@@ -7,4 +7,15 @@
         <activeConfTypeElem>0</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/eman/Projects/Cpp/DwarfQuest/src/Window.h</file>
+            <file>file:/home/eman/Projects/Cpp/DwarfQuest/src/Graphics/OpenGL/Graphics.cpp</file>
+            <file>file:/home/eman/Projects/Cpp/DwarfQuest/src/Window.cpp</file>
+            <file>file:/home/eman/Projects/Cpp/DwarfQuest/CMakeLists.txt</file>
+            <file>file:/home/eman/Projects/Cpp/DwarfQuest/src/Application.cpp</file>
+            <file>file:/home/eman/Projects/Cpp/DwarfQuest/src/Input.cpp</file>
+        </group>
+    </open-files>
 </project-private>
