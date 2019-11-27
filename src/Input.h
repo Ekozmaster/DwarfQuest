@@ -9,6 +9,8 @@ private:
 
     // Keeps a copy of the keys array to compare between frames.
     static Uint8* m_PreviousKeysState;
+    
+    static int m_mouseX, m_mouseY, m_prevMouseX, m_prevMouseY;
 
 private:
     Input() = delete;
@@ -19,6 +21,10 @@ public:
     static bool GetKeyPressed(const char* keyName);
     static bool GetKeyUp(const char* keyName);
     static bool GetKeyDown(const char* keyName);
+    static void GetMouseDelta(int& out_x, int& out_y);
 
     static void Update();
+    static void MouseMotionEvent(const SDL_Event& event);
+    static void MouseButtonDownEvent(const SDL_Event& event);
+    static void MouseButtonUpEvent(const SDL_Event& event);
 };

@@ -32,6 +32,7 @@ int Application::Run() {
 
         // #### Main stage.
         
+        
 
         // #### Finish stage.
         Input::Update();
@@ -57,6 +58,15 @@ void Application::DispatchEvents() {
         switch (event.type) {
         case SDL_QUIT:
             running = false;
+            break;
+        case SDL_MOUSEMOTION:
+            Input::MouseMotionEvent(event);
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            Input::MouseButtonDownEvent(event);
+            break;
+        case SDL_MOUSEBUTTONUP:
+            Input::MouseButtonUpEvent(event);
             break;
         }
     }
