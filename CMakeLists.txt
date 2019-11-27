@@ -12,6 +12,7 @@ add_executable(DwarfQuest src/Main.cpp)
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 
+string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(DwarfQuest
     PRIVATE
         ${SDL2_LIBRARIES}
