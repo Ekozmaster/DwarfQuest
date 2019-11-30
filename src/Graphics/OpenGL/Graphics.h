@@ -1,6 +1,7 @@
 #pragma once
 
 #include<SDL2/SDL.h>
+#include<GL/gl.h>
 
 class Graphics {
 private:
@@ -13,4 +14,5 @@ public:
     static void Destroy();
 
     static void SetViewport(int width, int height);
+    static void SetCameraView(const GLfloat* lookMatrix, const GLfloat* perspectiveMatrix);
 };

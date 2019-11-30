@@ -21,6 +21,8 @@ bool Window::Init() {
         int windowFlags = SDL_WINDOW_SHOWN;
 #ifdef DWARFQUEST_OPEN_GL
         windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 #endif
 
         m_gWindow = SDL_CreateWindow("Dwarf Quest",

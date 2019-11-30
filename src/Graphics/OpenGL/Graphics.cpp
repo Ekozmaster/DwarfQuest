@@ -8,9 +8,6 @@ bool Graphics::Init(SDL_Window *attachedWindow) {
     m_window = attachedWindow;
     bool success = true;
 
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-
     m_gContext = SDL_GL_CreateContext(m_window);
     if (m_gContext == NULL) {
         Logger::Error("Graphics.Init: OpenGL context could not be created! SDL Error: " + std::string(SDL_GetError()));
@@ -25,7 +22,7 @@ bool Graphics::Init(SDL_Window *attachedWindow) {
 }
 
 void Graphics::Render() {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glBegin(GL_TRIANGLES);
     glVertex2f(-0.5f, -0.5f);
@@ -50,6 +47,13 @@ void Graphics::SetViewport(int width, int height) {
     glViewport(0, 0, 640, 480);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Graphics::SetCameraView(const GLfloat* lookMatrix, const GLfloat* perspectiveMatrix) {
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(perspectiveMatrix);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(lookMatrix);
 }
 
 SDL_Window* Graphics::m_window = nullptr;
