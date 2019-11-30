@@ -19,6 +19,8 @@ target_link_libraries(DwarfQuest
         ${OPENGL_LIBRARIES}
 )
 
+target_include_directories(DwarfQuest PRIVATE libs/glm)
+
 include(src/CMakeLists.txt)
 include(src/Graphics/OpenGL/CMakeLists.txt)
 include(src/Utils/CMakeLists.txt)
