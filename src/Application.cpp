@@ -30,6 +30,8 @@ bool Application::Init() {
 
 int Application::Run() {
     running = true;
+    float mouseX = 0;
+    float mouseY = 0;
     
     Camera::Camera camera = Camera::InitADefaultCamera();
 
@@ -39,12 +41,24 @@ int Application::Run() {
         DispatchEvents();
 
 
-        // #### Main stage.
         
-        if(Input::GetKeyPressed("W")) camera.position += glm::vec3(0.0, 0.0, 1.0) * 0.01666f;
-        else if(Input::GetKeyPressed("S")) camera.position += glm::vec3(0.0, 0.0, -1.0) * 0.01666f;
+        // #### Main stage.
+        int mouseXDelta, mouseYDelta;
+        Input::GetMouseDelta(&mouseXDelta, &mouseYDelta);
+        mouseX += mouseXDelta;
+        mouseY += mouseYDelta;
+        
+        glm::quat camRotation = glm::quat(glm::vec3(mouseY * 0.0005, -mouseX * 0.0005, 0));
+        camera.direction = camRotation * glm::vec3(0.0f, 0.0f, 1.0f);
+        
+        if(Input::GetKeyPressed("W")) camera.position += camera.direction * 0.01666f;
+        else if(Input::GetKeyPressed("S")) camera.position += -camera.direction * 0.01666f;
         else if(Input::GetKeyPressed("A")) camera.position += Camera::Right(camera) * -0.01666f;
         else if(Input::GetKeyPressed("D")) camera.position += Camera::Right(camera) * 0.01666f;
+
+        if (Input::GetKeyDown("P")) running = false;
+        if (Input::GetKeyDown("E")) Input::IsCursorLocked() ? Input::UnlockCursor() : Input::LockCursor();
+
         
         // #### Finish stage.
         Input::Update();
@@ -79,9 +93,6 @@ void Application::DispatchEvents() {
         switch (event.type) {
         case SDL_QUIT:
             running = false;
-            break;
-        case SDL_MOUSEMOTION:
-            Input::MouseMotionEvent(event);
             break;
         case SDL_MOUSEBUTTONDOWN:
             Input::MouseButtonDownEvent(event);

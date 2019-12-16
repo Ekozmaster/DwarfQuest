@@ -72,22 +72,31 @@ bool Input::GetKeyDown(const char* keyName) {
     return false;
 }
 
-void Input::GetMouseDelta(int& out_x, int& out_y) {
-    out_x = m_mouseX - m_prevMouseX;
-    out_y = m_mouseY - m_prevMouseY;
+void Input::GetMouseDelta(int *out_x, int *out_y) {
+    if (m_cursorLocked) {
+        SDL_DisplayMode dm;
+        SDL_GetDesktopDisplayMode(0, &dm);
+        *out_x = m_mouseX - dm.w / 2;
+        *out_y = m_mouseY - dm.h / 2;
+    } else {
+        *out_x = m_mouseX - m_prevMouseX;
+        *out_y = m_mouseY - m_prevMouseY;
+    }
 }
 
 void Input::Update() {
     if (m_SDLKeysPointer) {
         std::memcpy(m_PreviousKeysState, m_SDLKeysPointer, m_SDLKeysCount * sizeof(Uint8));
     }
-}
+    m_prevMouseX = m_mouseX;
+    m_prevMouseY = m_mouseY;
+    SDL_GetGlobalMouseState(&m_mouseX, &m_mouseY);
 
-void Input::MouseMotionEvent(const SDL_Event& event) {
-    Input::m_prevMouseX = Input::m_mouseX;
-    Input::m_prevMouseY = Input::m_mouseY;
-    Input::m_mouseX = event.motion.x;
-    Input::m_mouseY = event.motion.y;
+    if (m_cursorLocked) {
+        SDL_DisplayMode dm;
+        SDL_GetDesktopDisplayMode(0, &dm);
+        SDL_WarpMouseGlobal(dm.w / 2, dm.h / 2);
+    }
 }
 
 void Input::MouseButtonDownEvent(const SDL_Event& event) {
@@ -98,6 +107,18 @@ void Input::MouseButtonUpEvent(const SDL_Event& event) {
     
 }
 
+bool Input::IsCursorLocked() {
+    return m_cursorLocked;
+}
+
+void Input::LockCursor() {
+    m_cursorLocked = true;
+}
+
+void Input::UnlockCursor() {
+    m_cursorLocked = false;
+}
+
 int Input::m_SDLKeysCount = 0;
 const Uint8* Input::m_SDLKeysPointer = nullptr;
 Uint8* Input::m_PreviousKeysState = nullptr;
@@ -105,3 +126,4 @@ int Input::m_mouseX = 0;
 int Input::m_mouseY = 0;
 int Input::m_prevMouseX = 0;
 int Input::m_prevMouseY = 0;
+bool Input::m_cursorLocked = false;
