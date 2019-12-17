@@ -112,10 +112,12 @@ bool Input::IsCursorLocked() {
 }
 
 void Input::LockCursor() {
+    SDL_ShowCursor(SDL_DISABLE);
     m_cursorLocked = true;
 }
 
 void Input::UnlockCursor() {
+    SDL_ShowCursor(SDL_ENABLE);
     m_cursorLocked = false;
 }
 
