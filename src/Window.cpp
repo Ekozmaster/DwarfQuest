@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <GL/glu.h>
 #include <stdio.h>
 #include <string>
 

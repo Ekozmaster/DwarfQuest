@@ -1,3 +1,6 @@
+#ifdef _WIN32
+#include<Windows.h>
+#endif
 #include <SDL2/SDL_opengl.h>
 #include <GL/glu.h>
 
