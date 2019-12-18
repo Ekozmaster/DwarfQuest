@@ -18,13 +18,16 @@ int mouseX, mouseY;
 Camera::Camera camera;
 
 void Application::FrameMainStage() {
-    int mouseXDelta, mouseYDelta;
-    Input::GetMouseDelta(&mouseXDelta, &mouseYDelta);
-    mouseX += mouseXDelta;
-    mouseY += mouseYDelta;
 
-    glm::quat camRotation = glm::quat(glm::vec3(mouseY * 0.0005, -mouseX * 0.0005, 0));
-    camera.direction = camRotation * glm::vec3(0.0f, 0.0f, 1.0f);
+    if (Input::IsCursorLocked()) {
+        int mouseXDelta, mouseYDelta;
+        Input::GetMouseDelta(&mouseXDelta, &mouseYDelta);
+        mouseX += mouseXDelta;
+        mouseY += mouseYDelta;
+
+        glm::quat camRotation = glm::quat(glm::vec3(mouseY * 0.0005, -mouseX * 0.0005, 0));
+        camera.direction = camRotation * glm::vec3(0.0f, 0.0f, 1.0f);
+    }
 
     if (Input::GetKeyPressed("W")) camera.position += camera.direction * 0.01666f;
     else if (Input::GetKeyPressed("S")) camera.position += -camera.direction * 0.01666f;

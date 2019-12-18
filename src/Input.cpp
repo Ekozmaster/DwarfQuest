@@ -113,6 +113,9 @@ bool Input::IsCursorLocked() {
 
 void Input::LockCursor() {
     SDL_ShowCursor(SDL_DISABLE);
+    SDL_DisplayMode dm;
+    SDL_GetDesktopDisplayMode(0, &dm);
+    SDL_WarpMouseGlobal(dm.w / 2, dm.h / 2);
     m_cursorLocked = true;
 }
 
