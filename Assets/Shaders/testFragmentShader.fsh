@@ -1,7 +1,7 @@
 #version 120
 
-out vec4 FragColor;
 in vec4 vertexColor;
+varying out vec4 FragColor;
 
 void main()
 {

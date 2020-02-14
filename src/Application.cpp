@@ -29,9 +29,9 @@ void Application::FrameMainStage() {
     }
 
     if (Input::GetKeyPressed("W")) camera.position += camera.direction * 0.01666f;
-    else if (Input::GetKeyPressed("S")) camera.position += -camera.direction * 0.01666f;
-    else if (Input::GetKeyPressed("A")) camera.position += Camera::Right(camera) * -0.01666f;
-    else if (Input::GetKeyPressed("D")) camera.position += Camera::Right(camera) * 0.01666f;
+    if (Input::GetKeyPressed("S")) camera.position += -camera.direction * 0.01666f;
+    if (Input::GetKeyPressed("A")) camera.position += Camera::Right(camera) * -0.01666f;
+    if (Input::GetKeyPressed("D")) camera.position += Camera::Right(camera) * 0.01666f;
 
     if (Input::GetKeyDown("P")) running = false;
     if (Input::GetKeyDown("E")) Input::IsCursorLocked() ? Input::UnlockCursor() : Input::LockCursor();

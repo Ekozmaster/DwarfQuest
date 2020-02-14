@@ -2,7 +2,7 @@
 
 in vec3 aPos; // the position variable has attribute position 0
 
-out vec4 vertexColor; // specify a color output to the fragment shader
+varying out vec4 vertexColor; // specify a color output to the fragment shader
 
 void main()
 {
