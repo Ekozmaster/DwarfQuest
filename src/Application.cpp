@@ -1,18 +1,17 @@
 #include <iostream>
+#include <chrono>
+#include <glm/gtc/type_ptr.hpp>
+#include <GL/glew.h>
 
 #include "Application.h"
 #include "Utils/Logger.h"
 #include "Input.h"
+#include "Graphics/OpenGL/Camera.h"
+#include "Graphics/OpenGL/Graphics.h"
 
 void Application::FrameSetupStage() {
     DispatchEvents();
 }
-
-#include"Graphics/OpenGL/Camera.h"
-#include "Graphics/OpenGL/Graphics.h"
-#include<glm/gtc/type_ptr.hpp>
-#include<GL/gl.h>
-#include<chrono>
 
 int mouseX, mouseY;
 Camera::Camera camera;
@@ -68,11 +67,14 @@ bool Application::Init() {
 }
 
 
-
+#include "Graphics/OpenGL/Shader.h"
 int Application::Run() {
     running = true;
     float mouseX = 0;
     float mouseY = 0;
+
+
+    Shader shader("Assets/Shaders/testVertexShader.vsh", "Assets/Shaders/testFragmentShader.fsh");
     
     camera = Camera::InitADefaultCamera();
 

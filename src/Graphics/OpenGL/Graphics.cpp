@@ -1,8 +1,7 @@
 #ifdef _WIN32
 #include<Windows.h>
 #endif
-#include <SDL2/SDL_opengl.h>
-#include <GL/glu.h>
+#include <GL/glew.h>
 
 #include "Graphics.h"
 #include "../../Utils/Logger.h"
@@ -16,7 +15,10 @@ bool Graphics::Init(SDL_Window *attachedWindow) {
         Logger::Error("Graphics.Init: OpenGL context could not be created! SDL Error: " + std::string(SDL_GetError()));
         success = false;
     } else if (SDL_GL_SetSwapInterval(1) < 0) {
-        Logger::Error("Graphics.Init: Warning: Unable to set VSync! SDL Error: " + std::string(SDL_GetError()));
+        Logger::Error("Graphics.Init: Error: Unable to set VSync! SDL Error: " + std::string(SDL_GetError()));
+        success = false;
+    } else if (glewInit() != GLEW_OK) {
+        Logger::Error("Graphics.Init: Error: Unable to set VSync! SDL Error: " + std::string(SDL_GetError()));
         success = false;
     } else {
         SetViewport(640, 480);
