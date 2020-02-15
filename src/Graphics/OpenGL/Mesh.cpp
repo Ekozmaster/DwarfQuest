@@ -5,32 +5,40 @@ Mesh::Mesh() {
 }
 
 Mesh::~Mesh() {
-    DestroyMesh();
+    Destroy();
 }
 
-int Mesh::CreateMesh(const GLfloat *vertexArray, const GLuint vertexArrayLength, const GLuint *indexesArray, const GLuint indexesArrayLength) {
-    if (m_allocated) DestroyMesh();
+int Mesh::Create(const GLfloat *vertexArray, const GLuint vertexArrayLength, const GLuint *indexesArray, const GLuint indexesArrayLength) {
+    if (m_allocated) Destroy();
     
     // Vertex array object
     glGenVertexArrays(1, &m_vao);
     glBindVertexArray(m_vao);
-     
+    
     // Vertex buffer object
-    glGenBuffers(1, &m_vbo);  
-    glBindBuffer(GL_VERTEX_ARRAY, m_vbo);  
+    glGenBuffers(1, &m_vbo);
+    glBindBuffer(GL_VERTEX_ARRAY, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexArrayLength, vertexArray, GL_STATIC_DRAW);
     
     // Indexes buffer object
     glGenBuffers(1, &m_ibo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indexesArrayLength, indexesArray, GL_STATIC_DRAW);
+
+    // Setting location 0 of "vertexArray" as position.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); // Position
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
     
     m_allocated = true;
+    m_verticesCount = vertexArrayLength;
+    m_indexesCount = indexesArrayLength;
     
     return 0;
 }
 
-void Mesh::DestroyMesh() {
+void Mesh::Destroy() {
     if (!m_allocated) return;
     
     glBindVertexArray(0);
@@ -39,14 +47,16 @@ void Mesh::DestroyMesh() {
     glDeleteBuffers(1, &m_ibo);
     glDeleteVertexArrays(1, &m_vao);
     
-    m_vao = 0;
-    m_vbo = 0;
-    m_ibo = 0;
+    m_vao = m_vbo = m_ibo = 0;
+    m_verticesCount = m_indexesCount = 0;
     m_allocated = false;
 }
 
-int Mesh::UseMesh() {
+int Mesh::Use() {
     if (!m_allocated) return 1;
-    
     glBindVertexArray(m_vao);
+}
+
+void Mesh::Render() {
+    glDrawElements(GL_TRIANGLES, m_indexesCount, GL_UNSIGNED_INT, 0);
 }

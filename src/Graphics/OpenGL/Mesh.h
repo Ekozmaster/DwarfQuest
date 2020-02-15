@@ -6,14 +6,16 @@ class Mesh {
 private:
     bool m_allocated;
     GLuint m_vao, m_vbo, m_ibo;
+    GLuint m_verticesCount, m_indexesCount;
     
 public:
     Mesh();
     ~Mesh();
     
-    int CreateMesh(const GLfloat *vertexArray, const GLuint vertexArrayLength, const GLuint *indexesArray, const GLuint indexesArrayLength);
-    void DestroyMesh();
+    int Create(const GLfloat *vertexArray, const GLuint vertexArrayLength, const GLuint *indexesArray, const GLuint indexesArrayLength);
+    void Destroy();
     
-    int UseMesh();
-    
+    // Don't use these methods directly unless you know exactly what you're doing.
+    int Use();
+    void Render();
 };

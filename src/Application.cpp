@@ -8,6 +8,9 @@
 #include "Input.h"
 #include "Graphics/OpenGL/Camera.h"
 #include "Graphics/OpenGL/Graphics.h"
+#include "Graphics/OpenGL/ShadersDefinitions.h"
+#include "Graphics/OpenGL/Shader.h"
+#include "Graphics/OpenGL/Mesh.h"
 
 void Application::FrameSetupStage() {
     DispatchEvents();
@@ -42,10 +45,24 @@ void Application::FrameFinishStage() {
 }
 
 void Application::FrameRenderStage() {
-    glm::mat4 persp = Camera::CameraPerspectiveMatrix(camera);
-    glm::mat4 look = Camera::CameraLookMatrix(camera);
-    Graphics::SetCameraView(glm::value_ptr(look), glm::value_ptr(persp));
-    window->Render();
+    Graphics::ClearScreen();
+
+    // Setting up shader.
+    //Graphics::SetShader(&shader);
+    //glm::mat4 persp = Camera::CameraPerspectiveMatrix(camera);
+    //glm::mat4 look = Camera::CameraLookMatrix(camera);
+    //glm::mat4 identity(1);
+    //Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(identity));
+    //Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
+    //Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
+
+    // Rendering.
+    //Graphics::SetMesh(&mesh);
+    //Graphics::RenderMesh();
+    //shader.Use();
+    mesh.Use();
+    mesh.Render();
+    window->SwapBuffers();
 }
 
 bool Application::Init() {
@@ -63,35 +80,41 @@ bool Application::Init() {
             return initStatus;
         }
     }
-    return initStatus;
-}
 
 
-#include "Graphics/OpenGL/Shader.h"
-#include "Graphics/OpenGL/Mesh.h"
-int Application::Run() {
-    running = true;
-    float mouseX = 0;
-    float mouseY = 0;
-    
+
+
+
+    // <TESTING>
     const GLfloat vertices[] = {
         -0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f
+         0.0f,  0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f
     };
     
     const GLuint indices[] = {
         0, 1, 2
     };
+    
+    mesh = Mesh();
+    Logger::Info("Creating Mesh");
+    mesh.Create(vertices, 9, indices, 3);
+    
+    shader = Shader("Assets/Shaders/testVertexShader.glsl", "Assets/Shaders/testFragmentShader.glsl");
+    // </TESTING>
 
-    {
-        Mesh mesh = Mesh();
-        Logger::Info("CreateMesh");
-        mesh.CreateMesh(vertices, 9, indices, 3);
-        Logger::Info("DestroyMesh");
-        mesh.DestroyMesh();
-    }
-    Shader shader("Assets/Shaders/testVertexShader.vsh", "Assets/Shaders/testFragmentShader.fsh");
+
+
+
+
+
+    return initStatus;
+}
+
+int Application::Run() {
+    running = true;
+    float mouseX = 0;
+    float mouseY = 0;
     
     camera = Camera::InitADefaultCamera();
 

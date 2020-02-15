@@ -9,7 +9,7 @@ private:
 
 public:
     bool Init();
-    void Render();
+    void SwapBuffers();
     void Close();
     void SetSize(unsigned int width, unsigned int height);
 };

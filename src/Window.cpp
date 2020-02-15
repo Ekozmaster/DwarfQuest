@@ -20,8 +20,8 @@ bool Window::Init() {
         int windowFlags = SDL_WINDOW_SHOWN;
 #ifdef DWARFQUEST_OPEN_GL
         windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 #endif
 
         m_gWindow = SDL_CreateWindow("Dwarf Quest",
@@ -44,8 +44,7 @@ bool Window::Init() {
     return success;
 }
 
-void Window::Render() {
-    Graphics::Render();
+void Window::SwapBuffers() {
     SDL_GL_SwapWindow(m_gWindow);
 }
 

@@ -88,17 +88,47 @@ void Shader::CompileShaders(const char* vertexPath, const char* fragmentPath) {
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
+
+    m_allocated = true;
 }
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
+    m_shaderProgram = 0;
+    m_allocated = false;
     CompileShaders(vertexPath, fragmentPath);
 }
 
-Shader::~Shader() {
-    glUseProgram(0);
-    glDeleteProgram(m_shaderProgram);
+Shader::Shader() {
+    m_shaderProgram = 0;
+    m_allocated = false;
 }
 
-void Shader::Use() {
+Shader::~Shader() {
+    Destroy();
+}
+
+void Shader::Destroy() {
+    if (!m_allocated) return;
+
+    glUseProgram(0);
+    glDeleteProgram(m_shaderProgram);
+    m_shaderProgram = 0;
+}
+
+int Shader::Use() {
+    if (!m_allocated) return 1;
     glUseProgram(m_shaderProgram);
+    return 0;
+}
+
+void Shader::Set4x4Matrix(const char *matrixName, const GLfloat *values) {
+    GLuint matrixID = glGetUniformLocation(m_shaderProgram, matrixName);
+
+    if (!matrixID) {
+        std::stringstream log;
+        log << "Shader.Set4x4Matrix - Shader has no matrix named '" << matrixName << "'";
+        Logger::Error(log.str().c_str());
+        return;
+    }
+    glUniformMatrix4fv(matrixID, 1, GL_FALSE, values);
 }
