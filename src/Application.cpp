@@ -68,12 +68,29 @@ bool Application::Init() {
 
 
 #include "Graphics/OpenGL/Shader.h"
+#include "Graphics/OpenGL/Mesh.h"
 int Application::Run() {
     running = true;
     float mouseX = 0;
     float mouseY = 0;
+    
+    const GLfloat vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f
+    };
+    
+    const GLuint indices[] = {
+        0, 1, 2
+    };
 
-
+    {
+        Mesh mesh = Mesh();
+        Logger::Info("CreateMesh");
+        mesh.CreateMesh(vertices, 9, indices, 3);
+        Logger::Info("DestroyMesh");
+        mesh.DestroyMesh();
+    }
     Shader shader("Assets/Shaders/testVertexShader.vsh", "Assets/Shaders/testFragmentShader.fsh");
     
     camera = Camera::InitADefaultCamera();
