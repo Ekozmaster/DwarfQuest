@@ -2,6 +2,8 @@
 
 Mesh::Mesh() {
     m_allocated = false;
+    m_vao = m_vbo = m_ibo = 0;
+    m_verticesCount = m_indexesCount = 0;
 }
 
 Mesh::~Mesh() {
@@ -17,7 +19,7 @@ int Mesh::Create(const GLfloat *vertexArray, const GLuint vertexArrayLength, con
     
     // Vertex buffer object
     glGenBuffers(1, &m_vbo);
-    glBindBuffer(GL_VERTEX_ARRAY, m_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertexArrayLength, vertexArray, GL_STATIC_DRAW);
     
     // Indexes buffer object
@@ -29,6 +31,7 @@ int Mesh::Create(const GLfloat *vertexArray, const GLuint vertexArrayLength, con
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0); // Position
     glEnableVertexAttribArray(0);
 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     
     m_allocated = true;

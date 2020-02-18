@@ -1,7 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <glm/gtc/type_ptr.hpp>
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include "Application.h"
 #include "Utils/Logger.h"
@@ -48,20 +48,17 @@ void Application::FrameRenderStage() {
     Graphics::ClearScreen();
 
     // Setting up shader.
-    //Graphics::SetShader(&shader);
-    //glm::mat4 persp = Camera::CameraPerspectiveMatrix(camera);
-    //glm::mat4 look = Camera::CameraLookMatrix(camera);
-    //glm::mat4 identity(1);
-    //Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(identity));
-    //Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
-    //Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
+    Graphics::SetShader(&shader);
+    glm::mat4 persp = Camera::CameraPerspectiveMatrix(camera);
+    glm::mat4 look = Camera::CameraLookMatrix(camera);
+    glm::mat4 identity(1);
+    Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(identity));
+    Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
+    Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
 
     // Rendering.
-    //Graphics::SetMesh(&mesh);
-    //Graphics::RenderMesh();
-    //shader.Use();
-    mesh.Use();
-    mesh.Render();
+    Graphics::SetMesh(&mesh);
+    Graphics::RenderMesh();
     window->SwapBuffers();
 }
 

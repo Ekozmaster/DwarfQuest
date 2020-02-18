@@ -6,7 +6,7 @@
 #ifdef _WIN32
 #include<Windows.h>
 #endif
-#include<GL/glew.h>
+#include <glad/glad.h>
 
 #include "../../Utils/Logger.h"
 

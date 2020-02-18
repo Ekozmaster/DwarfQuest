@@ -26,20 +26,20 @@ add_custom_command(
 
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
 
 string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 target_link_libraries(DwarfQuest
     PRIVATE
         ${SDL2_LIBRARIES}
         ${OPENGL_LIBRARIES}
-        GLEW::GLEW
 )
 
 target_include_directories(DwarfQuest PRIVATE libs/glm)
+target_include_directories(DwarfQuest PRIVATE libs/glad/include)
 target_include_directories(DwarfQuest PRIVATE ${SDL2_INCLUDE_DIRS})
-target_include_directories(DwarfQuest PRIVATE ${GLEW_INCLUDE_DIRS})
 
 include(src/CMakeLists.txt)
 include(src/Graphics/OpenGL/CMakeLists.txt)
 include(src/Utils/CMakeLists.txt)
+include(libs/glad/include/glad/CMakeLists.txt)
+include(libs/glad/src/CMakeLists.txt)

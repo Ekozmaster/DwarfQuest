@@ -1,7 +1,7 @@
 #ifdef _WIN32
 #include<Windows.h>
 #endif
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include "Graphics.h"
 #include "../../Utils/Logger.h"
@@ -11,20 +11,30 @@ bool Graphics::Init(SDL_Window *attachedWindow) {
     m_window = attachedWindow;
     bool success = true;
 
+    // CONTEXT
     m_gContext = SDL_GL_CreateContext(m_window);
     if (m_gContext == NULL) {
         Logger::Error("Graphics.Init: OpenGL context could not be created! SDL Error: " + std::string(SDL_GetError()));
-        success = false;
-    } else if (SDL_GL_SetSwapInterval(1) < 0) {
-        Logger::Error("Graphics.Init: Error: Unable to set VSync! SDL Error: " + std::string(SDL_GetError()));
-        success = false;
-    } else if (glewInit() != GLEW_OK) {
-        Logger::Error("Graphics.Init: Error: Unable to set VSync! SDL Error: " + std::string(SDL_GetError()));
-        success = false;
-    } else {
-        SetViewport(640, 480);
+        return false;
     }
-    return success;
+
+    // VSYNC
+    if (SDL_GL_SetSwapInterval(1) < 0) {
+        Logger::Error("Graphics.Init: Error: Unable to set VSync! SDL Error: " + std::string(SDL_GetError()));
+        SDL_GL_DeleteContext(m_gContext);
+        return false;
+    }
+
+    // GLAD INIT
+    int glExtensionsLoaded = gladLoadGL();
+    if (!glExtensionsLoaded) {
+        Logger::Error("Graphics.Init: Error: Unable to initialize glad");
+        SDL_GL_DeleteContext(m_gContext);
+        return false;
+    }
+
+    SetViewport(640, 480);
+    return true;
 }
 
 void Graphics::Destroy() {

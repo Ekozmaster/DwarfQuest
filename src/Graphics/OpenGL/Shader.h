@@ -1,11 +1,11 @@
 #pragma once
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 class Shader {
 private:
     bool m_allocated;
-    unsigned int m_shaderProgram;
+    GLuint m_shaderProgram;
 
 private:
     void CompileShaders(const char* vertexPath, const char* fragmentPath);
