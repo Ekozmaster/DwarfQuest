@@ -32,6 +32,7 @@ target_link_libraries(DwarfQuest
     PRIVATE
         ${SDL2_LIBRARIES}
         ${OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
 )
 
 target_include_directories(DwarfQuest PRIVATE libs/glm)
