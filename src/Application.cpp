@@ -84,20 +84,22 @@ bool Application::Init() {
 
     // <TESTING>
     const GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f
+        -0.5f, -0.5f,  0.0f, // VERTEX 1
+         1.0f,  0.0f,  0.0f, // COLOR 1
+         0.0f,  0.5f,  0.0f, // VERTEX 2
+         0.0f,  1.0f,  0.0f, // COLOR 2
+         0.5f, -0.5f,  0.0f, // VERTEX 3
+         0.0f,  0.0f,  1.0f, // COLOR 3
     };
     
     const GLuint indices[] = {
         0, 1, 2
     };
     
-    mesh = Mesh();
     Logger::Info("Creating Mesh");
     mesh.Create(vertices, 9, indices, 3);
     
-    shader = Shader("Assets/Shaders/testVertexShader.glsl", "Assets/Shaders/testFragmentShader.glsl");
+    shader.CompileShaders("Assets/Shaders/testVertexShader.glsl", "Assets/Shaders/testFragmentShader.glsl");
     // </TESTING>
 
 

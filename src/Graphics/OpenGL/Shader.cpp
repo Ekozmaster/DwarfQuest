@@ -124,7 +124,7 @@ int Shader::Use() {
 void Shader::Set4x4Matrix(const char *matrixName, const GLfloat *values) {
     GLuint matrixID = glGetUniformLocation(m_shaderProgram, matrixName);
 
-    if (!matrixID) {
+    if (matrixID == -1) {
         std::stringstream log;
         log << "Shader.Set4x4Matrix - Shader has no matrix named '" << matrixName << "'";
         Logger::Error(log.str().c_str());

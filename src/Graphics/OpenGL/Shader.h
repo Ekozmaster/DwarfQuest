@@ -7,10 +7,8 @@ private:
     bool m_allocated;
     GLuint m_shaderProgram;
 
-private:
-    void CompileShaders(const char* vertexPath, const char* fragmentPath);
-
 public:
+    void CompileShaders(const char* vertexPath, const char* fragmentPath);
     Shader();
     Shader(const char* vertexPath, const char* fragmentPath);
     ~Shader();
