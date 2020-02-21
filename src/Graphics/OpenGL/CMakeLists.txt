@@ -8,4 +8,5 @@ target_sources(DwarfQuest
         ${CMAKE_CURRENT_LIST_DIR}/Shader.h
         ${CMAKE_CURRENT_LIST_DIR}/Camera.h
         ${CMAKE_CURRENT_LIST_DIR}/Mesh.h
+        ${CMAKE_CURRENT_LIST_DIR}/Utils.h
 )

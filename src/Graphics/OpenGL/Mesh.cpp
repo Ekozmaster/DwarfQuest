@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Utils.h"
 
 Mesh::Mesh() {
     m_allocated = false;
@@ -63,5 +64,5 @@ int Mesh::Use() {
 }
 
 void Mesh::Render() {
-    glDrawElements(GL_TRIANGLES, m_indexesCount, GL_UNSIGNED_INT, 0);
+    GLTrackCall(glDrawElements(GL_TRIANGLES, m_indexesCount, GL_UNSIGNED_INT, 0));
 }
