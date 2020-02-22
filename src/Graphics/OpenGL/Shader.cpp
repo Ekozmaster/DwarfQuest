@@ -9,6 +9,7 @@
 #include <glad/glad.h>
 
 #include "../../Utils/Logger.h"
+#include "Utils.h"
 
 void Shader::CompileShaders(const char* vertexPath, const char* fragmentPath) {
     std::string vCode;
@@ -40,13 +41,13 @@ void Shader::CompileShaders(const char* vertexPath, const char* fragmentPath) {
     char infoLog[512];
 
     // VERTEX
-    unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vCodePointer, NULL);
-    glCompileShader(vertex);
+    GLTrackCall(unsigned int vertex = glCreateShader(GL_VERTEX_SHADER));
+    GLTrackCall(glShaderSource(vertex, 1, &vCodePointer, NULL));
+    GLTrackCall(glCompileShader(vertex));
 
-    glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
+    GLTrackCall(glGetShaderiv(vertex, GL_COMPILE_STATUS, &success));
     if (!success) {
-        glGetShaderInfoLog(vertex, 512, NULL, infoLog);
+        GLTrackCall(glGetShaderInfoLog(vertex, 512, NULL, infoLog));
         std::stringstream log;
         log << "Shader.CompileShaders - Could not compile vertex shader('" << vertexPath << "'):\n" << infoLog;
         Logger::Error(log.str().c_str());
@@ -54,13 +55,13 @@ void Shader::CompileShaders(const char* vertexPath, const char* fragmentPath) {
     };
 
     // FRAGMENT
-    unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fCodePointer, NULL);
-    glCompileShader(fragment);
+    GLTrackCall(unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER));
+    GLTrackCall(glShaderSource(fragment, 1, &fCodePointer, NULL));
+    GLTrackCall(glCompileShader(fragment));
 
-    glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
+    GLTrackCall(glGetShaderiv(fragment, GL_COMPILE_STATUS, &success));
     if (!success) {
-        glGetShaderInfoLog(fragment, 512, NULL, infoLog);
+        GLTrackCall(glGetShaderInfoLog(fragment, 512, NULL, infoLog));
         std::stringstream log;
         log << "Shader.CompileShaders - Could not compile fragment shader('" << fragmentPath << "'):\n" << infoLog;
         Logger::Error(log.str().c_str());
@@ -69,25 +70,25 @@ void Shader::CompileShaders(const char* vertexPath, const char* fragmentPath) {
     };
 
     // FINAL PROGRAM
-    m_shaderProgram = glCreateProgram();
-    glAttachShader(m_shaderProgram, vertex);
-    glAttachShader(m_shaderProgram, fragment);
-    glLinkProgram(m_shaderProgram);
+    GLTrackCall(m_shaderProgram = glCreateProgram());
+    GLTrackCall(glAttachShader(m_shaderProgram, vertex));
+    GLTrackCall(glAttachShader(m_shaderProgram, fragment));
+    GLTrackCall(glLinkProgram(m_shaderProgram));
 
-    glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &success);
+    GLTrackCall(glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &success));
     if (!success) {
-        glGetProgramInfoLog(m_shaderProgram, 512, NULL, infoLog);
+        GLTrackCall(glGetProgramInfoLog(m_shaderProgram, 512, NULL, infoLog));
         std::stringstream log;
         log << "Shader.CompileShaders - Could not link shader('" << vertexPath << "', '" << fragmentPath << "'):\n" << infoLog;
         Logger::Error(log.str().c_str());
-        glDeleteShader(vertex);
-        glDeleteShader(fragment);
-        glDeleteProgram(m_shaderProgram);
+        GLTrackCall(glDeleteShader(vertex));
+        GLTrackCall(glDeleteShader(fragment));
+        GLTrackCall(glDeleteProgram(m_shaderProgram));
         return;
     }
 
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
+    GLTrackCall(glDeleteShader(vertex));
+    GLTrackCall(glDeleteShader(fragment));
 
     m_allocated = true;
 }
@@ -110,8 +111,8 @@ Shader::~Shader() {
 void Shader::Destroy() {
     if (!m_allocated) return;
 
-    glUseProgram(0);
-    glDeleteProgram(m_shaderProgram);
+    GLTrackCall(glUseProgram(0));
+    GLTrackCall(glDeleteProgram(m_shaderProgram));
     m_shaderProgram = 0;
 }
 
@@ -122,7 +123,7 @@ int Shader::Use() {
 }
 
 void Shader::Set4x4Matrix(const char *matrixName, const GLfloat *values) {
-    GLuint matrixID = glGetUniformLocation(m_shaderProgram, matrixName);
+    GLTrackCall(GLuint matrixID = glGetUniformLocation(m_shaderProgram, matrixName));
 
     if (matrixID == -1) {
         std::stringstream log;
@@ -130,5 +131,5 @@ void Shader::Set4x4Matrix(const char *matrixName, const GLfloat *values) {
         Logger::Error(log.str().c_str());
         return;
     }
-    glUniformMatrix4fv(matrixID, 1, GL_FALSE, values);
+    GLTrackCall(glUniformMatrix4fv(matrixID, 1, GL_FALSE, values));
 }

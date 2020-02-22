@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include "../../Utils/Logger.h"
 #include "ShadersDefinitions.h"
+#include "Utils.h"
 
 bool Graphics::Init(SDL_Window *attachedWindow) {
     m_window = attachedWindow;
@@ -43,7 +44,7 @@ void Graphics::Destroy() {
 }
 
 void Graphics::SetViewport(int width, int height) {
-    glViewport(0, 0, 640, 480);
+    GLTrackCall(glViewport(0, 0, 640, 480));
 }
 
 void Graphics::SetShader(Shader *shader) {
@@ -77,8 +78,8 @@ void Graphics::RenderMesh() {
 }
 
 void Graphics::ClearScreen() {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    GLTrackCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+    GLTrackCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
 SDL_Window* Graphics::m_window = nullptr;
