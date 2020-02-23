@@ -9,9 +9,11 @@ uniform mat4 viewMatrix;
 uniform mat4 perspectiveMatrix;
 
 out vec3 normal;
+out vec2 uv;
 
 void main()
 {
+    uv = aUV;
     normal = vec3(modelMatrix * vec4(aNormal, 1));
     gl_Position = perspectiveMatrix * viewMatrix * modelMatrix * vec4(aPos, 1.0);
 }

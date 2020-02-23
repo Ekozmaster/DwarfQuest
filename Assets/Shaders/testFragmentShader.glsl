@@ -1,7 +1,11 @@
 #version 330
 
-out vec4 FragColor;
 in vec3 normal;
+in vec2 uv;
+
+uniform sampler2D uTexture0;
+
+out vec4 FragColor;
 
 void main()
 {
@@ -11,5 +15,5 @@ void main()
     if (lightFactor < 0) lightFactor = lightFactor * 0.2 + 0.2;
     else lightFactor = lightFactor * 0.8 + 0.2;
 
-    FragColor = vec4(1,1,1,1) * lightFactor;
+    FragColor = texture(uTexture0, uv) * lightFactor;
 }
