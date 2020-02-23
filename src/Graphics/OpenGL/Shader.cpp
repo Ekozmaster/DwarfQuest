@@ -114,6 +114,8 @@ void Shader::Destroy() {
     GLTrackCall(glUseProgram(0));
     GLTrackCall(glDeleteProgram(m_shaderProgram));
     m_shaderProgram = 0;
+
+    m_allocated = false;
 }
 
 int Shader::Use() {

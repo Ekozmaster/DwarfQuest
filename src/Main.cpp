@@ -11,6 +11,7 @@ int main(int argc, char* args[]) {
     }
 
     app.Run();
+    app.Destroy();
 
     return 0;
 }

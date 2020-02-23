@@ -35,12 +35,20 @@ bool Graphics::Init(SDL_Window *attachedWindow) {
     }
 
     SetViewport(640, 480);
+    GLTrackCall(glEnable(GL_DEPTH_TEST));
+
+    // Initializing texture slots array.
+    GLTrackCall(glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTexturesSlots));
+    m_activeTextures = new Texture * [m_maxTexturesSlots];
+    for (unsigned int i = 0; i < m_maxTexturesSlots; i++) m_activeTextures[i] = NULL;
     return true;
 }
 
 void Graphics::Destroy() {
     if(m_gContext) SDL_GL_DeleteContext(m_gContext);
     m_gContext = NULL;
+    delete[] m_activeTextures;
+    m_activeTextures = NULL;
 }
 
 void Graphics::SetViewport(int width, int height) {
@@ -74,7 +82,16 @@ void Graphics::RenderMesh() {
         Logger::Error("Graphics.RenderMesh - Trying to render mesh with no mesh attached.");
         return;
     }
-    m_currentMesh->Render();
+    m_currentMesh->Draw();
+}
+
+void Graphics::SetTexture(Texture* texture, unsigned int slot) {
+    if (slot >= m_maxTexturesSlots) {
+        Logger::Error("Graphics.SetTexture - Trying to assign texture to a slot bigger than GL_MAX_TEXTURE_IMAGE_UNITS");
+        return;
+    }
+    m_activeTextures[slot] = texture;
+    m_activeTextures[slot]->Use(slot);
 }
 
 void Graphics::ClearScreen() {
@@ -86,3 +103,5 @@ SDL_Window* Graphics::m_window = nullptr;
 SDL_GLContext Graphics::m_gContext = nullptr;
 Shader* Graphics::m_currentShader = nullptr;
 Mesh* Graphics::m_currentMesh = nullptr;
+Texture** Graphics::m_activeTextures = nullptr;
+GLint Graphics::m_maxTexturesSlots = 0;

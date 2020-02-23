@@ -6,6 +6,7 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Texture.h"
 
 class Graphics {
 private:
@@ -13,6 +14,8 @@ private:
     static Mesh* m_currentMesh;
     static SDL_Window* m_window;
     static SDL_GLContext m_gContext;
+    static Texture** m_activeTextures;
+    static GLint m_maxTexturesSlots;
 
 public:
     static bool Init(SDL_Window* attachedWindow);
@@ -23,5 +26,6 @@ public:
     static void SetShaderMatrix(const char* matrixName, const GLfloat* values);
     static void SetMesh(Mesh *mesh);
     static void RenderMesh();
+    static void SetTexture(Texture *texture, unsigned int slot);
     static void ClearScreen();
 };

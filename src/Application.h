@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Graphics/OpenGL/Mesh.h"
 #include "Graphics/OpenGL/Shader.h"
+#include "Graphics/OpenGL/Texture.h"
 
 class Application {
 private:
@@ -10,7 +11,8 @@ private:
     SDL_Event event;
     bool running = false;
 
-    Mesh mesh;
+    Mesh *mesh;
+    Texture* texture;
     Shader shader;
 
     void FrameSetupStage();

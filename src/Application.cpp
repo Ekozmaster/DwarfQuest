@@ -11,6 +11,8 @@
 #include "Graphics/OpenGL/ShadersDefinitions.h"
 #include "Graphics/OpenGL/Shader.h"
 #include "Graphics/OpenGL/Mesh.h"
+#include "ResourceManagement/MeshLoader.h"
+#include "ResourceManagement/ImageLoader.h"
 
 void Application::FrameSetupStage() {
     DispatchEvents();
@@ -57,7 +59,8 @@ void Application::FrameRenderStage() {
     Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
 
     // Rendering.
-    Graphics::SetMesh(&mesh);
+    Graphics::SetTexture(texture, 0);
+    Graphics::SetMesh(mesh);
     Graphics::RenderMesh();
     window->SwapBuffers();
 }
@@ -85,11 +88,14 @@ bool Application::Init() {
     // <TESTING>
     const GLfloat vertices[] = {
         -0.5f, -0.5f,  0.0f, // VERTEX 1
-         1.0f,  0.0f,  0.0f, // COLOR 1
+         1.0f,  0.0f,  0.0f, // NORMAL 1
+         0.0f,  0.0f,        // UV 1
          0.0f,  0.5f,  0.0f, // VERTEX 2
-         0.0f,  1.0f,  0.0f, // COLOR 2
+         0.0f,  1.0f,  0.0f, // NORMAL 2
+         0.5f,  1.0f,        // UV 2
          0.5f, -0.5f,  0.0f, // VERTEX 3
-         0.0f,  0.0f,  1.0f, // COLOR 3
+         0.0f,  0.0f,  1.0f, // NORMAL 3
+         1.0f,  0.0f,        // UV 3
     };
     
     const GLuint indices[] = {
@@ -97,7 +103,10 @@ bool Application::Init() {
     };
     
     Logger::Info("Creating Mesh");
-    mesh.Create(vertices, 9, indices, 3);
+    //mesh.Create(vertices, 9, indices, 3);
+    mesh = LoadMesh("Assets/Models/TestCrateModel.obj");
+    texture = LoadTexture("Assets/Textures/TestCrateAOBake.jpg");
+    //mesh = LoadMesh("Assets/Models/test2.obj");
     
     shader.CompileShaders("Assets/Shaders/testVertexShader.glsl", "Assets/Shaders/testFragmentShader.glsl");
     // </TESTING>
@@ -131,11 +140,14 @@ int Application::Run() {
         // std::cout << deltaTime << std::endl;
         // if(deltaTime < 1.0/60.0) SDL_Delay((1.0/60.0 - deltaTime) * 1000);
     }
-    window->Close();
     return 0;
 }
 
 void Application::Destroy() {
+    delete mesh;
+    delete texture;
+    shader.Destroy();
+
     if (window) {
         window->Close();
         delete window;

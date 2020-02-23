@@ -26,8 +26,8 @@ namespace Camera {
     
     inline Camera InitADefaultCamera() {
         Camera camera;
-        camera.position = glm::vec3(0, 0.0, -0.5);
-        camera.direction = glm::vec3(0.0, 0.0, 1.0);
+        camera.position = glm::vec3(-3.0, 4.0, -3.0);
+        camera.direction = glm::vec3(1.0, -1.0, 1.0);
         camera.up = glm::vec3(0.0, 1.0, 0.0);
 
         camera.fov = 45.0f;

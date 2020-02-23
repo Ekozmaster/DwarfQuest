@@ -1,6 +1,15 @@
 #pragma once
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+
+#define FLOATS_PER_VERTEX 8
+
+typedef struct {
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec2 uv;
+} Vertex;
 
 class Mesh {
 private:
@@ -12,10 +21,10 @@ public:
     Mesh();
     ~Mesh();
     
-    int Create(const GLfloat *vertexArray, const GLuint vertexArrayLength, const GLuint *indexesArray, const GLuint indexesArrayLength);
+    int Create(const GLfloat *vertexArray, const GLuint verticesCount, const GLuint *indexesArray, const GLuint indicesCount);
     void Destroy();
     
     // Don't use these methods directly unless you know exactly what you're doing.
     int Use();
-    void Render();
+    void Draw();
 };

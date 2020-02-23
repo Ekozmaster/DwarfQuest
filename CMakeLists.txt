@@ -41,6 +41,7 @@ target_include_directories(DwarfQuest PRIVATE ${SDL2_INCLUDE_DIRS})
 
 include(src/CMakeLists.txt)
 include(src/Graphics/OpenGL/CMakeLists.txt)
+include(src/ResourceManagement/CMakeLists.txt)
 include(src/Utils/CMakeLists.txt)
 include(libs/glad/include/glad/CMakeLists.txt)
 include(libs/glad/src/CMakeLists.txt)
