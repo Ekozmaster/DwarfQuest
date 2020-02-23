@@ -9,10 +9,7 @@
 #include "Graphics/OpenGL/Camera.h"
 #include "Graphics/OpenGL/Graphics.h"
 #include "Graphics/OpenGL/ShadersDefinitions.h"
-#include "Graphics/OpenGL/Shader.h"
-#include "Graphics/OpenGL/Mesh.h"
-#include "ResourceManagement/MeshLoader.h"
-#include "ResourceManagement/ImageLoader.h"
+#include "ResourceManagement/ResourceManager.h"
 
 void Application::FrameSetupStage() {
     DispatchEvents();
@@ -50,7 +47,7 @@ void Application::FrameRenderStage() {
     Graphics::ClearScreen();
 
     // Setting up shader.
-    Graphics::SetShader(&shader);
+    Graphics::SetShader(shader);
     glm::mat4 persp = Camera::CameraPerspectiveMatrix(camera);
     glm::mat4 look = Camera::CameraLookMatrix(camera);
     glm::mat4 identity(1);
@@ -102,13 +99,16 @@ bool Application::Init() {
         0, 1, 2
     };
     
-    Logger::Info("Creating Mesh");
+    Logger::Info("Loading mock scene");
+    mesh = ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestCrateModel.obj");
+    texture = ResourceManager::GetOrLoadTextureAsset("Assets/Textures/TestCrateAOBake.jpg");
+    shader = ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/testShader.glsl");
     //mesh.Create(vertices, 9, indices, 3);
-    mesh = LoadMesh("Assets/Models/TestCrateModel.obj");
-    texture = LoadTexture("Assets/Textures/TestCrateAOBake.jpg");
+    //mesh = LoadMesh("Assets/Models/TestCrateModel.obj");
+    //texture = LoadTexture("Assets/Textures/TestCrateAOBake.jpg");
     //mesh = LoadMesh("Assets/Models/test2.obj");
     
-    shader.CompileShaders("Assets/Shaders/testVertexShader.glsl", "Assets/Shaders/testFragmentShader.glsl");
+    //shader.CompileShaders("Assets/Shaders/testVertexShader.glsl", "Assets/Shaders/testFragmentShader.glsl");
     // </TESTING>
 
 
@@ -144,10 +144,7 @@ int Application::Run() {
 }
 
 void Application::Destroy() {
-    delete mesh;
-    delete texture;
-    shader.Destroy();
-
+    ResourceManager::DestroyAssets();
     if (window) {
         window->Close();
         delete window;

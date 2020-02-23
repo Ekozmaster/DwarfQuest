@@ -8,9 +8,8 @@ private:
     GLuint m_shaderProgram;
 
 public:
-    void CompileShaders(const char* vertexPath, const char* fragmentPath);
+    bool CompileShaders(const char* shaderName, const char* vertexSource, const char* fragmentSource);
     Shader();
-    Shader(const char* vertexPath, const char* fragmentPath);
     ~Shader();
 
     void Destroy();

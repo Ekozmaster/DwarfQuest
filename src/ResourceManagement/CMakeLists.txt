@@ -3,9 +3,11 @@ target_sources(DwarfQuest
         ${CMAKE_CURRENT_LIST_DIR}/ResourceManager.cpp
         ${CMAKE_CURRENT_LIST_DIR}/MeshLoader.cpp
         ${CMAKE_CURRENT_LIST_DIR}/ImageLoader.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/ShaderLoader.cpp
         ${CMAKE_CURRENT_LIST_DIR}/stb_image.cpp
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/ResourceManager.h
         ${CMAKE_CURRENT_LIST_DIR}/MeshLoader.h
         ${CMAKE_CURRENT_LIST_DIR}/ImageLoader.h
+        ${CMAKE_CURRENT_LIST_DIR}/ShaderLoader.h
 )

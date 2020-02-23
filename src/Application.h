@@ -13,7 +13,7 @@ private:
 
     Mesh *mesh;
     Texture* texture;
-    Shader shader;
+    Shader* shader;
 
     void FrameSetupStage();
     void FrameMainStage();

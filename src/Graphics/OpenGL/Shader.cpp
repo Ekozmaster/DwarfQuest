@@ -11,62 +11,44 @@
 #include "../../Utils/Logger.h"
 #include "Utils.h"
 
-void Shader::CompileShaders(const char* vertexPath, const char* fragmentPath) {
-    std::string vCode;
-    std::string fCode;
-    std::ifstream vFile;
-    std::ifstream fFile;
-    vFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    fFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try {
-        vFile.open(vertexPath);
-        fFile.open(fragmentPath);
-        std::stringstream vStream, fStream;
-        vStream << vFile.rdbuf();
-        fStream << fFile.rdbuf();
-        vFile.close();
-        fFile.close();
-        vCode = vStream.str();
-        fCode = fStream.str();
-    } catch (std::ifstream::failure e) {
-        std::stringstream log;
-        log << "Shader.CompileShaders - Could not read the files: '" << vertexPath << "' '" << fragmentPath << "'";
-        Logger::Error(log.str().c_str());
-        return;
-    }
+Shader::Shader() {
+    m_shaderProgram = 0;
+    m_allocated = false;
+}
 
-    const char* vCodePointer = vCode.c_str();
-    const char* fCodePointer = fCode.c_str();
+Shader::~Shader() {
+    Destroy();
+}
+
+bool Shader::CompileShaders(const char* shaderName, const char* vertexSource, const char* fragmentSource) {
     int success = 0;
     char infoLog[512];
 
     // VERTEX
     GLTrackCall(unsigned int vertex = glCreateShader(GL_VERTEX_SHADER));
-    GLTrackCall(glShaderSource(vertex, 1, &vCodePointer, NULL));
+    GLTrackCall(glShaderSource(vertex, 1, &vertexSource, NULL));
     GLTrackCall(glCompileShader(vertex));
 
     GLTrackCall(glGetShaderiv(vertex, GL_COMPILE_STATUS, &success));
     if (!success) {
         GLTrackCall(glGetShaderInfoLog(vertex, 512, NULL, infoLog));
-        std::stringstream log;
-        log << "Shader.CompileShaders - Could not compile vertex shader('" << vertexPath << "'):\n" << infoLog;
-        Logger::Error(log.str().c_str());
-        return;
+        Logger::Error("Shader.CompileShaders - Could not compile VERTEX shader('" + std::string(shaderName) + "'):\n" + infoLog);
+        GLTrackCall(glDeleteShader(vertex));
+        return false;
     };
 
     // FRAGMENT
     GLTrackCall(unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER));
-    GLTrackCall(glShaderSource(fragment, 1, &fCodePointer, NULL));
+    GLTrackCall(glShaderSource(fragment, 1, &fragmentSource, NULL));
     GLTrackCall(glCompileShader(fragment));
 
     GLTrackCall(glGetShaderiv(fragment, GL_COMPILE_STATUS, &success));
     if (!success) {
         GLTrackCall(glGetShaderInfoLog(fragment, 512, NULL, infoLog));
-        std::stringstream log;
-        log << "Shader.CompileShaders - Could not compile fragment shader('" << fragmentPath << "'):\n" << infoLog;
-        Logger::Error(log.str().c_str());
-        glDeleteShader(vertex);
-        return;
+        Logger::Error("Shader.CompileShaders - Could not compile FRAGMENT shader('" + std::string(shaderName) + "'):\n" + infoLog);
+        GLTrackCall(glDeleteShader(vertex));
+        GLTrackCall(glDeleteShader(fragment));
+        return false;
     };
 
     // FINAL PROGRAM
@@ -78,34 +60,18 @@ void Shader::CompileShaders(const char* vertexPath, const char* fragmentPath) {
     GLTrackCall(glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &success));
     if (!success) {
         GLTrackCall(glGetProgramInfoLog(m_shaderProgram, 512, NULL, infoLog));
-        std::stringstream log;
-        log << "Shader.CompileShaders - Could not link shader('" << vertexPath << "', '" << fragmentPath << "'):\n" << infoLog;
-        Logger::Error(log.str().c_str());
+        Logger::Error("Shader.CompileShaders - Could not link shader('" + std::string(shaderName) + "'):\n" + infoLog);
         GLTrackCall(glDeleteShader(vertex));
         GLTrackCall(glDeleteShader(fragment));
         GLTrackCall(glDeleteProgram(m_shaderProgram));
-        return;
+        return false;
     }
 
     GLTrackCall(glDeleteShader(vertex));
     GLTrackCall(glDeleteShader(fragment));
 
     m_allocated = true;
-}
-
-Shader::Shader(const char* vertexPath, const char* fragmentPath) {
-    m_shaderProgram = 0;
-    m_allocated = false;
-    CompileShaders(vertexPath, fragmentPath);
-}
-
-Shader::Shader() {
-    m_shaderProgram = 0;
-    m_allocated = false;
-}
-
-Shader::~Shader() {
-    Destroy();
+    return true;
 }
 
 void Shader::Destroy() {
