@@ -44,7 +44,7 @@ void Texture::Destroy() {
     if (!m_allocated) return;
 
     GLTrackCall(glDeleteTextures(1, &m_id));
-    m_id = NULL;
+    m_id = 0;
     m_width = 0;
     m_height = 0;
 

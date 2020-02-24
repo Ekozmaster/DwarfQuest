@@ -1,6 +1,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <vector>
+#include <cstring>
 
 #include "MeshLoader.h"
 #include "../Utils/Logger.h"
@@ -23,7 +24,6 @@ Mesh* LoadMesh(const char* path) {
     char lineHeader[128];
     int res = fscanf(file, "%s", lineHeader);
     while (res != EOF) {
-        
         if (strcmp(lineHeader, "v") == 0) { // POSITION
             glm::vec3 vertex;
             fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
