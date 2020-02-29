@@ -43,5 +43,8 @@ include(src/CMakeLists.txt)
 include(src/Graphics/OpenGL/CMakeLists.txt)
 include(src/ResourceManagement/CMakeLists.txt)
 include(src/Utils/CMakeLists.txt)
+include(src/EntitiesBehaviourModel/CMakeLists.txt)
+include(src/EntitiesBehaviourModel/Behaviour/CMakeLists.txt)
+
 include(libs/glad/include/glad/CMakeLists.txt)
 include(libs/glad/src/CMakeLists.txt)

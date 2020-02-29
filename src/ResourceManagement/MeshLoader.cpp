@@ -1,6 +1,7 @@
 #include <string>
 #include <glm/glm.hpp>
 #include <vector>
+#include <cstring>
 
 #include "MeshLoader.h"
 #include "../Utils/Logger.h"
@@ -31,12 +32,10 @@ namespace DwarfQuest {
                     glm::vec3 vertex;
                     fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
                     vertices.push_back(vertex);
-
                 } else if (strcmp(lineHeader, "vt") == 0) { // UVs
                     glm::vec2 uv;
                     fscanf(file, "%f %f\n", &uv.x, &uv.y);
                     uvs.push_back(uv);
-
                 } else if (strcmp(lineHeader, "vn") == 0) { // NORMALS
                     glm::vec3 normal;
                     fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z);

@@ -10,6 +10,8 @@
 #include "Graphics/OpenGL/Graphics.h"
 #include "Graphics/OpenGL/ShadersDefinitions.h"
 #include "ResourceManagement/ResourceManager.h"
+#include "EntitiesBehaviourModel/Behaviour/TestBehaviour.h"
+#include "EntitiesBehaviourModel/Behaviour/TestBehaviourB.h"
 
 namespace DwarfQuest {
     namespace Core {
@@ -40,6 +42,8 @@ namespace DwarfQuest {
 
             if (Input::GetKeyDown("P")) running = false;
             if (Input::GetKeyDown("E")) Input::IsCursorLocked() ? Input::UnlockCursor() : Input::LockCursor();
+
+            gameObject->Update();
         }
 
         void Application::FrameFinishStage() {
@@ -106,12 +110,14 @@ namespace DwarfQuest {
             mesh = ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestCrateModel.obj");
             texture = ResourceManager::GetOrLoadTextureAsset("Assets/Textures/TestCrateAOBake.jpg");
             shader = ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/testShader.glsl");
-            //mesh.Create(vertices, 9, indices, 3);
-            //mesh = LoadMesh("Assets/Models/TestCrateModel.obj");
-            //texture = LoadTexture("Assets/Textures/TestCrateAOBake.jpg");
-            //mesh = LoadMesh("Assets/Models/test2.obj");
 
-            //shader.CompileShaders("Assets/Shaders/testVertexShader.glsl", "Assets/Shaders/testFragmentShader.glsl");
+            gameObject = new GameObject();
+            gameObject->AddComponent<TestBehaviour>();
+            gameObject->AddComponent<TestBehaviourB>();
+            TestBehaviourB* b = gameObject->GetComponent<TestBehaviourB>();
+            b->name = 'C';
+
+            gameObject->Init();
             // </TESTING>
 
 
@@ -148,6 +154,7 @@ namespace DwarfQuest {
 
         void Application::Destroy() {
             ResourceManager::DestroyAssets();
+            delete gameObject;
             if (window) {
                 window->Close();
                 delete window;

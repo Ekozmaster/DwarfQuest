@@ -4,6 +4,7 @@
 #include "Graphics/OpenGL/Mesh.h"
 #include "Graphics/OpenGL/Shader.h"
 #include "Graphics/OpenGL/Texture.h"
+#include "EntitiesBehaviourModel/GameObject.h"
 
 namespace DwarfQuest {
     namespace Core {
@@ -17,6 +18,8 @@ namespace DwarfQuest {
             Mesh* mesh;
             Texture* texture;
             Shader* shader;
+
+            GameObject* gameObject;
 
             void FrameSetupStage();
             void FrameMainStage();
