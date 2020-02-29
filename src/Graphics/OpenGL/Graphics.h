@@ -8,24 +8,29 @@
 #include "Shader.h"
 #include "Texture.h"
 
-class Graphics {
-private:
-    static Shader* m_currentShader;
-    static Mesh* m_currentMesh;
-    static SDL_Window* m_window;
-    static SDL_GLContext m_gContext;
-    static Texture** m_activeTextures;
-    static GLint m_maxTexturesSlots;
+namespace DwarfQuest {
+    namespace Core {
 
-public:
-    static bool Init(SDL_Window* attachedWindow);
-    static void Destroy();
+        class Graphics {
+        private:
+            static Shader* m_currentShader;
+            static Mesh* m_currentMesh;
+            static SDL_Window* m_window;
+            static SDL_GLContext m_gContext;
+            static Texture** m_activeTextures;
+            static GLint m_maxTexturesSlots;
 
-    static void SetViewport(int width, int height);
-    static void SetShader(Shader *shader);
-    static void SetShaderMatrix(const char* matrixName, const GLfloat* values);
-    static void SetMesh(Mesh *mesh);
-    static void RenderMesh();
-    static void SetTexture(Texture *texture, unsigned int slot);
-    static void ClearScreen();
-};
+        public:
+            static bool Init(SDL_Window* attachedWindow);
+            static void Destroy();
+
+            static void SetViewport(int width, int height);
+            static void SetShader(Shader* shader);
+            static void SetShaderMatrix(const char* matrixName, const GLfloat* values);
+            static void SetMesh(Mesh* mesh);
+            static void RenderMesh();
+            static void SetTexture(Texture* texture, unsigned int slot);
+            static void ClearScreen();
+        };
+    }
+}

@@ -4,4 +4,9 @@
 
 #include "../Graphics/OpenGL/Texture.h"
 
-Texture *LoadTexture(const char* path);
+namespace DwarfQuest {
+    namespace Core {
+
+        Texture* LoadTexture(const char* path);
+    }
+}

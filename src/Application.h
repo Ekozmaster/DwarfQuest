@@ -5,23 +5,28 @@
 #include "Graphics/OpenGL/Shader.h"
 #include "Graphics/OpenGL/Texture.h"
 
-class Application {
-private:
-    Window* window;
-    SDL_Event event;
-    bool running = false;
+namespace DwarfQuest {
+    namespace Core {
 
-    Mesh *mesh;
-    Texture* texture;
-    Shader* shader;
+        class Application {
+        private:
+            Window* window;
+            SDL_Event event;
+            bool running = false;
 
-    void FrameSetupStage();
-    void FrameMainStage();
-    void FrameFinishStage();
-    void FrameRenderStage();
-public:
-    bool Init();
-    int Run();
-    void Destroy();
-    void DispatchEvents();
-};
+            Mesh* mesh;
+            Texture* texture;
+            Shader* shader;
+
+            void FrameSetupStage();
+            void FrameMainStage();
+            void FrameFinishStage();
+            void FrameRenderStage();
+        public:
+            bool Init();
+            int Run();
+            void Destroy();
+            void DispatchEvents();
+        };
+    }
+}

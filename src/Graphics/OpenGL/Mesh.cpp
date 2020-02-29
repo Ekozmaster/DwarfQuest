@@ -1,71 +1,77 @@
 #include "Mesh.h"
 #include "Utils.h"
 
-Mesh::Mesh() {
-    m_allocated = false;
-    m_vao = m_vbo = m_ibo = 0;
-    m_verticesCount = m_indexesCount = 0;
-}
+namespace DwarfQuest {
+    namespace Core {
 
-Mesh::~Mesh() {
-    Destroy();
-}
+        Mesh::Mesh() {
+            m_allocated = false;
+            m_vao = m_vbo = m_ibo = 0;
+            m_verticesCount = m_indexesCount = 0;
+        }
 
-int Mesh::Create(const GLfloat *vertexArray, const GLuint verticesCount, const GLuint *indexesArray, const GLuint indicesCount) {
-    if (m_allocated) Destroy();
-    
-    // Vertex array object
-    GLTrackCall(glGenVertexArrays(1, &m_vao));
-    GLTrackCall(glBindVertexArray(m_vao));
-    
-    // Vertex buffer object
-    GLTrackCall(glGenBuffers(1, &m_vbo));
-    GLTrackCall(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
-    GLTrackCall(glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * verticesCount * FLOATS_PER_VERTEX, vertexArray, GL_STATIC_DRAW));
-   
-    // Indexes buffer objec)t
-    GLTrackCall(glGenBuffers(1, &m_ibo));
-    GLTrackCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo));
-    GLTrackCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesCount, indexesArray, GL_STATIC_DRAW));
+        Mesh::~Mesh() {
+            Destroy();
+        }
 
-    // Setting location 0 of "vertexArray" as position, 1 as color).
-    GLTrackCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, position))); // Position
-    GLTrackCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, normal))); // Normal
-    GLTrackCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, uv))); // UVs
-    GLTrackCall(glEnableVertexAttribArray(0));
-    GLTrackCall(glEnableVertexAttribArray(1));
-    GLTrackCall(glEnableVertexAttribArray(2));
+        int Mesh::Create(const GLfloat* vertexArray, const GLuint verticesCount, const GLuint* indexesArray, const GLuint indicesCount) {
+            if (m_allocated) Destroy();
 
-    GLTrackCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
-    GLTrackCall(glBindVertexArray(0));
-    
-    m_allocated = true;
-    m_verticesCount = verticesCount;
-    m_indexesCount = indicesCount;
-    
-    return 0;
-}
+            // Vertex array object
+            GLTrackCall(glGenVertexArrays(1, &m_vao));
+            GLTrackCall(glBindVertexArray(m_vao));
 
-void Mesh::Destroy() {
-    if (!m_allocated) return;
-    
-    GLTrackCall(glBindVertexArray(0));
-    
-    GLTrackCall(glDeleteBuffers(1, &m_vbo));
-    GLTrackCall(glDeleteBuffers(1, &m_ibo));
-    GLTrackCall(glDeleteVertexArrays(1, &m_vao));
-    
-    m_vao = m_vbo = m_ibo = 0;
-    m_verticesCount = m_indexesCount = 0;
+            // Vertex buffer object
+            GLTrackCall(glGenBuffers(1, &m_vbo));
+            GLTrackCall(glBindBuffer(GL_ARRAY_BUFFER, m_vbo));
+            GLTrackCall(glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * verticesCount * FLOATS_PER_VERTEX, vertexArray, GL_STATIC_DRAW));
 
-    m_allocated = false;
-}
+            // Indexes buffer objec)t
+            GLTrackCall(glGenBuffers(1, &m_ibo));
+            GLTrackCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo));
+            GLTrackCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indicesCount, indexesArray, GL_STATIC_DRAW));
 
-int Mesh::Use() {
-    if (!m_allocated) return 1;
-    GLTrackCall(glBindVertexArray(m_vao));
-}
+            // Setting location 0 of "vertexArray" as position, 1 as color).
+            GLTrackCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, position))); // Position
+            GLTrackCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, normal))); // Normal
+            GLTrackCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, uv))); // UVs
+            GLTrackCall(glEnableVertexAttribArray(0));
+            GLTrackCall(glEnableVertexAttribArray(1));
+            GLTrackCall(glEnableVertexAttribArray(2));
 
-void Mesh::Draw() {
-    GLTrackCall(glDrawElements(GL_TRIANGLES, m_indexesCount, GL_UNSIGNED_INT, 0));
+            GLTrackCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+            GLTrackCall(glBindVertexArray(0));
+
+            m_allocated = true;
+            m_verticesCount = verticesCount;
+            m_indexesCount = indicesCount;
+
+            return 0;
+        }
+
+        void Mesh::Destroy() {
+            if (!m_allocated) return;
+
+            GLTrackCall(glBindVertexArray(0));
+
+            GLTrackCall(glDeleteBuffers(1, &m_vbo));
+            GLTrackCall(glDeleteBuffers(1, &m_ibo));
+            GLTrackCall(glDeleteVertexArrays(1, &m_vao));
+
+            m_vao = m_vbo = m_ibo = 0;
+            m_verticesCount = m_indexesCount = 0;
+
+            m_allocated = false;
+        }
+
+        int Mesh::Use() {
+            if (!m_allocated) return 1;
+            GLTrackCall(glBindVertexArray(m_vao));
+        }
+
+        void Mesh::Draw() {
+            GLTrackCall(glDrawElements(GL_TRIANGLES, m_indexesCount, GL_UNSIGNED_INT, 0));
+        }
+
+    }
 }

@@ -2,7 +2,7 @@
 #include "Application.h"
 
 int main(int argc, char* args[]) {
-    Application app = Application();
+    DwarfQuest::Core::Application app = DwarfQuest::Core::Application();
 
     int appInitialized = app.Init();
     if (!appInitialized) {

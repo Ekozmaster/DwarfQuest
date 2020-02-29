@@ -2,4 +2,8 @@
 
 #include "../Graphics/OpenGL/Shader.h"
 
-Shader* LoadShader(const char* shaderPath);
+namespace DwarfQuest {
+    namespace Core {
+        Shader* LoadShader(const char* shaderPath);
+    }
+}
