@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../libs/stb_image/stb_image.h"
+#include <libs/stb_image/stb_image.h>
 
-#include "../Graphics/OpenGL/Texture.h"
+#include <src/Graphics/OpenGL/Texture.h>
 
 namespace DwarfQuest {
     namespace Core {

@@ -2,12 +2,11 @@
 #include <stdio.h>
 #include <string>
 
-#include "Window.h"
-#include "Utils/Logger.h"
-#include "Graphics/OpenGL/Graphics.h"
+#include <src/Window.h>
+#include <src/Utils/Logger.h>
 
 #ifdef DWARFQUEST_OPEN_GL
-#include"Graphics/OpenGL/Graphics.h"
+#include <src/Graphics/OpenGL/Graphics.h>
 #endif
 
 namespace DwarfQuest {

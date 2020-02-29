@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Graphics/OpenGL/Shader.h"
+#include <src/Graphics/OpenGL/Shader.h>
 
 namespace DwarfQuest {
     namespace Core {

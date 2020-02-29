@@ -1,5 +1,5 @@
-#include "TestBehaviour.h"
-#include "../../Utils/Logger.h"
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/TestBehaviour.h>
+#include <src/Utils/Logger.h>
 
 namespace DwarfQuest {
     namespace Core {

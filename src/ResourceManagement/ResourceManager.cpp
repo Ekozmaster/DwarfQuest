@@ -1,8 +1,8 @@
-#include "ResourceManager.h"
-#include "ImageLoader.h"
-#include "MeshLoader.h"
-#include "ShaderLoader.h"
-#include "../Utils/Logger.h"
+#include <src/ResourceManagement/ResourceManager.h>
+#include <src/ResourceManagement/ImageLoader.h>
+#include <src/ResourceManagement/MeshLoader.h>
+#include <src/ResourceManagement/ShaderLoader.h>
+#include <src/Utils/Logger.h>
 
 namespace DwarfQuest {
     namespace Core {

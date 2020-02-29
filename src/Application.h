@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Window.h"
-#include "Graphics/OpenGL/Mesh.h"
-#include "Graphics/OpenGL/Shader.h"
-#include "Graphics/OpenGL/Texture.h"
-#include "EntitiesBehaviourModel/GameObject.h"
+#include <src/Window.h>
+#include <src/Graphics/OpenGL/Mesh.h>
+#include <src/Graphics/OpenGL/Shader.h>
+#include <src/Graphics/OpenGL/Texture.h>
+#include <src/EntitiesBehaviourModel/GameObject.h>
 
 namespace DwarfQuest {
     namespace Core {

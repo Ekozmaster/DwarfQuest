@@ -1,4 +1,4 @@
-#include "Behaviour.h"
+#include <src/EntitiesBehaviourModel/Behaviour/Behaviour.h>
 
 namespace DwarfQuest {
     namespace Core {

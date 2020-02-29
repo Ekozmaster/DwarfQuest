@@ -3,8 +3,8 @@
 #include <vector>
 #include <cstring>
 
-#include "MeshLoader.h"
-#include "../Utils/Logger.h"
+#include <src/ResourceManagement/MeshLoader.h>
+#include <src/Utils/Logger.h>
 
 namespace DwarfQuest {
     namespace Core {

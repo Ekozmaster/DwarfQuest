@@ -1,13 +1,14 @@
 #pragma once
-#include "Behaviour.h"
+
+#include <src/EntitiesBehaviourModel/Behaviour/Behaviour.h>
 
 namespace DwarfQuest {
     namespace Core {
 
-        class TestBehaviourB : public Behaviour {
+        class TestBehaviour : public Behaviour {
         private:
+            char name = 'A';
         public:
-            char name = 'B';
             void Init() override;
             void Update() override;
             void Destroy() override;

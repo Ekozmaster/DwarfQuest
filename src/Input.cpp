@@ -1,7 +1,7 @@
 #include<cstring>
 
-#include"Input.h"
-#include"Utils/Logger.h"
+#include <src/Input.h>
+#include<src/Utils/Logger.h>
 
 namespace DwarfQuest {
     namespace Core {

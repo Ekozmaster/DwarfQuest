@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Graphics/OpenGL/Mesh.h"
+#include <src/Graphics/OpenGL/Mesh.h>
 
 namespace DwarfQuest {
     namespace Core {

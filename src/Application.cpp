@@ -3,15 +3,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glad/glad.h>
 
-#include "Application.h"
-#include "Utils/Logger.h"
-#include "Input.h"
-#include "Graphics/OpenGL/Camera.h"
-#include "Graphics/OpenGL/Graphics.h"
-#include "Graphics/OpenGL/ShadersDefinitions.h"
-#include "ResourceManagement/ResourceManager.h"
-#include "EntitiesBehaviourModel/Behaviour/TestBehaviour.h"
-#include "EntitiesBehaviourModel/Behaviour/TestBehaviourB.h"
+#include <src/Application.h>
+#include <src/Utils/Logger.h>
+#include <src/Input.h>
+#include <src/Graphics/OpenGL/Camera.h>
+#include <src/Graphics/OpenGL/Graphics.h>
+#include <src/Graphics/OpenGL/ShadersDefinitions.h>
+#include <src/ResourceManagement/ResourceManager.h>
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/TestBehaviour.h>
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/TestBehaviourB.h>
 
 namespace DwarfQuest {
     namespace Core {

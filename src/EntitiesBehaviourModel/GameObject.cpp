@@ -1,4 +1,4 @@
-#include "GameObject.h"
+#include <src/EntitiesBehaviourModel/GameObject.h>
 
 namespace DwarfQuest {
     namespace Core {

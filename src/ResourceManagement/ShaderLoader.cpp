@@ -2,8 +2,8 @@
 #include <fstream>
 #include <sstream>
 
-#include "ShaderLoader.h"
-#include "../Utils/Logger.h"
+#include <src/ResourceManagement/ShaderLoader.h>
+#include <src/Utils/Logger.h>
 
 namespace DwarfQuest {
     namespace Core {

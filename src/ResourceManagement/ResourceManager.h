@@ -2,9 +2,9 @@
 #include <unordered_map>
 #include <string>
 
-#include "../Graphics/OpenGL/Mesh.h"
-#include "../Graphics/OpenGL/Texture.h"
-#include "../Graphics/OpenGL/Shader.h"
+#include <src/Graphics/OpenGL/Mesh.h>
+#include <src/Graphics/OpenGL/Texture.h>
+#include <src/Graphics/OpenGL/Shader.h>
 
 namespace DwarfQuest {
     namespace Core {

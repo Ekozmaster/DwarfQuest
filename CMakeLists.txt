@@ -38,6 +38,7 @@ target_link_libraries(DwarfQuest
 target_include_directories(DwarfQuest PRIVATE libs/glm)
 target_include_directories(DwarfQuest PRIVATE libs/glad/include)
 target_include_directories(DwarfQuest PRIVATE ${SDL2_INCLUDE_DIRS})
+target_include_directories(DwarfQuest PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 
 include(src/CMakeLists.txt)
 include(src/Graphics/OpenGL/CMakeLists.txt)
@@ -45,6 +46,7 @@ include(src/ResourceManagement/CMakeLists.txt)
 include(src/Utils/CMakeLists.txt)
 include(src/EntitiesBehaviourModel/CMakeLists.txt)
 include(src/EntitiesBehaviourModel/Behaviour/CMakeLists.txt)
+include(src/EntitiesBehaviourModel/Behaviour/GameComponents/CMakeLists.txt)
 
 include(libs/glad/include/glad/CMakeLists.txt)
 include(libs/glad/src/CMakeLists.txt)

@@ -1,4 +1,4 @@
-#include "ImageLoader.h"
+#include <src/ResourceManagement/ImageLoader.h>
 
 namespace DwarfQuest {
     namespace Core {

@@ -1,5 +1,6 @@
 #include<iostream>
-#include "Application.h"
+
+#include <src/Application.h>
 
 int main(int argc, char* args[]) {
     DwarfQuest::Core::Application app = DwarfQuest::Core::Application();

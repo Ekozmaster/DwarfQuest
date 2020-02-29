@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include "Behaviour/Behaviour.h"
+#include <src/EntitiesBehaviourModel/Behaviour/Behaviour.h>
 
 namespace DwarfQuest {
     namespace Core {
