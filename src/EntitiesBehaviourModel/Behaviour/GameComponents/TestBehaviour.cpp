@@ -2,10 +2,10 @@
 #include <src/Utils/Logger.h>
 
 namespace DwarfQuest {
-    namespace Core {
+    namespace GameComponents {
 
         void TestBehaviour::Init() {
-            Logger::Info("TestBehaviour.Init()");
+            DwarfQuest::Core::Logger::Info("TestBehaviour.Init()");
         }
 
         void TestBehaviour::Update() {
@@ -13,7 +13,7 @@ namespace DwarfQuest {
         }
 
         void TestBehaviour::Destroy() {
-            Logger::Info("TestBehaviour.Destroy()");
+            DwarfQuest::Core::Logger::Info("TestBehaviour.Destroy()");
         }
 
     }

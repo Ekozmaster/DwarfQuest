@@ -10,8 +10,7 @@
 #include <src/Graphics/OpenGL/Graphics.h>
 #include <src/Graphics/OpenGL/ShadersDefinitions.h>
 #include <src/ResourceManagement/ResourceManager.h>
-#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/TestBehaviour.h>
-#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/TestBehaviourB.h>
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/Transform.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -43,6 +42,8 @@ namespace DwarfQuest {
             if (Input::GetKeyDown("P")) running = false;
             if (Input::GetKeyDown("E")) Input::IsCursorLocked() ? Input::UnlockCursor() : Input::LockCursor();
 
+            if (Input::GetKeyPressed("F")) gameObject->GetComponent<DwarfQuest::GameComponents::Transform>()->Rotate(glm::vec3(0.01f, 0.0, 0.0));
+
             gameObject->Update();
         }
 
@@ -57,8 +58,9 @@ namespace DwarfQuest {
             Graphics::SetShader(shader);
             glm::mat4 persp = Camera::CameraPerspectiveMatrix(camera);
             glm::mat4 look = Camera::CameraLookMatrix(camera);
-            glm::mat4 identity(1);
-            Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(identity));
+            DwarfQuest::GameComponents::Transform* transform = gameObject->GetComponent<DwarfQuest::GameComponents::Transform>();
+            glm::mat4 model = transform->GetTRSMatrix();
+            Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(model));
             Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
             Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
 
@@ -112,10 +114,7 @@ namespace DwarfQuest {
             shader = ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/testShader.glsl");
 
             gameObject = new GameObject();
-            gameObject->AddComponent<TestBehaviour>();
-            gameObject->AddComponent<TestBehaviourB>();
-            TestBehaviourB* b = gameObject->GetComponent<TestBehaviourB>();
-            b->name = 'C';
+            gameObject->AddComponent<DwarfQuest::GameComponents::Transform>();
 
             gameObject->Init();
             // </TESTING>

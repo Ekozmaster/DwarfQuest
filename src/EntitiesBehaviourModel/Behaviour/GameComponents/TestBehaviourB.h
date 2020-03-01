@@ -2,9 +2,9 @@
 #include <src/EntitiesBehaviourModel/Behaviour/Behaviour.h>
 
 namespace DwarfQuest {
-    namespace Core {
+    namespace GameComponents {
 
-        class TestBehaviourB : public Behaviour {
+        class TestBehaviourB : public DwarfQuest::Core::Behaviour {
         private:
         public:
             char name = 'B';
