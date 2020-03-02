@@ -10,7 +10,6 @@
 #include <src/Graphics/OpenGL/Graphics.h>
 #include <src/Graphics/OpenGL/ShadersDefinitions.h>
 #include <src/ResourceManagement/ResourceManager.h>
-#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/Transform.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -42,8 +41,6 @@ namespace DwarfQuest {
             if (Input::GetKeyDown("P")) running = false;
             if (Input::GetKeyDown("E")) Input::IsCursorLocked() ? Input::UnlockCursor() : Input::LockCursor();
 
-            if (Input::GetKeyPressed("F")) gameObject->GetComponent<DwarfQuest::GameComponents::Transform>()->Rotate(glm::vec3(0.01f, 0.0, 0.0));
-
             gameObject->Update();
         }
 
@@ -58,8 +55,7 @@ namespace DwarfQuest {
             Graphics::SetShader(shader);
             glm::mat4 persp = Camera::CameraPerspectiveMatrix(camera);
             glm::mat4 look = Camera::CameraLookMatrix(camera);
-            DwarfQuest::GameComponents::Transform* transform = gameObject->GetComponent<DwarfQuest::GameComponents::Transform>();
-            glm::mat4 model = transform->GetTRSMatrix();
+            glm::mat4 model = gameObject->transform.GetTRSMatrix();
             Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(model));
             Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
             Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
@@ -92,29 +88,12 @@ namespace DwarfQuest {
 
 
             // <TESTING>
-            const GLfloat vertices[] = {
-                -0.5f, -0.5f,  0.0f, // VERTEX 1
-                 1.0f,  0.0f,  0.0f, // NORMAL 1
-                 0.0f,  0.0f,        // UV 1
-                 0.0f,  0.5f,  0.0f, // VERTEX 2
-                 0.0f,  1.0f,  0.0f, // NORMAL 2
-                 0.5f,  1.0f,        // UV 2
-                 0.5f, -0.5f,  0.0f, // VERTEX 3
-                 0.0f,  0.0f,  1.0f, // NORMAL 3
-                 1.0f,  0.0f,        // UV 3
-            };
-
-            const GLuint indices[] = {
-                0, 1, 2
-            };
-
             Logger::Info("Loading mock scene");
             mesh = ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestCrateModel.obj");
             texture = ResourceManager::GetOrLoadTextureAsset("Assets/Textures/TestCrateAOBake.jpg");
             shader = ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/testShader.glsl");
 
             gameObject = new GameObject();
-            gameObject->AddComponent<DwarfQuest::GameComponents::Transform>();
 
             gameObject->Init();
             // </TESTING>

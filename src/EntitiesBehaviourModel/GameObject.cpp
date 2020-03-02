@@ -45,7 +45,10 @@ namespace DwarfQuest {
         void GameObject::Destroy() {
             if (m_destroyed) return;
 
-            for (auto it = m_components.begin(); it != m_components.end(); ++it) delete (*it);
+            for (auto it = m_components.begin(); it != m_components.end(); ++it) {
+                (*it)->Destroy();
+                delete (*it);
+            }
             m_components.clear();
             m_destroyed = true;
         }

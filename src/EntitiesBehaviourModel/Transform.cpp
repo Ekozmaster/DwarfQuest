@@ -1,11 +1,11 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/Transform.h>
+#include <src/EntitiesBehaviourModel/Transform.h>
 
 
 namespace DwarfQuest {
-    namespace GameComponents {
+    namespace Core {
 
         Transform::Transform() {
             position = glm::vec3(0);

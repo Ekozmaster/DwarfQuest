@@ -1,12 +1,12 @@
 #pragma once
 
-#include <src/EntitiesBehaviourModel/Behaviour/Behaviour.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace DwarfQuest {
-    namespace GameComponents {
+    namespace Core {
 
-        class Transform : public DwarfQuest::Core::Behaviour {
+        class Transform {
         public:
             glm::vec3 position;
             glm::quat rotation;

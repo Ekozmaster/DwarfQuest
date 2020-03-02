@@ -47,6 +47,8 @@ include(src/Utils/CMakeLists.txt)
 include(src/EntitiesBehaviourModel/CMakeLists.txt)
 include(src/EntitiesBehaviourModel/Behaviour/CMakeLists.txt)
 include(src/EntitiesBehaviourModel/Behaviour/GameComponents/CMakeLists.txt)
+include(src/SceneManagement/CMakeLists.txt)
+include(src/DataStructures/CMakeLists.txt)
 
 include(libs/glad/include/glad/CMakeLists.txt)
 include(libs/glad/src/CMakeLists.txt)

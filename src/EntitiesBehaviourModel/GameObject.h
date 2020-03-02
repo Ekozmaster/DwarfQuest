@@ -1,7 +1,10 @@
 #pragma once
 
 #include <vector>
+
 #include <src/EntitiesBehaviourModel/Behaviour/Behaviour.h>
+#include <src/EntitiesBehaviourModel/GameObject.h>
+#include <src/EntitiesBehaviourModel/Transform.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -13,6 +16,8 @@ namespace DwarfQuest {
             bool m_initialized;
 
         public:
+
+            Transform transform;
             bool enabled;
 
             GameObject();
