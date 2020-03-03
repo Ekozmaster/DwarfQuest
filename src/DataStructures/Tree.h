@@ -34,13 +34,11 @@ namespace DwarfQuest {
         public:
             // <ITERATOR>
             // Because trees are bidimensional structures, the Iterator is who keeps track of what is begin(), end()
-            // as well as "Depth"begin() and "Depth"End(). (OBS: Draw a tree to understand if things get confused.)
-            // - For breadth's begin() and end() methods, it returns the current siblings vector's begin() and end() methods, respectively.
-            // - For depth's begin() and end() methods, it is just a bool that tells whether the iterator can't go any further.
+            // as well as "Depth"begin() and "Depth"End().
             // Usage:
-            // the ++it and --it operators moves between sibling, reaching the end() and begin() iterator of the current vector, respectively.
-            // the StepDown() moves to the first child of the current node, and StepUp() moves to it's parent, but never moves past the first
-            // or last node in the current depth chain.
+            // the ++it and --it operators moves between sibling, while StepDown moves to the first child of the current node and StepUp
+            // moves to the current node's parent.
+            // different from std::vector, Iterators can't move past the edges, neither depth nor breadth-wise.
             
             class Iterator {
             private:
@@ -50,6 +48,13 @@ namespace DwarfQuest {
                 Iterator() {}
 
             public:
+                Iterator(NodeVectorIteratorType current)
+                    :m_current(current) {
+                    Node* node = *current;
+                    if (node->parent != NULL) m_currentNodes = &(node->parent->childs);
+                    else m_currentNodes = &m_nodes;
+                }
+
                 Iterator(NodeVectorIteratorType current, NodeVectorType* currentNodes)
                     :m_current(current), m_currentNodes(currentNodes) {}
 
@@ -58,43 +63,49 @@ namespace DwarfQuest {
                 }
 
                 bool operator==(const Iterator& rhs) const {
-                    return m_current == rhs.m_current && m_currentNodes == rhs.m_currentNodes;
+                    return m_currentNodes == rhs.m_currentNodes && m_current == rhs.m_current;
                 }
 
                 bool operator!=(const Iterator& rhs) const {
-                    return m_current != rhs.m_current || m_currentNodes != rhs.m_currentNodes;
+                    return m_currentNodes != rhs.m_currentNodes || m_current != rhs.m_current;
                 }
 
                 // Advances to the next sibling.
                 void operator++() {
+                    if (IsBreadthEnd()) return;
                     ++m_current;
                 }
 
                 // Returns to the previous sibling.
                 void operator--() {
+                    if (IsBreadthBegin()) return;
                     --m_current;
                 }
 
                 // Advances to the first child.
                 void StepDown() {
                     if (IsDepthEnd()) return;
+                    m_currentNodes = &((*m_current)->childs);
                     m_current = (*m_current)->childs.begin();
                 }
 
                 // Returns to it's parent.
                 void StepUp() {
                     if (IsDepthBegin()) return;
-                    m_current = (*m_current)->parent->parent->childs.begin();
+                    Node* parentNode = (*m_current)->parent;
+                    if (parentNode->parent == NULL) m_currentNodes = &m_nodes;
+                    else m_currentNodes = &(parentNode->parent->childs);
+                    m_current = m_currentNodes->begin();
                 }
 
 
                 // BEGIN / END METHODS
-                NodeVectorIteratorType BreadthBegin() {
-                    return m_currentNodes->begin();
+                bool IsBreadthBegin() {
+                    return m_current == m_currentNodes->begin();
                 }
 
-                NodeVectorIteratorType BreadthEnd() {
-                    return m_currentNodes->end();
+                bool IsBreadthEnd() {
+                    return m_currentNodes->size() == 0 || m_current == m_currentNodes->end();
                 }
 
                 bool IsDepthBegin() {
@@ -127,6 +138,7 @@ namespace DwarfQuest {
 
             // Push as the last child of a specific parent.
             Iterator Push(const T& data, Iterator parent) {
+                if (parent == End()) throw std::invalid_argument("Passing invalid 'parent' argument in Three.Push");
                 Node* parentNode = *(parent.m_current);
                 Node* node = new Node(data, parentNode);
                 parentNode->childs.push_back(node);
@@ -135,6 +147,7 @@ namespace DwarfQuest {
 
             // Push as the "childIndex"th child of a specific parent.
             Iterator Push(const T& data, Iterator parent, unsigned int childIndex) {
+                if (parent == End()) throw std::invalid_argument("Passing invalid 'parent' argument in Three.Push");
                 Node* parentNode = *(parent.m_current);
                 Node* node = new Node(data, parentNode);
                 auto it = parentNode->childs.insert(parentNode->childs.begin() + childIndex, node);
@@ -155,15 +168,36 @@ namespace DwarfQuest {
                 if (result.IsDepthBegin()) result = End();
                 else result.StepUp();
 
-                delete (*position);
+                delete *(position.m_current);
                 return result;
             }
 
-            Iterator Find(const T& data) const {
-                
+        private:
+            Iterator DepthFind(const T& data, Iterator currentIt) {
+                if (*currentIt == data) return currentIt;
+                // Step down into currentNode's childs.
+                if (!currentIt.IsDepthEnd()) {
+                    currentIt.StepDown();
+                    for (Iterator it = currentIt; !it.IsBreadthEnd(); ++it) {
+                        Iterator nextIt = DepthFind(data, it);
+                        if (nextIt != End() && *nextIt == data) return nextIt;
+                    }
+                }
+                return End();
             }
 
-            std::vector<Iterator> FindAll(const T& data) const {
+        public:
+            Iterator Find(const T& data) {
+                if (m_nodes.size() == 0) return End();
+
+                for (Iterator it = Begin(); it != End(); ++it) {
+                    Iterator searchIt = DepthFind(data, it);
+                    if (searchIt != End()) return searchIt;
+                }
+                return End();
+            }
+
+            std::vector<Iterator> FindAll(const T& data) {
 
             }
 
