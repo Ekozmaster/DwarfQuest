@@ -23,7 +23,10 @@ namespace DwarfQuest {
                     COUNT_CONSTRUCTOR_CALL(this);
                 }
 
-                Node(T data, Node* parentNode = NULL) : content(data), parent(parentNode) {}
+                Node(T data, Node* parentNode = NULL) : content(data), parent(parentNode) {
+                    COUNT_CONSTRUCTOR_CALL(this);
+                }
+                
                 ~Node() {
                     for (auto it = childs.begin(); it != childs.end(); ++it) {
                         delete (*it);
