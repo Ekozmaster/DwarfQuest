@@ -2,7 +2,7 @@
 
 #include <src/Application.h>
 #include <src/DataStructures/Tree.h>
-
+#include <src/Utils/Testing.h>
 
 int main(int argc, char* args[]) {
     namespace DQCore = DwarfQuest::Core;
@@ -31,11 +31,19 @@ int main(int argc, char* args[]) {
     myTree.Push(9, three);
     //myTree.Push(9, notfound);
     DQDS::Tree<int>::Iterator ten = myTree.Find(10);
+
+    using namespace DwarfQuest::Testing;
+    std::cout << allocatedObjectsCount.size();
+    for (auto it = allocatedObjectsCount.begin(); it != allocatedObjectsCount.end(); ++it) {
+        std::cout << it->first << " :: " << it->second << std::endl;
+    }
     myTree.Push(11, ten);
     myTree.Push(12, ten);
     myTree.Push(13, ten);
     myTree.Push(14, ten);
     myTree.Push(15, ten);
+
+    
     /*
     myTree.Erase(myTree.Find(14));
     myTree.Erase(myTree.Find(16));

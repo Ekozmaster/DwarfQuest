@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <src/Utils/Testing.h>
 
 namespace DwarfQuest {
     namespace DataStructures {
@@ -18,13 +19,17 @@ namespace DwarfQuest {
                 Node* parent;
                 NodeVectorType childs;
 
-                Node() {}
+                Node() {
+                    COUNT_CONSTRUCTOR_CALL(this);
+                }
+
                 Node(T data, Node* parentNode = NULL) : content(data), parent(parentNode) {}
                 ~Node() {
                     for (auto it = childs.begin(); it != childs.end(); ++it) {
                         delete (*it);
                     }
                     childs.clear();
+                    COUNT_DESTRUCTOR_CALL(this);
                 }
             };
 

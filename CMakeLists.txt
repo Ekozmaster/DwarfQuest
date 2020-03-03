@@ -10,6 +10,7 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 add_definitions(-DDWARFQUEST_OPEN_GL)
+add_definitions(-DDWARFQUEST_TESTING)
 
 project(DwarfQuest)
 
