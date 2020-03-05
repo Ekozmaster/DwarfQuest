@@ -20,10 +20,10 @@ int main(int argc, char* args[]) {
     myTree.Push(2, zero, 1);
     myTree.Find(3);
     DQDS::Tree<int>::Iterator notfound = myTree.Find(19);
-    DQDS::Tree<int>::Iterator one = myTree.Find(3);
+    DQDS::Tree<int>::Iterator one = myTree.Find(1);
     myTree.Push(4, one);
     myTree.Push(5, one);
-    DQDS::Tree<int>::Iterator two = myTree.Find(3);
+    DQDS::Tree<int>::Iterator two = myTree.Find(2);
     myTree.Push(6, two);
     myTree.Push(7, two);
     DQDS::Tree<int>::Iterator three = myTree.Find(3);
@@ -36,11 +36,9 @@ int main(int argc, char* args[]) {
     myTree.Push(13, ten);
     myTree.Push(14, ten);
     myTree.Push(15, ten);
-    /*
     myTree.Erase(myTree.Find(14));
     myTree.Erase(myTree.Find(16));
     myTree.Erase(myTree.Find(15));
-    */
 
     /*
     DQCore::Application app = DwarfQuest::Core::Application();

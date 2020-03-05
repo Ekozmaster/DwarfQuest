@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-
+// For a while this structure does only supports unique values. Trying to use it with repeated values may result in unexpected behaviour.
 namespace DwarfQuest {
     namespace DataStructures {
 
@@ -42,78 +42,79 @@ namespace DwarfQuest {
             
             class Iterator {
             private:
-                NodeVectorIteratorType m_current;
-                NodeVectorType* m_currentNodes;
+                Tree* m_ownerTree;
+                NodeVectorIteratorType m_nodeIt;
+                NodeVectorType* m_nodeSiblingsVector;
 
                 Iterator() {}
 
-            public:
-                Iterator(NodeVectorIteratorType current)
-                    :m_current(current) {
-                    Node* node = *current;
-                    if (node->parent != NULL) m_currentNodes = &(node->parent->childs);
-                    else m_currentNodes = &m_nodes;
+                Iterator(Tree* ownerTree, NodeVectorIteratorType current)
+                    :m_ownerTree(ownerTree), m_nodeIt(current) {
+                    Node * node = *current;
+                    if (node->parent != NULL) m_nodeSiblingsVector = &(node->parent->childs);
+                    else m_nodeSiblingsVector = &(m_ownerTree->m_nodes);
                 }
 
-                Iterator(NodeVectorIteratorType current, NodeVectorType* currentNodes)
-                    :m_current(current), m_currentNodes(currentNodes) {}
+                Iterator(Tree *ownerTree, NodeVectorIteratorType current, NodeVectorType* currentNodes)
+                    :m_ownerTree(ownerTree), m_nodeIt(current), m_nodeSiblingsVector(currentNodes) {}
+            public:
 
                 T& operator*() {
-                    return (*m_current)->content;
+                    return (*m_nodeIt)->content;
                 }
 
                 bool operator==(const Iterator& rhs) const {
-                    return m_currentNodes == rhs.m_currentNodes && m_current == rhs.m_current;
+                    return m_nodeSiblingsVector == rhs.m_nodeSiblingsVector && m_nodeIt == rhs.m_nodeIt;
                 }
 
                 bool operator!=(const Iterator& rhs) const {
-                    return m_currentNodes != rhs.m_currentNodes || m_current != rhs.m_current;
+                    return m_nodeSiblingsVector != rhs.m_nodeSiblingsVector || m_nodeIt != rhs.m_nodeIt;
                 }
 
                 // Advances to the next sibling.
                 void operator++() {
                     if (IsBreadthEnd()) return;
-                    ++m_current;
+                    ++m_nodeIt;
                 }
 
                 // Returns to the previous sibling.
                 void operator--() {
                     if (IsBreadthBegin()) return;
-                    --m_current;
+                    --m_nodeIt;
                 }
 
                 // Advances to the first child.
                 void StepDown() {
                     if (IsDepthEnd()) return;
-                    m_currentNodes = &((*m_current)->childs);
-                    m_current = (*m_current)->childs.begin();
+                    m_nodeSiblingsVector = &((*m_nodeIt)->childs);
+                    m_nodeIt = (*m_nodeIt)->childs.begin();
                 }
 
                 // Returns to it's parent.
                 void StepUp() {
                     if (IsDepthBegin()) return;
-                    Node* parentNode = (*m_current)->parent;
-                    if (parentNode->parent == NULL) m_currentNodes = &m_nodes;
-                    else m_currentNodes = &(parentNode->parent->childs);
-                    m_current = m_currentNodes->begin();
+                    Node* parentNode = (*m_nodeIt)->parent;
+                    if (parentNode->parent == NULL) m_nodeSiblingsVector = &(m_ownerTree->m_nodes);
+                    else m_nodeSiblingsVector = &(parentNode->parent->childs);
+                    m_nodeIt = std::find(m_nodeSiblingsVector->begin(), m_nodeSiblingsVector->end(), parentNode);
                 }
 
 
                 // BEGIN / END METHODS
                 bool IsBreadthBegin() {
-                    return m_current == m_currentNodes->begin();
+                    return m_nodeIt == m_nodeSiblingsVector->begin();
                 }
 
                 bool IsBreadthEnd() {
-                    return m_currentNodes->size() == 0 || m_current == m_currentNodes->end();
+                    return m_nodeSiblingsVector->size() == 0 || m_nodeIt == m_nodeSiblingsVector->end();
                 }
 
                 bool IsDepthBegin() {
-                    return (*m_current)->parent == NULL;
+                    return (*m_nodeIt)->parent == NULL;
                 }
 
                 bool IsDepthEnd() {
-                    return (*m_current)->childs.size() == 0;
+                    return (*m_nodeIt)->childs.size() == 0;
                 }
 
                 friend class Tree;
@@ -133,42 +134,46 @@ namespace DwarfQuest {
             Iterator Push(const T& data) {
                 Node* node = new Node(data);
                 m_nodes.push_back(node);
-                return Iterator(--m_nodes.end(), &m_nodes);
+                return Iterator(this, --m_nodes.end(), &m_nodes);
             }
 
             // Push as the last child of a specific parent.
             Iterator Push(const T& data, Iterator parent) {
                 if (parent == End()) throw std::invalid_argument("Passing invalid 'parent' argument in Three.Push");
-                Node* parentNode = *(parent.m_current);
+                Node* parentNode = *(parent.m_nodeIt);
                 Node* node = new Node(data, parentNode);
                 parentNode->childs.push_back(node);
-                return Iterator(--parentNode->childs.end(), &(parentNode->childs));
+                return Iterator(this, --parentNode->childs.end(), &(parentNode->childs));
             }
 
             // Push as the "childIndex"th child of a specific parent.
             Iterator Push(const T& data, Iterator parent, unsigned int childIndex) {
                 if (parent == End()) throw std::invalid_argument("Passing invalid 'parent' argument in Three.Push");
-                Node* parentNode = *(parent.m_current);
+                Node* parentNode = *(parent.m_nodeIt);
                 Node* node = new Node(data, parentNode);
                 auto it = parentNode->childs.insert(parentNode->childs.begin() + childIndex, node);
-                return Iterator(it, &(parentNode->childs));
+                return Iterator(this, it, &(parentNode->childs));
             }
 
             // Push as the "childIndex"th child of the root nodes.
             Iterator Push(const T& data, unsigned int childIndex) {
                 Node* node = new Node(data);
                 auto it = m_nodes.insert(m_nodes.begin() + childIndex, node);
-                return Iterator(it, &m_nodes);
+                return Iterator(this, it, &m_nodes);
             }
 
             // Node's destructor causes a chain reaction of destruction, so just "delete node" is enough to recursively clear everything.
             // This method returns a iterator for the parent of the destroyed item, if there is one, otherwise return End().
             Iterator Erase(const Iterator& position) {
+                if (position == End()) return End();
                 Iterator result = position;
-                if (result.IsDepthBegin()) result = End();
-                else result.StepUp();
+                Node* node = *(position.m_nodeIt);
+                if (node->parent) result.StepUp();
+                else result = End();
+                
+                position.m_nodeSiblingsVector->erase(position.m_nodeIt);
+                delete node;
 
-                delete *(position.m_current);
                 return result;
             }
 
@@ -197,21 +202,21 @@ namespace DwarfQuest {
                 return End();
             }
 
-            std::vector<Iterator> FindAll(const T& data) {
-
-            }
-
             Iterator Begin() {
-                return Iterator(m_nodes.begin(), &m_nodes);
+                return Iterator(this, m_nodes.begin(), &m_nodes);
             }
 
             Iterator End() {
-                return Iterator(m_nodes.end(), &m_nodes);
+                return Iterator(this, m_nodes.end(), &m_nodes);
             }
 
             void Destroy() {
                 if (m_destroyed) return;
-                // else Do Magic
+                for (Iterator it = Begin(); it != End(); ++it) {
+                    delete *(it.m_nodeIt);
+                }
+                m_nodes.clear();
+                m_destroyed = true;
             }
             //*/
         };
