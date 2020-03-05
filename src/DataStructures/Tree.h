@@ -1,10 +1,13 @@
 #pragma once
 
 #include <vector>
-// For a while this structure does only supports unique values. Trying to use it with repeated values may result in unexpected behaviour.
+#include <src/Utils/Testing.h>
+
 namespace DwarfQuest {
     namespace DataStructures {
 
+        // For a while this structure does only supports unique values.
+        // Trying to use it with repeated values may result in unexpected behaviour.
         template <class T>
         class Tree {
         private:
@@ -18,13 +21,20 @@ namespace DwarfQuest {
                 Node* parent;
                 NodeVectorType childs;
 
-                Node() {}
-                Node(T data, Node* parentNode = NULL) : content(data), parent(parentNode) {}
+                Node() {
+                    COUNT_CONSTRUCTOR_CALL(this);
+                }
+
+                Node(T data, Node* parentNode = NULL) : content(data), parent(parentNode) {
+                    COUNT_CONSTRUCTOR_CALL(this);
+                }
+                
                 ~Node() {
                     for (auto it = childs.begin(); it != childs.end(); ++it) {
                         delete (*it);
                     }
                     childs.clear();
+                    COUNT_DESTRUCTOR_CALL(this);
                 }
             };
 

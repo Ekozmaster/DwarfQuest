@@ -3,4 +3,5 @@ target_sources(DwarfQuest
         ${CMAKE_CURRENT_LIST_DIR}/Logger.cpp
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}/Logger.h
+        ${CMAKE_CURRENT_LIST_DIR}/Testing.h
 )
