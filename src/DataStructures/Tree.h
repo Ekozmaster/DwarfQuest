@@ -22,11 +22,11 @@ namespace DwarfQuest {
                 NodeVectorType childs;
 
                 Node() {
-                    COUNT_CONSTRUCTOR_CALL(this);
+                    COUNT_CONSTRUCTOR_CALL;
                 }
 
                 Node(T data, Node* parentNode = NULL) : content(data), parent(parentNode) {
-                    COUNT_CONSTRUCTOR_CALL(this);
+                    COUNT_CONSTRUCTOR_CALL;
                 }
                 
                 ~Node() {
@@ -34,7 +34,7 @@ namespace DwarfQuest {
                         delete (*it);
                     }
                     childs.clear();
-                    COUNT_DESTRUCTOR_CALL(this);
+                    COUNT_DESTRUCTOR_CALL;
                 }
             };
 
