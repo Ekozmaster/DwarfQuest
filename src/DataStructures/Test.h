@@ -76,11 +76,11 @@ void Test_Tree_Push_Int_As_Last_Child_Of_Parent() {
     unittest_Tree->Push(1, it);
     unittest_Tree->Push(2, it);
 
-    auto testIt = unittest_Tree->Push(3, it, 2);
+    auto testIt = unittest_Tree->Push(3, it);
     --testIt;
     ASSERT_EQUALS(*testIt, 2);
     ++testIt; ++testIt;
-    ASSERT_EQUALS(testIt, unittest_Tree->End());
+    ASSERT_TRUTHY(testIt.IsBreadthEnd());
     --testIt;
     testIt.StepUp();
     ASSERT_EQUALS(*testIt, 10);

@@ -31,6 +31,7 @@ namespace DwarfQuest {
             std::vector<std::pair<std::string, UnitSetupPointer>> m_unitSetups;
             std::vector<std::pair<std::string, UnitTearDownPointer>> m_unitTearDowns;
             std::vector<std::pair<std::string, TestUnitPointer>> m_testUnits;
+            std::vector<std::string> m_testingErrorsMessages;
 
             unsigned int m_currentTestUnitStep; // 0 = Setup, 1 = Run, 2 = Tear Down.
             std::string m_currentTestUnitName;
@@ -45,12 +46,13 @@ namespace DwarfQuest {
             void RegisterTestUnit(const char* name, TestUnitPointer testUnitPointer);
             void PushErrorToCurrentUnit(const char* errorString);
             void Run();
+            void PrintErrorsIfAny();
         };
 
-        extern std::vector<std::string> testingErrorsMessages;
         extern std::vector<TestContext*> testContexts;
         extern unsigned int systemTotalOfUnitTests;
         extern TestContext* activeTestContext;
+        extern bool hadAnyErrors;
 
         // ### INTERNAL FUNCTIONS
         void SetTestContext(const char* contextName);

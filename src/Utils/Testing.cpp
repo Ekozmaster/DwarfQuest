@@ -32,8 +32,9 @@ namespace DwarfQuest {
 
         void TestContext::PushErrorToCurrentUnit(const char* errorString) {
             auto foo = this;
-            testingErrorsMessages.push_back("[FAILED]: " + m_contextName + " > "  + m_currentTestUnitName + " - " + errorString);
+            m_testingErrorsMessages.push_back("[FAILED]: " + m_currentTestUnitName + " - " + errorString);
             m_currentUnitHadErrors = true;
+            hadAnyErrors = true;
         }
 
         void TestContext::Run() {
@@ -58,10 +59,19 @@ namespace DwarfQuest {
             }
         }
 
+        void TestContext::PrintErrorsIfAny() {
+            if (m_testingErrorsMessages.size() == 0) return;
+            std::cout << std::endl << "=== " << m_contextName << std::endl;
+            for (auto it = m_testingErrorsMessages.begin(); it != m_testingErrorsMessages.end(); ++it) {
+                std::cout << *it << std::endl;
+            }
+        }
+
         std::vector<std::string> testingErrorsMessages;
         std::vector<TestContext*> testContexts;
         unsigned int systemTotalOfUnitTests = 0;
         TestContext* activeTestContext = NULL;
+        bool hadAnyErrors = false;
 
         // ### INTERNAL FUNCTIONS
         void SetTestContext(const char* contextName) {
@@ -101,24 +111,24 @@ namespace DwarfQuest {
             std::cout << std::endl;
             std::cout << "Finished with a total of " << std::to_string(systemTotalOfUnitTests) << " unit tests performed." << std::endl;
             if (testingErrorsMessages.size()) {
-                std::cout << "Errors: " << testingErrorsMessages.size() << std::endl;
+                std::cout << "Total Errors: " << testingErrorsMessages.size() << std::endl;
             }
 
-            std::cout << std::endl << "Error Messages: " << std::endl;
-            for (auto it = testingErrorsMessages.begin(); it != testingErrorsMessages.end(); ++it) {
-                std::cout << *it << std::endl;
+            if (hadAnyErrors) {
+                std::cout << std::endl << "Error Messages: " << std::endl;
+                for (auto it = testContexts.begin(); it != testContexts.end(); ++it) (*it)->PrintErrorsIfAny();
+            } else {
+                std::cout << "All tests passed." << std::endl;
             }
 
-            for (auto it = testContexts.begin(); it != testContexts.end(); ++it) {
-                delete (*it);
-            }
-
-            char answer[10];
             std::cout << std::endl;
+            char answer[10];
+            std::cout << "Type 'exit' to finish." << std::endl;
             do {
-                std::cout << "Type 'exit' to finish." << std::endl;
                 std::cin.getline(answer, 10);
             } while (std::strcmp(answer, "exit") != 0);
+
+            for (auto it = testContexts.begin(); it != testContexts.end(); ++it) delete (*it);
             testContexts.clear();
         }
 
