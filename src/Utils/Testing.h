@@ -10,6 +10,13 @@
 
 #ifdef DWARFQUEST_TESTING
 
+namespace std {
+    template<typename T>
+    std::string to_string(const T& s) {
+        return typeid(s).name();
+    }
+}
+
 namespace DwarfQuest {
     namespace Testing {
 
@@ -25,14 +32,12 @@ namespace DwarfQuest {
             std::vector<std::pair<std::string, UnitTearDownPointer>> m_unitTearDowns;
             std::vector<std::pair<std::string, TestUnitPointer>> m_testUnits;
 
+            unsigned int m_currentTestUnitStep; // 0 = Setup, 1 = Run, 2 = Tear Down.
             std::string m_currentTestUnitName;
             bool m_currentUnitHadErrors;
         public:
-            TestContext(const char* contextName) : m_contextName(contextName) {
-                m_currentTestUnitName = "";
-                m_currentUnitHadErrors = false;
-            }
-            ~TestContext() {}
+            TestContext(const char* contextName);
+            ~TestContext();
 
             std::string GetContextName();
             void RegisterUnitSetup(const char* name, UnitSetupPointer unitSetupPointer);
@@ -62,6 +67,30 @@ namespace DwarfQuest {
             }
         }
 
+        template<typename T>
+        void AssertNotEquals(T a, T b, unsigned int line) {
+            if (a == b) {
+                std::string error = "Expected '" + std::to_string(a) + "' to be different than '" + std::to_string(b) + "' at line: " + std::to_string(line);
+                activeTestContext->PushErrorToCurrentUnit(error.c_str());
+            }
+        }
+
+        template<typename T>
+        void AssertTruthy(T a, unsigned int line) {
+            if (!a) {
+                std::string error = "Expected 'falsy' to be 'truthy' at line: " + std::to_string(line);
+                activeTestContext->PushErrorToCurrentUnit(error.c_str());
+            }
+        }
+
+        template<typename T>
+        void AssertFalsy(T a, unsigned int line) {
+            if (a) {
+                std::string error = "Expected 'truthy' to be 'falsy' at line: " + std::to_string(line);
+                activeTestContext->PushErrorToCurrentUnit(error.c_str());
+            }
+        }
+
         
 #define SETUP_ACTIVE_TEST_CONTEXT(testModuleName) DwarfQuest::Testing::SetTestContext(testModuleName);
 #define REGISTER_TEST_UNIT_SETUP(unit) DwarfQuest::Testing::PushTestUnitSetupToActiveContext(#unit, unit);
@@ -70,6 +99,9 @@ namespace DwarfQuest {
 
 // Assertions
 #define ASSERT_EQUALS(x, y) DwarfQuest::Testing::AssertEquals(x, y, __LINE__);
+#define ASSERT_NOT_EQUALS(x, y) DwarfQuest::Testing::AssertNotEquals(x, y, __LINE__);
+#define ASSERT_TRUTHY(x) DwarfQuest::Testing::AssertTruthy(x, __LINE__);
+#define ASSERT_FALSY(x) DwarfQuest::Testing::AssertFalsy(x, __LINE__);
 
         // MEMORY DIAGNOSTICS
         typedef struct {
@@ -81,13 +113,14 @@ namespace DwarfQuest {
 
         void PushObjectAllocationCount(const char* objTypeName, size_t sizeofObj);
         void PopObjectAllocationCount(const char* objTypeName, size_t sizeofObj);
+        int GetAllocatedObjectCount(const char* objName);
         size_t GetHeapAllocatedMemory();
         void PrintHeapUsage();
         void PrintObjectsAllocationStatus();
         void PrintMemoryDiagnostics();
 
-#define COUNT_CONSTRUCTOR_CALL DwarfQuest::Testing::PushObjectAllocationCount(typeid(*this).name(), sizeof(*this)); // memoryDiagnostics.allocatedObjectsCount[typeid(*this).name()]++;
-#define COUNT_DESTRUCTOR_CALL DwarfQuest::Testing::PopObjectAllocationCount(typeid(*this).name(), sizeof(*this)); //memoryDiagnostics.allocatedObjectsCount[typeid(*this).name()]--;
+#define COUNT_CONSTRUCTOR_CALL(objName) DwarfQuest::Testing::PushObjectAllocationCount(objName, sizeof(*this));
+#define COUNT_DESTRUCTOR_CALL(objName) DwarfQuest::Testing::PopObjectAllocationCount(objName, sizeof(*this));
     }
 }
 

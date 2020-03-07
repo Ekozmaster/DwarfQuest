@@ -22,11 +22,11 @@ namespace DwarfQuest {
                 NodeVectorType childs;
 
                 Node() {
-                    COUNT_CONSTRUCTOR_CALL;
+                    COUNT_CONSTRUCTOR_CALL("Tree::Node");
                 }
 
                 Node(T data, Node* parentNode = NULL) : content(data), parent(parentNode) {
-                    COUNT_CONSTRUCTOR_CALL;
+                    COUNT_CONSTRUCTOR_CALL("Tree::Node");
                 }
                 
                 ~Node() {
@@ -34,7 +34,7 @@ namespace DwarfQuest {
                         delete (*it);
                     }
                     childs.clear();
-                    COUNT_DESTRUCTOR_CALL;
+                    COUNT_DESTRUCTOR_CALL("Tree::Node");
                 }
             };
 
@@ -109,6 +109,9 @@ namespace DwarfQuest {
                     m_nodeIt = std::find(m_nodeSiblingsVector->begin(), m_nodeSiblingsVector->end(), parentNode);
                 }
 
+                int ChildCount() {
+                    return (*m_nodeIt)->childs.size();
+                }
 
                 // BEGIN / END METHODS
                 bool IsBreadthBegin() {

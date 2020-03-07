@@ -6,6 +6,14 @@ namespace DwarfQuest {
     namespace Testing {
 
         // ### TestContext
+        TestContext::TestContext(const char* contextName) : m_contextName(contextName) {
+            m_currentTestUnitName = "";
+            m_currentUnitHadErrors = false;
+            m_currentTestUnitStep = 0;
+        }
+
+        TestContext::~TestContext() {}
+
         std::string TestContext::GetContextName() {
             return m_contextName;
         }
@@ -30,15 +38,19 @@ namespace DwarfQuest {
 
         void TestContext::Run() {
             for (auto unitIt = m_testUnits.begin(); unitIt != m_testUnits.end(); ++unitIt) {
+                m_currentTestUnitName = unitIt->first;
                 m_currentUnitHadErrors = false;
+
                 // Setups
+                m_currentTestUnitStep = 0;
                 for (auto it = m_unitSetups.begin(); it != m_unitSetups.end(); ++it) it->second();
 
-                // Unit
-                m_currentTestUnitName = unitIt->first;
+                // Run
+                m_currentTestUnitStep = 1;
                 unitIt->second();
 
                 // Tear Downs
+                m_currentTestUnitStep = 2;
                 for (auto it = m_unitTearDowns.begin(); it != m_unitTearDowns.end(); ++it) it->second();
 
                 if (m_currentUnitHadErrors) std::cout << "x";
@@ -96,18 +108,34 @@ namespace DwarfQuest {
             for (auto it = testingErrorsMessages.begin(); it != testingErrorsMessages.end(); ++it) {
                 std::cout << *it << std::endl;
             }
+
+            for (auto it = testContexts.begin(); it != testContexts.end(); ++it) {
+                delete (*it);
+            }
+
+            char answer[10];
+            std::cout << std::endl;
+            do {
+                std::cout << "Type 'exit' to finish." << std::endl;
+                std::cin.getline(answer, 10);
+            } while (std::strcmp(answer, "exit") != 0);
+            testContexts.clear();
         }
 
 
         // MEMORY DIAGNOSTICS
-        void PushObjectAllocationCount(const char* objTypeName, size_t sizeofObj) {
-            memoryDiagnostics.allocatedObjectsCount[objTypeName]++;
-            memoryDiagnostics.allocatedObjectsHeapUsage[objTypeName] += sizeofObj;
+        void PushObjectAllocationCount(const char* objName, size_t sizeofObj) {
+            memoryDiagnostics.allocatedObjectsCount[objName]++;
+            memoryDiagnostics.allocatedObjectsHeapUsage[objName] += sizeofObj;
         }
 
-        void PopObjectAllocationCount(const char* objTypeName, size_t sizeofObj) {
-            memoryDiagnostics.allocatedObjectsCount[objTypeName]--;
-            memoryDiagnostics.allocatedObjectsHeapUsage[objTypeName] -= sizeofObj;
+        void PopObjectAllocationCount(const char* objName, size_t sizeofObj) {
+            memoryDiagnostics.allocatedObjectsCount[objName]--;
+            memoryDiagnostics.allocatedObjectsHeapUsage[objName] -= sizeofObj;
+        }
+
+        int GetAllocatedObjectCount(const char* objName) {
+            return memoryDiagnostics.allocatedObjectsCount[objName];
         }
 
         size_t GetHeapAllocatedMemory() {
