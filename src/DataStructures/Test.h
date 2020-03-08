@@ -247,55 +247,33 @@ void Test_Tree_Iterator_Tree_Navigation() {
     auto it = unittest_Tree->Begin();
     ASSERT_NOT_EQUALS(it, unittest_Tree->End());
 
-    // TODO: Start this context with simpler units before this huge one.
-    // TODO: Make Iterator's navigation operators return a reference to iterator itself.
-
     // 0
     ASSERT_EQUALS(*it, 0);
-    it.StepDown();
-    ASSERT_EQUALS(*it, 1);
-    ++it;
-    ASSERT_EQUALS(*it, 2);
-    ++it;
-    ASSERT_EQUALS(*it, 3);
-    ++it;
-    ASSERT_TRUTHY(it.IsBreadthEnd());
-    --it;
-    ASSERT_EQUALS(*it, 3);
-    --it; --it; --it;
-    ASSERT_EQUALS(*it, 1);
-    it.StepDown();
-    ASSERT_EQUALS(*it, 4);
-    ++it;
-    ASSERT_EQUALS(*it, 5);
+    
+    ASSERT_EQUALS(*it.StepDown(), 1);
+    ASSERT_EQUALS(*++it, 2);
+    ASSERT_EQUALS(*++it, 3);
+    ASSERT_TRUTHY((++it).IsBreadthEnd());
+    ASSERT_EQUALS(*--it, 3);
+    ASSERT_EQUALS(*--(--(--it)), 1);
+    ASSERT_EQUALS(*it.StepDown(), 4);
+    ASSERT_EQUALS(*++it, 5);
     ASSERT_TRUTHY(it.IsDepthEnd());
-    it.StepUp();
-    ASSERT_EQUALS(*it, 1);
-    ++it;
-    ASSERT_EQUALS(*it, 2);
-    it.StepDown();
-    ASSERT_EQUALS(*it, 6);
-    ++it;
-    ASSERT_EQUALS(*it, 7);
-    it.StepUp();
-    ++it;
-    ASSERT_EQUALS(*it, 3);
-    it.StepDown();
-    ASSERT_EQUALS(*it, 8);
-    ++it;
-    ASSERT_EQUALS(*it, 9);
+    ASSERT_EQUALS(*it.StepUp(), 1);
+    ASSERT_EQUALS(*++it, 2);
+    ASSERT_EQUALS(*it.StepDown(), 6);
+    ASSERT_EQUALS(*++it, 7);
+    ASSERT_EQUALS(*++(it.StepUp()), 3);
+    ASSERT_EQUALS(*it.StepDown(), 8);
+    ASSERT_EQUALS(*++it, 9);
     it.StepUp();
     it.StepUp();
 
     // 10
-    ++it;
-    ASSERT_EQUALS(*it, 10);
-    it.StepDown();
-    ASSERT_EQUALS(*it, 11);
-    ++it;
-    ASSERT_EQUALS(*it, 12);
-    ++it;
-    ASSERT_EQUALS(*it, 13);
+    ASSERT_EQUALS(*++it, 10);
+    ASSERT_EQUALS(*it.StepDown(), 11);
+    ASSERT_EQUALS(*++it, 12);
+    ASSERT_EQUALS(*++it, 13);
 
     ASSERT_TRUTHY(it.IsDepthEnd());
     ASSERT_FALSY(it.IsDepthBegin());

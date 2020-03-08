@@ -82,31 +82,35 @@ namespace DwarfQuest {
                 }
 
                 // Advances to the next sibling.
-                void operator++() {
-                    if (IsBreadthEnd()) return;
-                    ++m_nodeIt;
+                Iterator& operator++() {
+                    if (!IsBreadthEnd()) ++m_nodeIt;
+                    return *this;
                 }
 
                 // Returns to the previous sibling.
-                void operator--() {
-                    if (IsBreadthBegin()) return;
-                    --m_nodeIt;
+                Iterator& operator--() {
+                    if (!IsBreadthBegin()) --m_nodeIt;
+                    return *this;
                 }
 
                 // Advances to the first child.
-                void StepDown() {
-                    if (IsDepthEnd()) return;
-                    m_nodeSiblingsVector = &((*m_nodeIt)->childs);
-                    m_nodeIt = (*m_nodeIt)->childs.begin();
+                Iterator& StepDown() {
+                    if (!IsDepthEnd()) {
+                        m_nodeSiblingsVector = &((*m_nodeIt)->childs);
+                        m_nodeIt = (*m_nodeIt)->childs.begin();
+                    }
+                    return *this;
                 }
 
                 // Returns to it's parent.
-                void StepUp() {
-                    if (IsDepthBegin()) return;
-                    Node* parentNode = (*m_nodeIt)->parent;
-                    if (parentNode->parent == NULL) m_nodeSiblingsVector = &(m_ownerTree->m_nodes);
-                    else m_nodeSiblingsVector = &(parentNode->parent->childs);
-                    m_nodeIt = std::find(m_nodeSiblingsVector->begin(), m_nodeSiblingsVector->end(), parentNode);
+                Iterator& StepUp() {
+                    if (!IsDepthBegin()) {
+                        Node* parentNode = (*m_nodeIt)->parent;
+                        if (parentNode->parent == NULL) m_nodeSiblingsVector = &(m_ownerTree->m_nodes);
+                        else m_nodeSiblingsVector = &(parentNode->parent->childs);
+                        m_nodeIt = std::find(m_nodeSiblingsVector->begin(), m_nodeSiblingsVector->end(), parentNode);
+                    }
+                    return *this;
                 }
 
                 int ChildCount() {
