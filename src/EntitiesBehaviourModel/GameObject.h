@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 
 #include <src/EntitiesBehaviourModel/Behaviour/Behaviour.h>
 #include <src/EntitiesBehaviourModel/GameObject.h>
@@ -16,16 +17,27 @@ namespace DwarfQuest {
             bool m_initialized;
 
         public:
-
+            std::string name;
             Transform transform;
             bool enabled;
 
             GameObject();
+            GameObject(const GameObject& other);
+            GameObject(GameObject&& other);
+            GameObject(std::string objName);
             ~GameObject();
 
             void Init();
             void Update();
             void Destroy();
+
+            bool operator==(const GameObject& rhs) const {
+                return this == std::addressof(rhs);
+            }
+
+            bool operator!=(const GameObject& rhs) const {
+                return this != std::addressof(rhs);
+            }
 
             // ADD
             template<class T>

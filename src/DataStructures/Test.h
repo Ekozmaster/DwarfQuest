@@ -282,6 +282,20 @@ void Test_Tree_Iterator_Tree_Navigation() {
     ASSERT_TRUTHY(it.IsDepthBegin());
 }
 
+class TreeNodeTestClass {
+public:
+    int value = 0;
+
+    TreeNodeTestClass() {
+        std::cout << "My constructor" << std::endl;
+        COUNT_CONSTRUCTOR_CALL("TreeNodeTestClass");
+    }
+    ~TreeNodeTestClass() {
+        std::cout << "My destructor" << std::endl;
+        COUNT_DESTRUCTOR_CALL("TreeNodeTestClass");
+    }
+};
+
 
 // SETUP
 void Setup_Tree_Tests() {

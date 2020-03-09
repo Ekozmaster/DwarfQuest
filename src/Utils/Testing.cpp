@@ -122,6 +122,9 @@ namespace DwarfQuest {
             }
 
             std::cout << std::endl;
+            PrintMemoryDiagnostics();
+
+            std::cout << std::endl;
             char answer[10];
             std::cout << "Type 'exit' to finish." << std::endl;
             do {
@@ -153,7 +156,7 @@ namespace DwarfQuest {
         }
 
         void PrintHeapUsage() {
-            std::cout << "Heap memory usage: " << GetHeapAllocatedMemory() << std::endl;
+            std::cout << "Heap memory usage: " << GetHeapAllocatedMemory() << " bytes" << std::endl;
         }
 
         void PrintObjectsAllocationStatus() {

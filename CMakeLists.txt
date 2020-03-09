@@ -10,7 +10,11 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 endif()
 
 add_definitions(-DDWARFQUEST_OPEN_GL)
-#add_definitions(-DDWARFQUEST_TESTING)
+
+OPTION(DWARFQUEST_TESTING "Runs unit tests" OFF)
+if (DWARFQUEST_TESTING)
+    add_definitions(-DDWARFQUEST_TESTING)
+endif (DWARFQUEST_TESTING)
 
 project(DwarfQuest)
 

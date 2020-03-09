@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <src/EntitiesBehaviourModel/GameObject.h>
 #include <src/DataStructures/Tree.h>
 
@@ -9,23 +11,22 @@ namespace DwarfQuest {
         class Scene {
         private:
             bool m_destroyed;
-            DataStructures::Tree<GameObject*> m_gameObjects;
+            DataStructures::Tree<GameObject> m_gameObjects;
 
         public:
 
             Scene();
             ~Scene();
 
-            GameObject& CreateGameObject();
-            GameObject& CreateGameObject(DataStructures::Tree<GameObject*>::Iterator parent);
-            void DestroyGameObject(DataStructures::Tree<GameObject*>::Iterator gameObject);
-            void DestroyGameObject(GameObject& gameObject);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject();
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(std::string name);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(DataStructures::Tree<GameObject>::Iterator parent);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(std::string name, DataStructures::Tree<GameObject>::Iterator parent);
 
-        private:
-            void DestroyRecursive(DataStructures::Tree<GameObject*>::Iterator currentIt);
+            bool DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject);
+            bool DestroyGameObject(GameObject& gameObject);
 
-        public:
-
+            void DestroyAllGameObjects();
             void Destroy();
         };
 

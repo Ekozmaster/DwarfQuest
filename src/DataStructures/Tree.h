@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <stdexcept>
+
 #include <src/Utils/Testing.h>
 
 namespace DwarfQuest {
@@ -19,21 +21,21 @@ namespace DwarfQuest {
             public:
                 T content;
                 Node* parent;
-                NodeVectorType childs;
+                NodeVectorType children;
 
                 Node() {
                     COUNT_CONSTRUCTOR_CALL("Tree::Node");
                 }
 
-                Node(T data, Node* parentNode = NULL) : content(data), parent(parentNode) {
+                Node(const T& data, Node* parentNode = NULL) : content(data), parent(parentNode) {
                     COUNT_CONSTRUCTOR_CALL("Tree::Node");
                 }
                 
                 ~Node() {
-                    for (auto it = childs.begin(); it != childs.end(); ++it) {
+                    for (auto it = children.begin(); it != children.end(); ++it) {
                         delete (*it);
                     }
-                    childs.clear();
+                    children.clear();
                     COUNT_DESTRUCTOR_CALL("Tree::Node");
                 }
             };
@@ -61,7 +63,7 @@ namespace DwarfQuest {
                 Iterator(Tree* ownerTree, NodeVectorIteratorType current)
                     :m_ownerTree(ownerTree), m_nodeIt(current) {
                     Node * node = *current;
-                    if (node->parent != NULL) m_nodeSiblingsVector = &(node->parent->childs);
+                    if (node->parent != NULL) m_nodeSiblingsVector = &(node->parent->children);
                     else m_nodeSiblingsVector = &(m_ownerTree->m_nodes);
                 }
 
@@ -96,8 +98,8 @@ namespace DwarfQuest {
                 // Advances to the first child.
                 Iterator& StepDown() {
                     if (!IsDepthEnd()) {
-                        m_nodeSiblingsVector = &((*m_nodeIt)->childs);
-                        m_nodeIt = (*m_nodeIt)->childs.begin();
+                        m_nodeSiblingsVector = &((*m_nodeIt)->children);
+                        m_nodeIt = (*m_nodeIt)->children.begin();
                     }
                     return *this;
                 }
@@ -107,14 +109,14 @@ namespace DwarfQuest {
                     if (!IsDepthBegin()) {
                         Node* parentNode = (*m_nodeIt)->parent;
                         if (parentNode->parent == NULL) m_nodeSiblingsVector = &(m_ownerTree->m_nodes);
-                        else m_nodeSiblingsVector = &(parentNode->parent->childs);
+                        else m_nodeSiblingsVector = &(parentNode->parent->children);
                         m_nodeIt = std::find(m_nodeSiblingsVector->begin(), m_nodeSiblingsVector->end(), parentNode);
                     }
                     return *this;
                 }
 
                 int ChildCount() {
-                    return (*m_nodeIt)->childs.size();
+                    return (*m_nodeIt)->children.size();
                 }
 
                 // BEGIN / END METHODS
@@ -131,7 +133,7 @@ namespace DwarfQuest {
                 }
 
                 bool IsDepthEnd() {
-                    return (*m_nodeIt)->childs.size() == 0;
+                    return (*m_nodeIt)->children.size() == 0;
                 }
 
                 friend class Tree;
@@ -159,8 +161,8 @@ namespace DwarfQuest {
                 if (parent == End()) throw std::invalid_argument("Passing invalid 'parent' argument in Three.Push");
                 Node* parentNode = *(parent.m_nodeIt);
                 Node* node = new Node(data, parentNode);
-                parentNode->childs.push_back(node);
-                return Iterator(this, --parentNode->childs.end(), &(parentNode->childs));
+                parentNode->children.push_back(node);
+                return Iterator(this, --parentNode->children.end(), &(parentNode->children));
             }
 
             // Push as the "childIndex"th child of a specific parent.
@@ -168,8 +170,8 @@ namespace DwarfQuest {
                 if (parent == End()) throw std::invalid_argument("Passing invalid 'parent' argument in Three.Push");
                 Node* parentNode = *(parent.m_nodeIt);
                 Node* node = new Node(data, parentNode);
-                auto it = parentNode->childs.insert(parentNode->childs.begin() + childIndex, node);
-                return Iterator(this, it, &(parentNode->childs));
+                auto it = parentNode->children.insert(parentNode->children.begin() + childIndex, node);
+                return Iterator(this, it, &(parentNode->children));
             }
 
             // Push as the "childIndex"th child of the root nodes.
@@ -197,7 +199,7 @@ namespace DwarfQuest {
         private:
             Iterator DepthFind(const T& data, Iterator currentIt) {
                 if (*currentIt == data) return currentIt;
-                // Step down into currentNode's childs.
+                // Step down into currentNode's children.
                 if (!currentIt.IsDepthEnd()) {
                     currentIt.StepDown();
                     for (Iterator it = currentIt; !it.IsBreadthEnd(); ++it) {
@@ -227,12 +229,16 @@ namespace DwarfQuest {
                 return Iterator(this, m_nodes.end(), &m_nodes);
             }
 
-            void Destroy() {
-                if (m_destroyed) return;
+            void Clear() {
                 for (Iterator it = Begin(); it != End(); ++it) {
-                    delete *(it.m_nodeIt);
+                    delete* (it.m_nodeIt);
                 }
                 m_nodes.clear();
+            }
+
+            void Destroy() {
+                if (m_destroyed) return;
+                Clear();
                 m_destroyed = true;
             }
             //*/
