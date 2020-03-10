@@ -11,24 +11,24 @@ namespace DwarfQuest {
             DestroyAllGameObjects();
         }
 
-        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject() {
-            auto it = m_gameObjects.Push(GameObject());
-            return it;
+        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(int childIndex) {
+            if (childIndex > -1) return m_gameObjects.Push(GameObject(), childIndex);
+            return m_gameObjects.Push(GameObject());
         }
 
-        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(std::string name) {
-            auto it = m_gameObjects.Push(GameObject(name));
-            return it;
+        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(std::string name, int childIndex) {
+            if (childIndex > -1) return m_gameObjects.Push(GameObject(name), childIndex);
+            return m_gameObjects.Push(GameObject(name));
         }
 
-        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(DataStructures::Tree<GameObject>::Iterator parent) {
-            auto it = m_gameObjects.Push(GameObject(), parent);
-            return it;
+        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(DataStructures::Tree<GameObject>::Iterator parent, int childIndex) {
+            if (childIndex > -1) return m_gameObjects.Push(GameObject(), parent, childIndex);
+            return m_gameObjects.Push(GameObject(), parent);
         }
 
-        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(std::string name, DataStructures::Tree<GameObject>::Iterator parent) {
-            auto it = m_gameObjects.Push(GameObject(name), parent);
-            return it;
+        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(std::string name, DataStructures::Tree<GameObject>::Iterator parent, int childIndex) {
+            if (childIndex > -1) return m_gameObjects.Push(GameObject(name), parent, childIndex);
+            return m_gameObjects.Push(GameObject(name), parent);
         }
 
         bool Scene::DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject) {

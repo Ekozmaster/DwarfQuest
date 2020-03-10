@@ -58,6 +58,7 @@ void Test_Scene_NewGameObject_With_Parent() {
     ASSERT_TRUTHY(it.IsDepthEnd());
 }
 
+
 // Scene.NewGameObject(std::string name, Tree::Iterator parent);
 void Test_Scene_NewGameObject_With_Name_And_Parent() {
     auto parentIt = unittest_scene->NewGameObject("Test Parent GameObject");
@@ -79,12 +80,115 @@ void Test_Scene_NewGameObject_With_Name_And_Parent() {
     ASSERT_EQUALS((*it).name, std::string("Test Parent GameObject"));
 }
 
-void Test_Scene_DestroyGameObject_By_Iterator_Beginning() {
-    // TODO: Implement specific child indexing using TDD.
+
+// Testing insertion at specific positions.
+void Test_Scene_NewGameObject_At_Beginning() {
     auto it = unittest_scene->NewGameObject();
-    //unittest_scene->NewGameObject();
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+    ASSERT_FALSY(it.IsBreadthEnd());
+    ASSERT_TRUTHY(it.IsDepthBegin());
+    ASSERT_TRUTHY(it.IsDepthEnd());
+
+    it = unittest_scene->NewGameObject(0);
+    ASSERT_TRUTHY(it.IsDepthBegin());
+    ASSERT_TRUTHY(it.IsDepthEnd());
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+    ASSERT_FALSY(it.IsBreadthEnd());
+    ++it;
+    ASSERT_FALSY(it.IsBreadthEnd());
+}
+
+void Test_Scene_NewGameObject_At_Middle() {
+    unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject();
+    auto it = unittest_scene->NewGameObject(1);
+
+    ASSERT_TRUTHY(it.IsDepthBegin());
+    ASSERT_TRUTHY(it.IsDepthEnd());
+    ASSERT_FALSY(it.IsBreadthBegin());
+    ++it;
+    ASSERT_FALSY(it.IsBreadthEnd());
+    --it; --it;
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+}
+
+void Test_Scene_NewGameObject_At_End() {
+    unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject();
+    auto it = unittest_scene->NewGameObject();
+
+    ASSERT_TRUTHY(it.IsDepthBegin());
+    ASSERT_TRUTHY(it.IsDepthEnd());
+    ++it;
+    ASSERT_TRUTHY(it.IsBreadthEnd());
+    --it; --it;
+    ASSERT_FALSY(it.IsBreadthBegin());
+    --it;
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+}
+
+// Test insertion at specific position in parent.
+void Test_Scene_NewGameObject_With_Parent_At_Beginning() {
+    auto parentIt = unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject(parentIt);
+    auto it = unittest_scene->NewGameObject(parentIt, 0);
+
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+    ASSERT_FALSY(it.IsBreadthEnd());
+    ASSERT_FALSY(it.IsDepthBegin());
+    ASSERT_TRUTHY(it.IsDepthEnd());
+
+    it = unittest_scene->NewGameObject(parentIt, 0);
+    ASSERT_FALSY(it.IsDepthBegin());
+    ASSERT_TRUTHY(it.IsDepthEnd());
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+    ASSERT_FALSY(it.IsBreadthEnd());
+    ++it;
+    ASSERT_FALSY(it.IsBreadthEnd());
+}
+
+void Test_Scene_NewGameObject_With_Parent_At_Middle() {
+    auto parentIt = unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject(parentIt);
+    unittest_scene->NewGameObject(parentIt);
+    auto it = unittest_scene->NewGameObject(parentIt, 1);
+
+    ASSERT_FALSY(it.IsDepthBegin());
+    ASSERT_TRUTHY(it.IsDepthEnd());
+    ASSERT_FALSY(it.IsBreadthBegin());
+    ++it;
+    ASSERT_FALSY(it.IsBreadthEnd());
+    --it; --it;
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+}
+
+void Test_Scene_NewGameObject_With_Parent_At_End() {
+    auto parentIt = unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject(parentIt);
+    unittest_scene->NewGameObject(parentIt);
+    auto it = unittest_scene->NewGameObject(parentIt);
+
+    ASSERT_FALSY(it.IsDepthBegin());
+    ASSERT_TRUTHY(it.IsDepthEnd());
+    ++it;
+    ASSERT_TRUTHY(it.IsBreadthEnd());
+    --it; --it;
+    ASSERT_FALSY(it.IsBreadthBegin());
+    --it;
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+}
+
+// Scene.DestroyGameObject(Tree::Iterator gameObject);
+void Test_Scene_DestroyGameObject_By_Iterator_Beginning() {
+    // TODO: Implement Begin(), End(), and Find() on Scene using TDD.
+    // TODO: Implement a way to count GameObjects in Scene, or even better, objects/nodes in Tree, also using TDD.
+    unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject();
+    auto it = unittest_scene->NewGameObject();
+    
     bool result = unittest_scene->DestroyGameObject(it);
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 0);
+    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 3);
 }
 
 
@@ -96,6 +200,12 @@ void Setup_Scene_Tests() {
     REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Name);
     REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Parent);
     REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Name_And_Parent);
+    REGISTER_TEST_UNIT(Test_Scene_NewGameObject_At_Beginning);
+    REGISTER_TEST_UNIT(Test_Scene_NewGameObject_At_Middle);
+    REGISTER_TEST_UNIT(Test_Scene_NewGameObject_At_End);
+    REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Parent_At_Beginning);
+    REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Parent_At_Middle);
+    REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Parent_At_End);
     REGISTER_TEST_UNIT(Test_Scene_DestroyGameObject_By_Iterator_Beginning);
 }
 

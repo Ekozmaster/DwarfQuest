@@ -18,10 +18,10 @@ namespace DwarfQuest {
             Scene();
             ~Scene();
 
-            DataStructures::Tree<GameObject>::Iterator NewGameObject();
-            DataStructures::Tree<GameObject>::Iterator NewGameObject(std::string name);
-            DataStructures::Tree<GameObject>::Iterator NewGameObject(DataStructures::Tree<GameObject>::Iterator parent);
-            DataStructures::Tree<GameObject>::Iterator NewGameObject(std::string name, DataStructures::Tree<GameObject>::Iterator parent);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(int childIndex = -1);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(std::string name, int childIndex = -1);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(DataStructures::Tree<GameObject>::Iterator parent, int childIndex = -1);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(std::string name, DataStructures::Tree<GameObject>::Iterator parent, int childIndex = -1);
 
             bool DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject);
             bool DestroyGameObject(GameObject& gameObject);
