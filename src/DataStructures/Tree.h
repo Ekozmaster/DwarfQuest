@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
 
 #include <src/Utils/Testing.h>
 

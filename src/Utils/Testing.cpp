@@ -2,6 +2,9 @@
 
 
 #ifdef DWARFQUEST_TESTING
+
+#include <cstring>
+
 namespace DwarfQuest {
     namespace Testing {
 
@@ -87,17 +90,17 @@ namespace DwarfQuest {
         }
 
         void PushTestUnitSetupToActiveContext(const char* unitName, UnitSetupPointer unitPtr) {
-            if (!activeTestContext) throw std::exception("No active TestContext to register test units's setup.");
+            if (!activeTestContext) throw std::runtime_error("No active TestContext to register test units's setup.");
             activeTestContext->RegisterUnitSetup(unitName, unitPtr);
         }
 
         void PushTestUnitTearDownToActiveContext(const char* unitName, UnitTearDownPointer unitPtr) {
-            if (!activeTestContext) throw std::exception("No active TestContext to register test units's tear down.");
+            if (!activeTestContext) throw std::runtime_error("No active TestContext to register test units's tear down.");
             activeTestContext->RegisterUnitTearDown(unitName, unitPtr);
         }
 
         void PushTestUnitToActiveContext(const char* unitName, TestUnitPointer unitPtr) {
-            if (!activeTestContext) throw std::exception("No active TestContext to register test units.");
+            if (!activeTestContext) throw std::runtime_error("No active TestContext to register test units.");
             activeTestContext->RegisterTestUnit(unitName, unitPtr);
             systemTotalOfUnitTests++;
         }
