@@ -20,9 +20,9 @@ namespace std {
 namespace DwarfQuest {
     namespace Testing {
 
-        typedef typename void (*UnitSetupPointer)();
-        typedef typename void (*UnitTearDownPointer)();
-        typedef typename void (*TestUnitPointer)();
+        typedef void (*UnitSetupPointer)();
+        typedef void (*UnitTearDownPointer)();
+        typedef void (*TestUnitPointer)();
 
         // UNIT TESTING
         class TestContext {
