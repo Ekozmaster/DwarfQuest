@@ -181,7 +181,6 @@ void Test_Scene_NewGameObject_With_Parent_At_End() {
 // Scene.DestroyGameObject(Tree::Iterator gameObject);
 void Test_Scene_DestroyGameObject_By_Iterator_Beginning() {
     // TODO: Implement Begin(), End(), and Find() on Scene using TDD.
-    // TODO: Implement a way to count GameObjects in Scene, or even better, objects/nodes in Tree, also using TDD.
     unittest_scene->NewGameObject();
     unittest_scene->NewGameObject();
     unittest_scene->NewGameObject();

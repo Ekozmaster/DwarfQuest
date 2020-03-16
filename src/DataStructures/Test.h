@@ -27,12 +27,15 @@ void Test_Tree_Push_Int() {
 
     ASSERT_NOT_EQUALS(it, unittest_Tree->End());
     ASSERT_EQUALS(*it, 10);
+    ASSERT_EQUALS(unittest_Tree->Size(), 1);
 }
 
 // Push(int, Iterator).
 void Test_Tree_Push_Int_Parent() {
     auto it = unittest_Tree->Push(10);
+    ASSERT_EQUALS(unittest_Tree->Size(), 1);
     auto it2 = unittest_Tree->Push(0, it);
+    ASSERT_EQUALS(unittest_Tree->Size(), 2);
 
     ASSERT_NOT_EQUALS(it2, unittest_Tree->End());
     ASSERT_EQUALS(*it2, 0);
@@ -46,6 +49,7 @@ void Test_Tree_Push_Int_As_First_Child_Of_Parent() {
     auto it = unittest_Tree->Push(10);
     unittest_Tree->Push(1, it);
     unittest_Tree->Push(2, it);
+    ASSERT_EQUALS(unittest_Tree->Size(), 3);
 
     auto testIt = unittest_Tree->Push(0, it, 0);
     ASSERT_TRUTHY(testIt.IsBreadthBegin());
@@ -60,8 +64,10 @@ void Test_Tree_Push_Int_As_Middle_Child_Of_Parent() {
     auto it = unittest_Tree->Push(10);
     unittest_Tree->Push(1, it);
     unittest_Tree->Push(3, it);
+    ASSERT_EQUALS(unittest_Tree->Size(), 3);
 
     auto testIt = unittest_Tree->Push(2, it, 1);
+    ASSERT_EQUALS(unittest_Tree->Size(), 4);
     --testIt;
     ASSERT_EQUALS(*testIt, 1);
     ++testIt; ++testIt;
@@ -75,8 +81,10 @@ void Test_Tree_Push_Int_As_Last_Child_Of_Parent() {
     auto it = unittest_Tree->Push(10);
     unittest_Tree->Push(1, it);
     unittest_Tree->Push(2, it);
+    ASSERT_EQUALS(unittest_Tree->Size(), 3);
 
     auto testIt = unittest_Tree->Push(3, it);
+    ASSERT_EQUALS(unittest_Tree->Size(), 4);
     --testIt;
     ASSERT_EQUALS(*testIt, 2);
     ++testIt; ++testIt;
@@ -91,9 +99,11 @@ void Test_Tree_Erase_From_Beginning() {
     auto it = unittest_Tree->Push(10);
     unittest_Tree->Push(2, it);
     auto testIt = unittest_Tree->Push(1, it, 0);
+    ASSERT_EQUALS(unittest_Tree->Size(), 3);
 
     // Erase returns parent
     auto erasedParentIt = unittest_Tree->Erase(testIt);
+    ASSERT_EQUALS(unittest_Tree->Size(), 2);
     ASSERT_EQUALS(*erasedParentIt, 10);
     // Stepping down to remaining child.
     erasedParentIt.StepDown();
@@ -105,9 +115,11 @@ void Test_Tree_Erase_From_End() {
     auto it = unittest_Tree->Push(10);
     unittest_Tree->Push(1, it);
     auto testIt = unittest_Tree->Push(2, it);
+    ASSERT_EQUALS(unittest_Tree->Size(), 3);
 
     // Erase returns parent
     auto erasedParentIt = unittest_Tree->Erase(testIt);
+    ASSERT_EQUALS(unittest_Tree->Size(), 2);
     ASSERT_EQUALS(*erasedParentIt, 10);
     // Stepping down to remaining child.
     erasedParentIt.StepDown();
@@ -120,9 +132,11 @@ void Test_Tree_Erase_From_Middle() {
     unittest_Tree->Push(1, it);
     unittest_Tree->Push(3, it);
     auto testIt = unittest_Tree->Push(2, it, 1);
+    ASSERT_EQUALS(unittest_Tree->Size(), 4);
 
     // Erase returns parent
     auto erasedParentIt = unittest_Tree->Erase(testIt);
+    ASSERT_EQUALS(unittest_Tree->Size(), 3);
     ASSERT_EQUALS(*erasedParentIt, 10);
     // Stepping down to remaining childs.
     erasedParentIt.StepDown();
@@ -174,11 +188,13 @@ void Test_Tree_Destroy() {
     unittest_Tree->Push(11, ten);
     unittest_Tree->Push(12, ten);
     unittest_Tree->Push(13, ten);
+    ASSERT_EQUALS(unittest_Tree->Size(), 4);
 
     auto zero = unittest_Tree->Push(0, 0);
     unittest_Tree->Push(3, zero);
     unittest_Tree->Push(1, zero, 0);
     unittest_Tree->Push(2, zero, 1);
+    ASSERT_EQUALS(unittest_Tree->Size(), 8);
 
     auto zeroChilds = unittest_Tree->Find(1);
     unittest_Tree->Push(4, zeroChilds);
@@ -189,14 +205,18 @@ void Test_Tree_Destroy() {
     ++zeroChilds;
     unittest_Tree->Push(8, zeroChilds);
     unittest_Tree->Push(9, zeroChilds);
+    ASSERT_EQUALS(unittest_Tree->Size(), 14);
 
     auto tenChilds = unittest_Tree->Find(11);
     ++tenChilds;
     auto toEraseIt = unittest_Tree->Push(19, tenChilds);
+    ASSERT_EQUALS(unittest_Tree->Size(), 15);
     auto erasedParentIt = unittest_Tree->Erase(toEraseIt);
+    ASSERT_EQUALS(unittest_Tree->Size(), 14);
     ASSERT_EQUALS(*erasedParentIt, 12);
 
     unittest_Tree->Destroy();
+    ASSERT_EQUALS(unittest_Tree->Size(), 0);
     ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("Tree::Node"), 0);
 }
 
@@ -234,6 +254,7 @@ void Test_Tree_Iterator_Setup() {
     ++tenChilds;
     auto toEraseIt = unittest_Tree->Push(19, tenChilds);
     auto erasedParentIt = unittest_Tree->Erase(toEraseIt);
+    ASSERT_EQUALS(unittest_Tree->Size(), 14);
 }
 
 void Test_Tree_Iterator_TearDown() {
@@ -281,20 +302,6 @@ void Test_Tree_Iterator_Tree_Navigation() {
     ASSERT_FALSY(it.IsDepthEnd());
     ASSERT_TRUTHY(it.IsDepthBegin());
 }
-
-class TreeNodeTestClass {
-public:
-    int value = 0;
-
-    TreeNodeTestClass() {
-        std::cout << "My constructor" << std::endl;
-        COUNT_CONSTRUCTOR_CALL("TreeNodeTestClass");
-    }
-    ~TreeNodeTestClass() {
-        std::cout << "My destructor" << std::endl;
-        COUNT_DESTRUCTOR_CALL("TreeNodeTestClass");
-    }
-};
 
 
 // SETUP

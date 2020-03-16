@@ -52,7 +52,7 @@ namespace DwarfQuest {
         extern std::vector<TestContext*> testContexts;
         extern unsigned int systemTotalOfUnitTests;
         extern TestContext* activeTestContext;
-        extern bool hadAnyErrors;
+        extern int totalErrorsCount;
 
         // ### INTERNAL FUNCTIONS
         void SetTestContext(const char* contextName);
@@ -61,16 +61,16 @@ namespace DwarfQuest {
         void PushTestUnitToActiveContext(const char* unitName, TestUnitPointer unitPtr);
         void RunAllTestContexts();
 
-        template<typename T>
-        void AssertEquals(T a, T b, unsigned int line) {
+        template<typename T, typename U>
+        void AssertEquals(T a, U b, unsigned int line) {
             if (a != b) {
                 std::string error = "Expected '" + std::to_string(a) + "' to be equals to '" + std::to_string(b) + "' at line: " + std::to_string(line);
                 activeTestContext->PushErrorToCurrentUnit(error.c_str());
             }
         }
 
-        template<typename T>
-        void AssertNotEquals(T a, T b, unsigned int line) {
+        template<typename T, typename U>
+        void AssertNotEquals(T a, U b, unsigned int line) {
             if (a == b) {
                 std::string error = "Expected '" + std::to_string(a) + "' to be different than '" + std::to_string(b) + "' at line: " + std::to_string(line);
                 activeTestContext->PushErrorToCurrentUnit(error.c_str());

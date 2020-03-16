@@ -18,16 +18,20 @@ namespace DwarfQuest {
             typedef typename NodeVectorType::iterator NodeVectorIteratorType;
 
             class Node {
+                Tree* m_ownerTree;
             public:
                 T content;
                 Node* parent;
                 NodeVectorType children;
 
-                Node() {
+                Node(Tree* ownerTree) : m_ownerTree(ownerTree) {
+                    m_ownerTree->m_size++;
                     COUNT_CONSTRUCTOR_CALL("Tree::Node");
                 }
 
-                Node(const T& data, Node* parentNode = NULL) : content(data), parent(parentNode) {
+                Node(Tree* ownerTree, const T& data, Node* parentNode = NULL) 
+                    : m_ownerTree(ownerTree), content(data), parent(parentNode) {
+                    m_ownerTree->m_size++;
                     COUNT_CONSTRUCTOR_CALL("Tree::Node");
                 }
                 
@@ -36,12 +40,16 @@ namespace DwarfQuest {
                         delete (*it);
                     }
                     children.clear();
+                    m_ownerTree->m_size--;
                     COUNT_DESTRUCTOR_CALL("Tree::Node");
                 }
             };
 
+            friend class Node;
+
             NodeVectorType m_nodes;
             bool m_destroyed;
+            unsigned int m_size;
 
         public:
             // <ITERATOR>
@@ -143,6 +151,7 @@ namespace DwarfQuest {
 
             Tree() {
                 m_destroyed = false;
+                m_size = 0;
             }
 
             ~Tree() {
@@ -151,7 +160,7 @@ namespace DwarfQuest {
 
             // Push to the back of the root nodes.
             Iterator Push(const T& data) {
-                Node* node = new Node(data);
+                Node* node = new Node(this, data);
                 m_nodes.push_back(node);
                 return Iterator(this, --m_nodes.end(), &m_nodes);
             }
@@ -160,7 +169,7 @@ namespace DwarfQuest {
             Iterator Push(const T& data, Iterator parent) {
                 if (parent == End()) throw std::invalid_argument("Passing invalid 'parent' argument in Three.Push");
                 Node* parentNode = *(parent.m_nodeIt);
-                Node* node = new Node(data, parentNode);
+                Node* node = new Node(this, data, parentNode);
                 parentNode->children.push_back(node);
                 return Iterator(this, --parentNode->children.end(), &(parentNode->children));
             }
@@ -169,14 +178,14 @@ namespace DwarfQuest {
             Iterator Push(const T& data, Iterator parent, unsigned int childIndex) {
                 if (parent == End()) throw std::invalid_argument("Passing invalid 'parent' argument in Three.Push");
                 Node* parentNode = *(parent.m_nodeIt);
-                Node* node = new Node(data, parentNode);
+                Node* node = new Node(this, data, parentNode);
                 auto it = parentNode->children.insert(parentNode->children.begin() + childIndex, node);
                 return Iterator(this, it, &(parentNode->children));
             }
 
             // Push as the "childIndex"th child of the root nodes.
             Iterator Push(const T& data, unsigned int childIndex) {
-                Node* node = new Node(data);
+                Node* node = new Node(this, data);
                 auto it = m_nodes.insert(m_nodes.begin() + childIndex, node);
                 return Iterator(this, it, &m_nodes);
             }
@@ -229,11 +238,16 @@ namespace DwarfQuest {
                 return Iterator(this, m_nodes.end(), &m_nodes);
             }
 
+            unsigned int Size() {
+                return m_size;
+            }
+
             void Clear() {
                 for (Iterator it = Begin(); it != End(); ++it) {
                     delete* (it.m_nodeIt);
                 }
                 m_nodes.clear();
+                m_size = 0;
             }
 
             void Destroy() {

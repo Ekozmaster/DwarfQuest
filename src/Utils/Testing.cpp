@@ -34,7 +34,7 @@ namespace DwarfQuest {
             auto foo = this;
             m_testingErrorsMessages.push_back("[FAILED]: " + m_currentTestUnitName + " - " + errorString);
             m_currentUnitHadErrors = true;
-            hadAnyErrors = true;
+            totalErrorsCount++;
         }
 
         void TestContext::Run() {
@@ -67,11 +67,10 @@ namespace DwarfQuest {
             }
         }
 
-        std::vector<std::string> testingErrorsMessages;
         std::vector<TestContext*> testContexts;
         unsigned int systemTotalOfUnitTests = 0;
         TestContext* activeTestContext = NULL;
-        bool hadAnyErrors = false;
+        int totalErrorsCount = 0;
 
         // ### INTERNAL FUNCTIONS
         void SetTestContext(const char* contextName) {
@@ -110,11 +109,9 @@ namespace DwarfQuest {
 
             std::cout << std::endl;
             std::cout << "Finished with a total of " << std::to_string(systemTotalOfUnitTests) << " unit tests performed." << std::endl;
-            if (testingErrorsMessages.size()) {
-                std::cout << "Total Errors: " << testingErrorsMessages.size() << std::endl;
-            }
 
-            if (hadAnyErrors) {
+            if (totalErrorsCount > 0) {
+                std::cout << "Total Errors: " << totalErrorsCount << std::endl;
                 std::cout << std::endl << "Error Messages: " << std::endl;
                 for (auto it = testContexts.begin(); it != testContexts.end(); ++it) (*it)->PrintErrorsIfAny();
             } else {
