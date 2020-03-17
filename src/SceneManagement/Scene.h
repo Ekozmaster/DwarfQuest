@@ -23,8 +23,8 @@ namespace DwarfQuest {
             DataStructures::Tree<GameObject>::Iterator NewGameObject(DataStructures::Tree<GameObject>::Iterator parent, int childIndex = -1);
             DataStructures::Tree<GameObject>::Iterator NewGameObject(const std::string& name, DataStructures::Tree<GameObject>::Iterator parent, int childIndex = -1);
 
-            bool DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject);
-            bool DestroyGameObject(GameObject& gameObject);
+            DataStructures::Tree<GameObject>::Iterator DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject);
+            DataStructures::Tree<GameObject>::Iterator DestroyGameObject(GameObject& gameObject);
 
         private:
             DataStructures::Tree<GameObject>::Iterator FindRecursive(const std::string& name, DataStructures::Tree<GameObject>::Iterator current);

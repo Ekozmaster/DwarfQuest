@@ -31,15 +31,14 @@ namespace DwarfQuest {
             return m_gameObjects.Push(GameObject(name), parent);
         }
 
-        bool Scene::DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject) {
-            m_gameObjects.Erase(gameObject);
-            return true;
+        DataStructures::Tree<GameObject>::Iterator Scene::DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject) {
+            if (gameObject == End()) return End();
+            return m_gameObjects.Erase(gameObject);
         }
 
-        bool Scene::DestroyGameObject(GameObject& gameObject) {
+        DataStructures::Tree<GameObject>::Iterator Scene::DestroyGameObject(GameObject& gameObject) {
             auto it = m_gameObjects.Find(gameObject);
-            if (it != m_gameObjects.End()) return DestroyGameObject(it);
-            return false;
+            return DestroyGameObject(it);
         }
 
 
