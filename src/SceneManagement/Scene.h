@@ -26,6 +26,10 @@ namespace DwarfQuest {
             bool DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject);
             bool DestroyGameObject(GameObject& gameObject);
 
+            DataStructures::Tree<GameObject>::Iterator Begin();
+            DataStructures::Tree<GameObject>::Iterator End();
+            DataStructures::Tree<GameObject>::Iterator Back();
+
             void DestroyAllGameObjects();
             void Destroy();
         };

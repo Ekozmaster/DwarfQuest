@@ -178,16 +178,62 @@ void Test_Scene_NewGameObject_With_Parent_At_End() {
     ASSERT_TRUTHY(it.IsBreadthBegin());
 }
 
+void Test_Scene_Begin() {
+    ASSERT_EQUALS(unittest_scene->Begin(), unittest_scene->End());
+
+    unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject();
+
+    auto it = unittest_scene->Begin();
+    ASSERT_NOT_EQUALS(it, unittest_scene->End());
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+    ++it;
+    ASSERT_FALSY(it.IsBreadthEnd());
+    ++it; ++it;
+    ASSERT_TRUTHY(it.IsBreadthEnd());
+}
+
+void Test_Scene_End() {
+    unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject();
+    unittest_scene->NewGameObject();
+
+    auto it = unittest_scene->End();
+    ASSERT_NOT_EQUALS(it, unittest_scene->Begin());
+    ASSERT_TRUTHY(it.IsBreadthEnd());
+    --it;
+    ASSERT_FALSY(it.IsBreadthBegin());
+    --it; --it;
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+}
+
+void Test_Scene_Back() {
+    ASSERT_EQUALS(unittest_scene->Back(), unittest_scene->End());
+    ASSERT_EQUALS(unittest_scene->Back(), unittest_scene->Begin());
+    unittest_scene->NewGameObject("A");
+    ASSERT_EQUALS(unittest_scene->Back(), unittest_scene->Begin());
+    unittest_scene->NewGameObject("B");
+    ASSERT_NOT_EQUALS(unittest_scene->Back(), unittest_scene->Begin());
+    unittest_scene->NewGameObject("C");
+    ASSERT_NOT_EQUALS(unittest_scene->Back(), unittest_scene->Begin());
+
+    auto it = unittest_scene->Back();
+    ASSERT_NOT_EQUALS(it, unittest_scene->End());
+    ASSERT_EQUALS((*it).name, "C");
+}
+
 // Scene.DestroyGameObject(Tree::Iterator gameObject);
 void Test_Scene_DestroyGameObject_By_Iterator_Beginning() {
-    // TODO: Implement Begin(), End(), and Find() on Scene using TDD.
-    unittest_scene->NewGameObject();
-    unittest_scene->NewGameObject();
-    unittest_scene->NewGameObject();
-    auto it = unittest_scene->NewGameObject();
+    // TODO: Implement Find() on Scene using TDD.
+    unittest_scene->NewGameObject("A");
+    unittest_scene->NewGameObject("B");
+    unittest_scene->NewGameObject("C");
+    auto it = unittest_scene->Begin();
     
     bool result = unittest_scene->DestroyGameObject(it);
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 3);
+    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 2);
+    ASSERT_EQUALS((*unittest_scene->Begin()).name, "B");
 }
 
 
@@ -205,6 +251,8 @@ void Setup_Scene_Tests() {
     REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Parent_At_Beginning);
     REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Parent_At_Middle);
     REGISTER_TEST_UNIT(Test_Scene_NewGameObject_With_Parent_At_End);
+    REGISTER_TEST_UNIT(Test_Scene_Begin);
+    REGISTER_TEST_UNIT(Test_Scene_End);
     REGISTER_TEST_UNIT(Test_Scene_DestroyGameObject_By_Iterator_Beginning);
 }
 

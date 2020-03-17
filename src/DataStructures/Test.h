@@ -146,6 +146,8 @@ void Test_Tree_Erase_From_Middle() {
     ASSERT_EQUALS(it.ChildCount(), 2);
 }
 
+
+// TREE FIND
 void Test_Tree_Find_At_Beginning() {
     unittest_Tree->Push(0);
     unittest_Tree->Push(5);
@@ -181,6 +183,56 @@ void Test_Tree_Find_At_Middle() {
     ASSERT_EQUALS(*it, 10);
     --it; --it;
     ASSERT_EQUALS(*it, 0);
+}
+
+// TREE BEGIN, END, BACK.
+void Test_Tree_Begin() {
+    ASSERT_EQUALS(unittest_Tree->Begin(), unittest_Tree->End());
+
+    unittest_Tree->Push(1);
+    unittest_Tree->Push(2);
+    unittest_Tree->Push(3);
+
+    auto it = unittest_Tree->Begin();
+    ASSERT_NOT_EQUALS(it, unittest_Tree->End());
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+    ASSERT_EQUALS(*it, 1);
+    ++it;
+    ASSERT_FALSY(it.IsBreadthEnd());
+    ASSERT_EQUALS(*it, 2);
+    ++it; ++it;
+    ASSERT_TRUTHY(it.IsBreadthEnd());
+}
+
+void Test_Tree_End() {
+    unittest_Tree->Push(1);
+    unittest_Tree->Push(2);
+    unittest_Tree->Push(3);
+
+    auto it = unittest_Tree->End();
+    ASSERT_NOT_EQUALS(it, unittest_Tree->Begin());
+    ASSERT_TRUTHY(it.IsBreadthEnd());
+    --it;
+    ASSERT_EQUALS(*it, 3);
+    ASSERT_FALSY(it.IsBreadthBegin());
+    --it; --it;
+    ASSERT_TRUTHY(it.IsBreadthBegin());
+    ASSERT_EQUALS(*it, 1);
+}
+
+void Test_Tree_Back() {
+    ASSERT_EQUALS(unittest_Tree->Back(), unittest_Tree->End());
+    ASSERT_EQUALS(unittest_Tree->Back(), unittest_Tree->Begin());
+    unittest_Tree->Push(1);
+    ASSERT_EQUALS(unittest_Tree->Back(), unittest_Tree->Begin());
+    unittest_Tree->Push(2);
+    ASSERT_NOT_EQUALS(unittest_Tree->Back(), unittest_Tree->Begin());
+    unittest_Tree->Push(3);
+    ASSERT_NOT_EQUALS(unittest_Tree->Back(), unittest_Tree->Begin());
+
+    auto it = unittest_Tree->Back();
+    ASSERT_NOT_EQUALS(it, unittest_Tree->End());
+    ASSERT_EQUALS(*it, 3);
 }
 
 void Test_Tree_Destroy() {
@@ -320,6 +372,9 @@ void Setup_Tree_Tests() {
     REGISTER_TEST_UNIT(Test_Tree_Find_At_Beginning);
     REGISTER_TEST_UNIT(Test_Tree_Find_At_End);
     REGISTER_TEST_UNIT(Test_Tree_Find_At_Middle);
+    REGISTER_TEST_UNIT(Test_Tree_Begin);
+    REGISTER_TEST_UNIT(Test_Tree_End);
+    REGISTER_TEST_UNIT(Test_Tree_Back);
     REGISTER_TEST_UNIT(Test_Tree_Destroy);
 
     SETUP_ACTIVE_TEST_CONTEXT("Testing Tree::Iterator operations");

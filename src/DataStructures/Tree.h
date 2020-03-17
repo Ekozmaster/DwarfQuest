@@ -19,7 +19,12 @@ namespace DwarfQuest {
             typedef typename NodeVectorType::iterator NodeVectorIteratorType;
 
             class Node {
+            private:
                 Tree* m_ownerTree;
+
+                Node() = delete;
+                Node(const Node& node) = delete;
+                Node(Node&& node) = delete;
             public:
                 T content;
                 Node* parent;
@@ -237,6 +242,11 @@ namespace DwarfQuest {
 
             Iterator End() {
                 return Iterator(this, m_nodes.end(), &m_nodes);
+            }
+
+            Iterator Back() {
+                if (m_nodes.size() == 0) return End();
+                return --End();
             }
 
             unsigned int Size() {

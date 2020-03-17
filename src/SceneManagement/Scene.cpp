@@ -42,6 +42,18 @@ namespace DwarfQuest {
             return false;
         }
 
+        DataStructures::Tree<GameObject>::Iterator Scene::Begin() {
+            return m_gameObjects.Begin();
+        }
+
+        DataStructures::Tree<GameObject>::Iterator Scene::End() {
+            return m_gameObjects.End();
+        }
+
+        DataStructures::Tree<GameObject>::Iterator Scene::Back() {
+            return m_gameObjects.Back();
+        }
+
         void Scene::DestroyAllGameObjects() {
             m_gameObjects.Clear();
         }
