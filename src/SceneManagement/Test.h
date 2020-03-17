@@ -339,7 +339,8 @@ void Test_Scene_Find_By_Name_Last_Child() {
 
 // Scene.DestroyGameObject(Tree::Iterator gameObject);
 void Test_Scene_DestroyGameObject_By_Iterator_Beginning() {
-    // TODO: See if parameters could become const&.
+    // TODO: Implement more destruction tests.
+    // TODO: Implement intensive scene graph manipulation and integrity tests.
     unittest_scene->NewGameObject("A");
     unittest_scene->NewGameObject("B");
     unittest_scene->NewGameObject("C");
