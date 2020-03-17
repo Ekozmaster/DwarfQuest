@@ -19,12 +19,20 @@ namespace DwarfQuest {
             ~Scene();
 
             DataStructures::Tree<GameObject>::Iterator NewGameObject(int childIndex = -1);
-            DataStructures::Tree<GameObject>::Iterator NewGameObject(std::string name, int childIndex = -1);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(const std::string& name, int childIndex = -1);
             DataStructures::Tree<GameObject>::Iterator NewGameObject(DataStructures::Tree<GameObject>::Iterator parent, int childIndex = -1);
-            DataStructures::Tree<GameObject>::Iterator NewGameObject(std::string name, DataStructures::Tree<GameObject>::Iterator parent, int childIndex = -1);
+            DataStructures::Tree<GameObject>::Iterator NewGameObject(const std::string& name, DataStructures::Tree<GameObject>::Iterator parent, int childIndex = -1);
 
             bool DestroyGameObject(DataStructures::Tree<GameObject>::Iterator gameObject);
             bool DestroyGameObject(GameObject& gameObject);
+
+        private:
+            DataStructures::Tree<GameObject>::Iterator FindRecursive(const std::string& name, DataStructures::Tree<GameObject>::Iterator current);
+            DataStructures::Tree<GameObject>::Iterator FindRecursive(const GameObject& gameObject, DataStructures::Tree<GameObject>::Iterator current);
+
+        public:
+            DataStructures::Tree<GameObject>::Iterator Find(const std::string& name);
+            DataStructures::Tree<GameObject>::Iterator Find(const GameObject& gameObject);
 
             DataStructures::Tree<GameObject>::Iterator Begin();
             DataStructures::Tree<GameObject>::Iterator End();

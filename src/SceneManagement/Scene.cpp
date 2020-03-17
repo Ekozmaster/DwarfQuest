@@ -16,7 +16,7 @@ namespace DwarfQuest {
             return m_gameObjects.Push(GameObject());
         }
 
-        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(std::string name, int childIndex) {
+        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(const std::string& name, int childIndex) {
             if (childIndex > -1) return m_gameObjects.Push(GameObject(name), childIndex);
             return m_gameObjects.Push(GameObject(name));
         }
@@ -26,7 +26,7 @@ namespace DwarfQuest {
             return m_gameObjects.Push(GameObject(), parent);
         }
 
-        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(std::string name, DataStructures::Tree<GameObject>::Iterator parent, int childIndex) {
+        DataStructures::Tree<GameObject>::Iterator Scene::NewGameObject(const std::string& name, DataStructures::Tree<GameObject>::Iterator parent, int childIndex) {
             if (childIndex > -1) return m_gameObjects.Push(GameObject(name), parent, childIndex);
             return m_gameObjects.Push(GameObject(name), parent);
         }
@@ -42,6 +42,52 @@ namespace DwarfQuest {
             return false;
         }
 
+
+        // ### FIND
+        DataStructures::Tree<GameObject>::Iterator Scene::FindRecursive(const std::string& name, DataStructures::Tree<GameObject>::Iterator current) {
+            if ((*current).name == name) return current;
+
+            if (!current.IsDepthEnd()) {
+                current.StepDown();
+                for (; !current.IsBreadthEnd(); ++current) {
+                    auto find = FindRecursive(name, current);
+                    if (find != End()) return find;
+                }
+            }
+            return End();
+        }
+
+        DataStructures::Tree<GameObject>::Iterator Scene::FindRecursive(const GameObject& gameObject, DataStructures::Tree<GameObject>::Iterator current) {
+            if ((*current) == gameObject) return current;
+
+            if (!current.IsDepthEnd()) {
+                current.StepDown();
+                for (; !current.IsBreadthEnd(); ++current) {
+                    auto find = FindRecursive(gameObject, current);
+                    if (find != End()) return find;
+                }
+            }
+            return End();
+        }
+
+        DataStructures::Tree<GameObject>::Iterator Scene::Find(const std::string& name) {
+            for (auto it = Begin(); !it.IsBreadthEnd(); ++it) {
+                auto find = FindRecursive(name, it);
+                if (find != End()) return find;
+            }
+            return End();
+        }
+
+        DataStructures::Tree<GameObject>::Iterator Scene::Find(const GameObject& gameObject) {
+            for (auto it = Begin(); !it.IsBreadthEnd(); ++it) {
+                auto find = FindRecursive(gameObject, it);
+                if (find != End()) return find;
+            }
+            return End();
+        }
+
+
+        // ### BEGIN, END, BACK.
         DataStructures::Tree<GameObject>::Iterator Scene::Begin() {
             return m_gameObjects.Begin();
         }
@@ -54,6 +100,8 @@ namespace DwarfQuest {
             return m_gameObjects.Back();
         }
 
+
+        // ### DESTRUCTION.
         void Scene::DestroyAllGameObjects() {
             m_gameObjects.Clear();
         }
