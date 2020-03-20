@@ -203,9 +203,9 @@ namespace DwarfQuest {
                 Iterator result = position;
                 Node* node = *(position.m_nodeIt);
                 if (node->parent) result.StepUp();
-                else result = End();
                 
                 position.m_nodeSiblingsVector->erase(position.m_nodeIt);
+                if (!node->parent) result = End();
                 delete node;
 
                 return result;

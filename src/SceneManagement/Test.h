@@ -339,8 +339,6 @@ void Test_Scene_Find_By_Name_Last_Child() {
 
 // Scene.DestroyGameObject(Tree::Iterator gameObject);
 void Test_Scene_DestroyGameObject_By_Iterator_Beginning() {
-    // TODO: Implement more destruction tests.
-    // TODO: Implement intensive scene graph manipulation and integrity tests.
     unittest_scene->NewGameObject("A");
     unittest_scene->NewGameObject("B");
     unittest_scene->NewGameObject("C");
@@ -430,7 +428,7 @@ void Test_Scene_DestroyGameObject_By_Iterator_Children_Middle() {
 }
 
 void Test_Scene_DestroyGameObject_By_Iterator_Children_End() {
-unittest_scene->NewGameObject("A");
+    unittest_scene->NewGameObject("A");
     unittest_scene->NewGameObject("B");
     unittest_scene->NewGameObject("C");
     auto parent = unittest_scene->Back();
@@ -480,6 +478,7 @@ void Setup_Scene_Tests() {
     REGISTER_TEST_UNIT(Test_Scene_DestroyGameObject_By_Iterator_Children_Beginning);
     REGISTER_TEST_UNIT(Test_Scene_DestroyGameObject_By_Iterator_Children_Middle);
     REGISTER_TEST_UNIT(Test_Scene_DestroyGameObject_By_Iterator_Children_End);
+    // TODO: Implement intensive scene graph manipulation and integrity tests.
 }
 
 #endif
