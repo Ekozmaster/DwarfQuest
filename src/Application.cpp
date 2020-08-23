@@ -10,7 +10,7 @@
 #include <src/Graphics/OpenGL/Graphics.h>
 #include <src/Graphics/OpenGL/ShadersDefinitions.h>
 #include <src/ResourceManagement/ResourceManager.h>
-#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/TestBehaviour.h>
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/Renderer.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -34,10 +34,10 @@ namespace DwarfQuest {
                 camera.direction = camRotation * glm::vec3(0.0f, 0.0f, 1.0f);
             }
 
-            if (Input::GetKeyPressed("W")) camera.position += camera.direction * 0.01666f;
-            if (Input::GetKeyPressed("S")) camera.position += -camera.direction * 0.01666f;
-            if (Input::GetKeyPressed("A")) camera.position += Camera::Right(camera) * -0.01666f;
-            if (Input::GetKeyPressed("D")) camera.position += Camera::Right(camera) * 0.01666f;
+            if (Input::GetKeyPressed("W")) camera.position += camera.direction * 0.03f;
+            if (Input::GetKeyPressed("S")) camera.position += -camera.direction * 0.03f;
+            if (Input::GetKeyPressed("A")) camera.position += Camera::Right(camera) * -0.03f;
+            if (Input::GetKeyPressed("D")) camera.position += Camera::Right(camera) * 0.03f;
 
             if (Input::GetKeyDown("P")) running = false;
             if (Input::GetKeyDown("E")) Input::IsCursorLocked() ? Input::UnlockCursor() : Input::LockCursor();
@@ -80,8 +80,21 @@ namespace DwarfQuest {
             Logger::Info("Loading mock scene");
             scene = new Scene();
             scene->Init();
-            auto gmIt = scene->NewGameObject("Test GameObject");
-            (*gmIt).AddComponent<DwarfQuest::GameComponents::TestBehaviour>();
+
+            // Test Scene
+            // Temple
+            auto gmIt = scene->NewGameObject("Temple");
+            GameComponents::Renderer* renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
+            renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneTemple.obj");
+            renderer->shader = Core::ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/TestUnlitShader.glsl");
+            renderer->texture = Core::ResourceManager::GetOrLoadTextureAsset("Assets/Textures/TestSceneTempleBake.jpg");
+
+            // Ground
+            gmIt = scene->NewGameObject("Ground");
+            renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
+            renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneGround.obj");
+            renderer->shader = Core::ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/TestUnlitShader.glsl");
+            renderer->texture = Core::ResourceManager::GetOrLoadTextureAsset("Assets/Textures/TestSceneGroundBake.jpg");
 
             Logger::Info("Mock scene loaded");
 

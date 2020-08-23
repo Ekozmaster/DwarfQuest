@@ -45,6 +45,7 @@ namespace DwarfQuest {
                 if (component->enabled) {
                     if (!component->IsInitialized()) {
                         component->Init();
+                        component->MarkInitialized();
                     }
                 }
             }
@@ -58,6 +59,7 @@ namespace DwarfQuest {
                 if (component->enabled) {
                     if (!component->IsInitialized()) {
                         component->Init();
+                        component->MarkInitialized();
                     }
                     component->Update();
                 }
@@ -71,6 +73,7 @@ namespace DwarfQuest {
                 if (component->enabled) {
                     if (!component->IsInitialized()) {
                         component->Init();
+                        component->MarkInitialized();
                     }
                     component->Render();
                 }

@@ -13,10 +13,11 @@ namespace DwarfQuest {
             return m_initialized;
         }
 
-        void Behaviour::Init() {
+        void Behaviour::MarkInitialized() {
             m_initialized = true;
         }
 
+        void Behaviour::Init() {}
         void Behaviour::Update() {}
         void Behaviour::Destroy() {}
         void Behaviour::Render() {}

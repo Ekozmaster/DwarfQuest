@@ -12,6 +12,7 @@ namespace DwarfQuest {
 
             Behaviour();
             bool IsInitialized();
+            void MarkInitialized();
 
             virtual void Init();
             virtual void Update();
