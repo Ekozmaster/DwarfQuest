@@ -10,6 +10,7 @@
 #include <src/Graphics/OpenGL/Graphics.h>
 #include <src/Graphics/OpenGL/ShadersDefinitions.h>
 #include <src/ResourceManagement/ResourceManager.h>
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/TestBehaviour.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -41,7 +42,7 @@ namespace DwarfQuest {
             if (Input::GetKeyDown("P")) running = false;
             if (Input::GetKeyDown("E")) Input::IsCursorLocked() ? Input::UnlockCursor() : Input::LockCursor();
 
-            gameObject->Update();
+            scene->Update();
         }
 
         void Application::FrameFinishStage() {
@@ -50,20 +51,8 @@ namespace DwarfQuest {
 
         void Application::FrameRenderStage() {
             Graphics::ClearScreen();
-
-            // Setting up shader.
-            Graphics::SetShader(shader);
-            glm::mat4 persp = Camera::CameraPerspectiveMatrix(camera);
-            glm::mat4 look = Camera::CameraLookMatrix(camera);
-            glm::mat4 model = gameObject->transform.GetTRSMatrix();
-            Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(model));
-            Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
-            Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
-
-            // Rendering.
-            Graphics::SetTexture(texture, 0);
-            Graphics::SetMesh(mesh);
-            Graphics::RenderMesh();
+            Graphics::SetCurrentCamera(&camera);
+            scene->Render();
             window->SwapBuffers();
         }
 
@@ -89,13 +78,14 @@ namespace DwarfQuest {
 
             // <TESTING>
             Logger::Info("Loading mock scene");
-            mesh = ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestCrateModel.obj");
-            texture = ResourceManager::GetOrLoadTextureAsset("Assets/Textures/TestCrateAOBake.jpg");
-            shader = ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/testShader.glsl");
+            scene = new Scene();
+            scene->Init();
+            auto gmIt = scene->NewGameObject("Test GameObject");
+            (*gmIt).AddComponent<DwarfQuest::GameComponents::TestBehaviour>();
 
-            gameObject = new GameObject();
+            Logger::Info("Mock scene loaded");
 
-            gameObject->Init();
+            camera = Camera::InitADefaultCamera();
             // </TESTING>
 
 
@@ -110,8 +100,6 @@ namespace DwarfQuest {
             running = true;
             float mouseX = 0;
             float mouseY = 0;
-
-            camera = Camera::InitADefaultCamera();
 
             while (running) {
                 auto frameStartTime = std::chrono::high_resolution_clock::now();
@@ -132,7 +120,7 @@ namespace DwarfQuest {
 
         void Application::Destroy() {
             ResourceManager::DestroyAssets();
-            delete gameObject;
+            delete scene;
             if (window) {
                 window->Close();
                 delete window;

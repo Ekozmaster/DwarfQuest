@@ -14,9 +14,9 @@ namespace DwarfQuest {
         private:
             std::vector<Behaviour*> m_components;
             bool m_destroyed;
-            bool m_initialized;
 
         public:
+            bool initialized;
             std::string name;
             Transform transform;
             bool enabled;
@@ -29,6 +29,7 @@ namespace DwarfQuest {
 
             void Init();
             void Update();
+            void Render();
             void Destroy();
 
             bool operator==(const GameObject& rhs) const {
@@ -43,6 +44,7 @@ namespace DwarfQuest {
             template<class T>
             T* AddComponent() {
                 T* component = new T();
+                component->gameObject = this;
                 m_components.push_back(component);
                 return component;
             }

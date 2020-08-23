@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Texture.h"
+#include <src/Graphics/OpenGL/Camera.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -19,6 +20,7 @@ namespace DwarfQuest {
             static SDL_GLContext m_gContext;
             static Texture** m_activeTextures;
             static GLint m_maxTexturesSlots;
+            static Camera::Camera* m_currentCamera;
 
         public:
             static bool Init(SDL_Window* attachedWindow);
@@ -31,6 +33,7 @@ namespace DwarfQuest {
             static void RenderMesh();
             static void SetTexture(Texture* texture, unsigned int slot);
             static void ClearScreen();
+            static void SetCurrentCamera(Camera::Camera* camera);
         };
     }
 }

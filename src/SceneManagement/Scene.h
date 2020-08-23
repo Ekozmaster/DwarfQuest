@@ -38,6 +38,9 @@ namespace DwarfQuest {
             DataStructures::Tree<GameObject>::Iterator End();
             DataStructures::Tree<GameObject>::Iterator Back();
 
+            void Init();
+            void Update();
+            void Render();
             void DestroyAllGameObjects();
             void Destroy();
         };

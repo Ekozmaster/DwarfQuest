@@ -6,14 +6,11 @@ namespace DwarfQuest {
         Behaviour::Behaviour() {
             enabled = true;
             m_initialized = false;
+            gameObject = nullptr;
         }
 
         bool Behaviour::IsInitialized() {
             return m_initialized;
-        }
-
-        void Behaviour::MarkInitilized() {
-            m_initialized = true;
         }
 
         void Behaviour::Init() {
@@ -22,5 +19,6 @@ namespace DwarfQuest {
 
         void Behaviour::Update() {}
         void Behaviour::Destroy() {}
+        void Behaviour::Render() {}
     }
 }

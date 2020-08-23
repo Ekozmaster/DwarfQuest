@@ -100,6 +100,31 @@ namespace DwarfQuest {
         }
 
 
+        // ### LIFECYCLE METHODS
+        void Scene::Init() {
+            for (auto it = Begin(); !it.IsBreadthEnd(); ++it) {
+                GameObject& gm = *it;
+                if (!gm.initialized) gm.Init();
+            }
+        }
+
+        void Scene::Update() {
+            for (auto it = Begin(); !it.IsBreadthEnd(); ++it) {
+                GameObject& gm = *it;
+                if (!gm.initialized) gm.Init();
+                gm.Update();
+            }
+        }
+
+        void Scene::Render() {
+            for (auto it = Begin(); !it.IsBreadthEnd(); ++it) {
+                GameObject& gm = *it;
+                if (!gm.initialized) gm.Init();
+                gm.Render();
+            }
+        }
+
+
         // ### DESTRUCTION.
         void Scene::DestroyAllGameObjects() {
             m_gameObjects.Clear();

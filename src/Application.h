@@ -1,10 +1,8 @@
 #pragma once
 
 #include <src/Window.h>
-#include <src/Graphics/OpenGL/Mesh.h>
-#include <src/Graphics/OpenGL/Shader.h>
-#include <src/Graphics/OpenGL/Texture.h>
-#include <src/EntitiesBehaviourModel/GameObject.h>
+#include <src/SceneManagement/Scene.h>
+#include <src/Graphics/OpenGL/Camera.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -15,11 +13,7 @@ namespace DwarfQuest {
             SDL_Event event;
             bool running = false;
 
-            Mesh* mesh;
-            Texture* texture;
-            Shader* shader;
-
-            GameObject* gameObject;
+            Scene* scene;
 
             void FrameSetupStage();
             void FrameMainStage();

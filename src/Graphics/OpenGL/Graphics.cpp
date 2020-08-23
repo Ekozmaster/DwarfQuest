@@ -7,6 +7,7 @@
 #include "../../Utils/Logger.h"
 #include "ShadersDefinitions.h"
 #include "Utils.h"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace DwarfQuest {
     namespace Core {
@@ -59,8 +60,16 @@ namespace DwarfQuest {
         }
 
         void Graphics::SetShader(Shader* shader) {
+            if (m_currentCamera == nullptr) {
+                Logger::Error("Graphics.SetShader - Trying to set shader without a active camera");
+                return;
+            }
             m_currentShader = shader;
             m_currentShader->Use();
+            glm::mat4 persp = Camera::CameraPerspectiveMatrix(*m_currentCamera);
+            glm::mat4 look = Camera::CameraLookMatrix(*m_currentCamera);
+            Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
+            Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
         }
 
         void Graphics::SetShaderMatrix(const char* matrixName, const GLfloat* values) {
@@ -102,12 +111,17 @@ namespace DwarfQuest {
             GLTrackCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
         }
 
+        void Graphics::SetCurrentCamera(Camera::Camera* camera) {
+            m_currentCamera = camera;
+        }
+
         SDL_Window* Graphics::m_window = nullptr;
         SDL_GLContext Graphics::m_gContext = nullptr;
         Shader* Graphics::m_currentShader = nullptr;
         Mesh* Graphics::m_currentMesh = nullptr;
         Texture** Graphics::m_activeTextures = nullptr;
         GLint Graphics::m_maxTexturesSlots = 0;
+        Camera::Camera* Graphics::m_currentCamera = nullptr;
 
     }
 }
