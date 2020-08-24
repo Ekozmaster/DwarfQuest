@@ -5,6 +5,7 @@
 #include <src/Graphics/OpenGL/Shader.h>
 #include <src/Graphics/OpenGL/Texture.h>
 #include <src/Graphics/OpenGL/Camera.h>
+#include <src/Graphics/OpenGL/Material.h>
 
 namespace DwarfQuest {
     namespace GameComponents {
@@ -13,6 +14,7 @@ namespace DwarfQuest {
         private:
             char name = 'A';
         public:
+            Core::Material* material;
             Core::Mesh* mesh;
             Core::Shader* shader;
             Core::Texture* texture;
