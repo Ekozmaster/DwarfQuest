@@ -1,3 +1,4 @@
+#include <src/Graphics/OpenGL/Graphics.h>
 #include <src/Graphics/OpenGL/Material.h>
 
 namespace DwarfQuest {
@@ -8,5 +9,12 @@ namespace DwarfQuest {
         }
 
         Material::~Material() {}
+
+        int Material::Use() {
+            Graphics::SetShader(m_shader);
+            // Graphics::SetTexture(...);
+            return 0;
+        }
     }
+
 }

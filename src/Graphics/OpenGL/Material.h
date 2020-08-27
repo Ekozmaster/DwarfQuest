@@ -4,28 +4,8 @@
 
 namespace DwarfQuest {
     namespace Core {
-        // ### Scalars
-        // bool
-        // int
-        // uint
-        // float
-        // double
-
-        // ### Vectors
-        // bvecn
-        // ivecn
-        // uvecn
-        // vecn
-        // dvecn
-
-        // ### Matrices
-        // matnxm
-        // matn
-        // dmatnxm
-        // dmatn
-
-        // ### Opaque
-        // sampler2D
+        // Table with data types:
+        // https://www.khronos.org/opengl/wiki/GLAPI/glGetActiveUniforms
 
         class Material {
             Shader* m_shader;
