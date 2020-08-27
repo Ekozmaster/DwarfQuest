@@ -28,9 +28,15 @@ namespace DwarfQuest {
         // sampler2D
 
         class Material {
-            Shader* shader;
+            Shader* m_shader;
 
         public:
+            std::vector<ShaderAttribute> attributes;
+            std::vector<ShaderUniform> uniforms;
+
+            Material(Shader* shader);
+            ~Material();
+
             // Don't use these methods directly unless you know exactly what you're doing.
             int Use();
         };

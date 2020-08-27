@@ -99,6 +99,8 @@ namespace DwarfQuest {
             Logger::Info("Mock scene loaded");
 
             camera = Camera::InitADefaultCamera();
+
+            Material material = Material(renderer->shader);
             // </TESTING>
 
 
