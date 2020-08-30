@@ -78,8 +78,7 @@ namespace DwarfQuest {
                     m_shader->Set4x4MatrixUniform(it->name.c_str(), (GLfloat*)(it->dataLocation));
                     break;
                 case GL_SAMPLER_2D:
-                    Texture* texture = (Texture*)(it->dataLocation);
-                    Graphics::SetTexture(texture, textureSlot);
+                    Graphics::SetTexture(((Texture**)(it->dataLocation))[0], textureSlot);
                     m_shader->SetIntUniform(it->name.c_str(), textureSlot);
                     textureSlot++;
                     break;

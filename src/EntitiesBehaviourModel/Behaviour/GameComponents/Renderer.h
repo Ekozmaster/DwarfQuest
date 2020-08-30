@@ -16,8 +16,6 @@ namespace DwarfQuest {
         public:
             Core::Material* material;
             Core::Mesh* mesh;
-            Core::Shader* shader;
-            Core::Texture* texture;
 
             void Init() override;
             void Update() override;
