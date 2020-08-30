@@ -18,12 +18,11 @@ namespace DwarfQuest {
         void Renderer::Update() {}
 
         void Renderer::Render() {
-            Core::Graphics::SetShader(shader);
+            material->Use();
             glm::mat4 model = ((Core::GameObject*)gameObject)->transform.GetTRSMatrix();
             Core::Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(model));
 
             // Rendering.
-            Core::Graphics::SetTexture(texture, 0);
             Core::Graphics::SetMesh(mesh);
             Core::Graphics::RenderMesh();
         }

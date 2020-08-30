@@ -3,6 +3,8 @@
 #include<Windows.h>
 #endif
 #include<SDL2/SDL.h>
+#include<vector>
+#include<string>
 
 #include "Mesh.h"
 #include "Shader.h"
@@ -23,6 +25,8 @@ namespace DwarfQuest {
             static Camera::Camera* m_currentCamera;
 
         public:
+            static std::vector<std::string> graphicsUniformsNames;
+
             static bool Init(SDL_Window* attachedWindow);
             static void Destroy();
 

@@ -45,6 +45,13 @@ namespace DwarfQuest {
             GLTrackCall(glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &m_maxTexturesSlots));
             m_activeTextures = new Texture * [m_maxTexturesSlots];
             for (unsigned int i = 0; i < m_maxTexturesSlots; i++) m_activeTextures[i] = NULL;
+
+            // MISC
+            // Shader uniforms that Graphics only is responsible for.
+            graphicsUniformsNames.push_back(SHADERS_PERSPECTIVE_MATRIX);
+            graphicsUniformsNames.push_back(SHADERS_VIEW_MATRIX);
+            graphicsUniformsNames.push_back(SHADERS_MODEL_MATRIX);
+
             return true;
         }
 
@@ -77,7 +84,7 @@ namespace DwarfQuest {
                 Logger::Error("Graphics.SetShaderMatrices - Trying to bind matrix with no shader attached.");
                 return;
             }
-            m_currentShader->Set4x4Matrix(matrixName, values);
+            m_currentShader->Set4x4MatrixUniform(matrixName, values);
         }
 
         void Graphics::SetMesh(Mesh* mesh) {
@@ -122,6 +129,7 @@ namespace DwarfQuest {
         Texture** Graphics::m_activeTextures = nullptr;
         GLint Graphics::m_maxTexturesSlots = 0;
         Camera::Camera* Graphics::m_currentCamera = nullptr;
+        std::vector<std::string> Graphics::graphicsUniformsNames = std::vector<std::string>();
 
     }
 }
