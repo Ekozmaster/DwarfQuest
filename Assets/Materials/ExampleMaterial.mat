@@ -1,11 +1,4 @@
-### SHADER
 Assets/Shaders/TestUnlitShader.glsl
 
-### ATTRIBUTES
-attrib1 int 10
-attrib2 float 1.0
-attrib3 vec3 1.0 2.0 3.0
-
-### UNIFORMS
-albedo texture Assets/Textures/TestCrateAOBake.jpg
-some_color vec4 0.0 1.0 1.0 1.0
+texture2D albedo Assets/Textures/TestCrateAOBake.jpg
+vec4 some_color 0.0 1.0 1.0 1.0

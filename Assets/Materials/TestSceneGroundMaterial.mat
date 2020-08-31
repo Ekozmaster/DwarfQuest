@@ -1,0 +1,3 @@
+Assets/Shaders/TestUnlitShader.glsl
+
+texture2D uTexture0 Assets/Textures/TestSceneGroundBake.jpg

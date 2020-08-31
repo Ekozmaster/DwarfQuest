@@ -2,6 +2,7 @@
 #include <src/ResourceManagement/ImageLoader.h>
 #include <src/ResourceManagement/MeshLoader.h>
 #include <src/ResourceManagement/ShaderLoader.h>
+#include <src/ResourceManagement/MaterialLoader.h>
 #include <src/Utils/Logger.h>
 
 namespace DwarfQuest {
@@ -29,23 +30,33 @@ namespace DwarfQuest {
             return m_shadersAssetMap.find(path) != m_shadersAssetMap.end();
         }
 
+        bool ResourceManager::IsMaterialAssetLoaded(const char* path) {
+            return m_materialsAssetMap.find(path) != m_materialsAssetMap.end();
+        }
+
         // Get
         Texture* ResourceManager::GetOrLoadTextureAsset(const char* path) {
-            auto textureIt = m_texturesAssetMap.find(path);
-            if (textureIt == m_texturesAssetMap.end()) return LoadTextureAsset(path);
-            return textureIt->second;
+            auto it = m_texturesAssetMap.find(path);
+            if (it == m_texturesAssetMap.end()) return LoadTextureAsset(path);
+            return it->second;
         }
 
         Mesh* ResourceManager::GetOrLoadMeshAsset(const char* path) {
-            auto meshIt = m_meshesAssetMap.find(path);
-            if (meshIt == m_meshesAssetMap.end()) return LoadMeshAsset(path);
-            return meshIt->second;
+            auto it = m_meshesAssetMap.find(path);
+            if (it == m_meshesAssetMap.end()) return LoadMeshAsset(path);
+            return it->second;
         }
 
         Shader* ResourceManager::GetOrLoadShaderAsset(const char* path) {
-            auto shaderIt = m_shadersAssetMap.find(path);
-            if (shaderIt == m_shadersAssetMap.end()) return LoadShaderAsset(path);
-            return shaderIt->second;
+            auto it = m_shadersAssetMap.find(path);
+            if (it == m_shadersAssetMap.end()) return LoadShaderAsset(path);
+            return it->second;
+        }
+
+        Material* ResourceManager::GetOrLoadMaterialAsset(const char* path) {
+            auto it = m_materialsAssetMap.find(path);
+            if (it == m_materialsAssetMap.end()) return LoadMaterialAsset(path);
+            return it->second;
         }
 
         // Load
@@ -100,34 +111,60 @@ namespace DwarfQuest {
             return NULL;
         }
 
+        Material* ResourceManager::LoadMaterialAsset(const char* path, bool reload) {
+            if (reload) UnloadShaderAsset(path);
+            else {
+                auto it = m_materialsAssetMap.find(path);
+                if (it != m_materialsAssetMap.end()) return it->second;
+            }
+
+            Material* material = LoadMaterial(path);
+            if (material) {
+                m_materialsAssetMap[path] = material;
+                return material;
+            } else {
+                Logger::Error("ResourceManager.LoadMaterialAsset - Could not load Material asset: '" + std::string(path) + "'");
+            }
+            return NULL;
+        }
+
         // Unload
         void ResourceManager::UnloadTextureAsset(const char* path) {
-            auto textureIt = m_texturesAssetMap.find(path);
-            if (textureIt == m_texturesAssetMap.end()) return;
+            auto it = m_texturesAssetMap.find(path);
+            if (it == m_texturesAssetMap.end()) return;
 
-            delete textureIt->second;
-            m_texturesAssetMap[path] = NULL;
+            delete it->second;
+            m_texturesAssetMap.erase(it);
         }
 
         void ResourceManager::UnloadMeshAsset(const char* path) {
-            auto meshIt = m_meshesAssetMap.find(path);
-            if (meshIt == m_meshesAssetMap.end()) return;
+            auto it = m_meshesAssetMap.find(path);
+            if (it == m_meshesAssetMap.end()) return;
 
-            delete meshIt->second;
-            m_meshesAssetMap[path] = NULL;
+            delete it->second;
+            m_meshesAssetMap.erase(it);
         }
 
         void ResourceManager::UnloadShaderAsset(const char* path) {
-            auto shaderIt = m_shadersAssetMap.find(path);
-            if (shaderIt == m_shadersAssetMap.end()) return;
+            auto it = m_shadersAssetMap.find(path);
+            if (it == m_shadersAssetMap.end()) return;
 
-            delete shaderIt->second;
-            m_shadersAssetMap[path] = NULL;
+            delete it->second;
+            m_shadersAssetMap.erase(it);
+        }
+
+        void ResourceManager::UnloadMaterialAsset(const char* path) {
+            auto it = m_materialsAssetMap.find(path);
+            if (it == m_materialsAssetMap.end()) return;
+
+            delete it->second;
+            m_materialsAssetMap.erase(it);
         }
 
         std::unordered_map<std::string, Mesh*> ResourceManager::m_meshesAssetMap = std::unordered_map<std::string, Mesh*>();
         std::unordered_map<std::string, Texture*> ResourceManager::m_texturesAssetMap = std::unordered_map<std::string, Texture*>();
         std::unordered_map<std::string, Shader*> ResourceManager::m_shadersAssetMap = std::unordered_map<std::string, Shader*>();
+        std::unordered_map<std::string, Material*> ResourceManager::m_materialsAssetMap = std::unordered_map<std::string, Material*>();
 
     }
 }

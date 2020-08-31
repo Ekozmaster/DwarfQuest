@@ -86,24 +86,13 @@ namespace DwarfQuest {
             auto gmIt = scene->NewGameObject("Temple");
             GameComponents::Renderer* renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
             renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneTemple.obj");
-
-            Shader* shader = Core::ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/TestUnlitShader.glsl");
-            renderer->material = new Material(shader);
-
-            Texture* texture = Core::ResourceManager::GetOrLoadTextureAsset("Assets/Textures/TestSceneTempleBake.jpg");
-            renderer->material->SetData("uTexture0", &texture, sizeof(void*));
-
+            renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestSceneTempleMaterial.mat");
 
             // Ground
             gmIt = scene->NewGameObject("Ground");
             renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
             renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneGround.obj");
-
-            shader = Core::ResourceManager::GetOrLoadShaderAsset("Assets/Shaders/TestUnlitShader.glsl");
-            renderer->material = new Material(shader);
-
-            texture = Core::ResourceManager::GetOrLoadTextureAsset("Assets/Textures/TestSceneGroundBake.jpg");
-            renderer->material->SetData("uTexture0", &texture, sizeof(void*));
+            renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestSceneGroundMaterial.mat");
 
             Logger::Info("Mock scene loaded");
 

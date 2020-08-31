@@ -14,8 +14,8 @@ namespace DwarfQuest {
         private:
             char name = 'A';
         public:
-            Core::Material* material;
-            Core::Mesh* mesh;
+            Core::Material* material = nullptr;
+            Core::Mesh* mesh = nullptr;
 
             void Init() override;
             void Update() override;
