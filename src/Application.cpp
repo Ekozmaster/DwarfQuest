@@ -94,6 +94,12 @@ namespace DwarfQuest {
             renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneGround.obj");
             renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestSceneGroundMaterial.mat");
 
+            gmIt = scene->NewGameObject("Crate");
+            renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
+            renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestCrateModel.obj");
+            renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestCrate.mat");
+            (*gmIt).transform.position = glm::vec3(5, 2, 5);
+
             Logger::Info("Mock scene loaded");
 
             camera = Camera::InitADefaultCamera();
