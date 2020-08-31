@@ -114,7 +114,7 @@ namespace DwarfQuest {
                 int dataSize = GetGLTypeSize(type);
                 if (dataSize == -1) {
                     std::string error = std::string("Uniform type not supported. Type code: ") + std::to_string(type);
-                    throw std::exception(error.c_str());
+                    throw std::runtime_error(error.c_str());
                 }
                 result.push_back(ShaderUniform({ type, unifName, nullptr, (size_t)dataSize }));
             }

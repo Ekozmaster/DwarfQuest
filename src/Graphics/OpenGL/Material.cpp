@@ -2,6 +2,7 @@
 
 #include<string>
 #include<vector>
+#include<algorithm>
 
 #include <src/Graphics/OpenGL/Graphics.h>
 #include <src/Graphics/OpenGL/Utils.h>

@@ -64,7 +64,7 @@ namespace DwarfQuest {
                 } else if (strcmp(lineHeader, "bool") == 0) {
                     bool value = false;
                     char value_str[5];
-                    res = fscanf(file, "%s %s", uniformName, &value_str);
+                    res = fscanf(file, "%s %s", uniformName, value_str);
                     if (strcmp(value_str, "true") == 0) value = true;
                     material->SetData(uniformName, &value, sizeof(GLboolean));
 
@@ -91,7 +91,7 @@ namespace DwarfQuest {
 
                 } else if (strcmp(lineHeader, "texture2D") == 0) {
                     char texturePath[128];
-                    res = fscanf(file, "%s %s", uniformName, &texturePath);
+                    res = fscanf(file, "%s %s", uniformName, texturePath);
                     Texture* texture = ResourceManager::GetOrLoadTextureAsset(texturePath);
                     if (texture == nullptr) {
                         delete material;
