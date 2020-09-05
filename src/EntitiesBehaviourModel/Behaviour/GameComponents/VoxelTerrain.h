@@ -19,6 +19,7 @@ namespace DwarfQuest {
 
         class Chunk {
         public:
+            bool initialized = false;
             glm::ivec2 id;
             Block* blocks = nullptr;
             Core::Mesh* mesh = nullptr;
@@ -29,13 +30,21 @@ namespace DwarfQuest {
 
         class VoxelTerrain : public DwarfQuest::Core::Behaviour {
         private:
-            int m_renderDistance = 4;
+            int m_renderDistance = 16;
             Chunk** m_chunks;
-            Core::Material* material;
+            Core::Material* m_material;
+            // x and y encodes the x and z position/id of a chunk, z encodes it's index whithin the m_chunks matrix.
+            std::vector<glm::ivec3> m_renderingSpiral;
+            glm::ivec2 m_pivotChunk = glm::ivec2(0);
 
-            void InitializeChunks();
+            void GenerateRenderingSpiral();
+            void InitializeChunk(Chunk* chunk);
+            void TriggerChunkMatrixTranslation(const glm::ivec2& delta);
 
         public:
+
+            void SetPivotChunk(const glm::ivec2& newPivot);
+
             void Init() override;
             void Update() override;
             void Render() override;
