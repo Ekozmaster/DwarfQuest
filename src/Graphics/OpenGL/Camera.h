@@ -36,7 +36,7 @@ namespace DwarfQuest {
                 camera.fov = 45.0f;
                 camera.aspectRatio = 640.0 / 480.0;
                 camera.nearPlane = 0.3;
-                camera.farPlane = 100.0;
+                camera.farPlane = 1000.0;
                 return camera;
             }
 

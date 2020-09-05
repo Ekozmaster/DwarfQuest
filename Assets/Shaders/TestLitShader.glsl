@@ -15,7 +15,7 @@ out vec2 uv;
 void main()
 {
     uv = aUV;
-    normal = vec3(modelMatrix * vec4(aNormal, 1));
+    normal = vec3(modelMatrix * vec4(aNormal, 0));
     gl_Position = perspectiveMatrix * viewMatrix * modelMatrix * vec4(aPos, 1.0);
 }
 

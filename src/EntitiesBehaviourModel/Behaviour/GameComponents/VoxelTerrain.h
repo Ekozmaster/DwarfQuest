@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <src/Graphics/OpenGL/Mesh.h>
 #include <src/Graphics/OpenGL/Material.h>
+#include <glm/glm.hpp>
 
 namespace DwarfQuest {
     namespace GameComponents {
@@ -18,18 +19,21 @@ namespace DwarfQuest {
 
         class Chunk {
         public:
+            glm::ivec2 id;
             Block* blocks = nullptr;
             Core::Mesh* mesh = nullptr;
 
-            Chunk();
+            Chunk(glm::ivec2 id);
             ~Chunk();
         } ;
 
         class VoxelTerrain : public DwarfQuest::Core::Behaviour {
         private:
-            size_t m_renderDistance = 8;
-            Chunk* m_chunks;
+            int m_renderDistance = 4;
+            Chunk** m_chunks;
             Core::Material* material;
+
+            void InitializeChunks();
 
         public:
             void Init() override;

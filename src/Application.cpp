@@ -35,10 +35,11 @@ namespace DwarfQuest {
                 camera.direction = camRotation * glm::vec3(0.0f, 0.0f, 1.0f);
             }
 
-            if (Input::GetKeyPressed("W")) camera.position += camera.direction * 0.03f;
-            if (Input::GetKeyPressed("S")) camera.position += -camera.direction * 0.03f;
-            if (Input::GetKeyPressed("A")) camera.position += Camera::Right(camera) * -0.03f;
-            if (Input::GetKeyPressed("D")) camera.position += Camera::Right(camera) * 0.03f;
+            float cameraSpeed = 0.1f;
+            if (Input::GetKeyPressed("W")) camera.position += camera.direction * cameraSpeed;
+            if (Input::GetKeyPressed("S")) camera.position += -camera.direction * cameraSpeed;
+            if (Input::GetKeyPressed("A")) camera.position += Camera::Right(camera) * -cameraSpeed;
+            if (Input::GetKeyPressed("D")) camera.position += Camera::Right(camera) * cameraSpeed;
 
             if (Input::GetKeyDown("P")) running = false;
             if (Input::GetKeyDown("E")) Input::IsCursorLocked() ? Input::UnlockCursor() : Input::LockCursor();
@@ -83,25 +84,25 @@ namespace DwarfQuest {
             scene->Init();
 
             // Test Scene
-            // Temple
-            auto gmIt = scene->NewGameObject("Temple");
-            GameComponents::Renderer* renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
-            renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneTemple.obj");
-            renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestSceneTempleMaterial.mat");
+            //// Temple
+            //auto gmIt = scene->NewGameObject("Temple");
+            //GameComponents::Renderer* renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
+            //renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneTemple.obj");
+            //renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestSceneTempleMaterial.mat");
 
-            // Ground
-            gmIt = scene->NewGameObject("Ground");
-            renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
-            renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneGround.obj");
-            renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestSceneGroundMaterial.mat");
+            //// Ground
+            //gmIt = scene->NewGameObject("Ground");
+            //renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
+            //renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestSceneGround.obj");
+            //renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestSceneGroundMaterial.mat");
 
-            gmIt = scene->NewGameObject("Crate");
-            renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
-            renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestCrateModel.obj");
-            renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestCrate.mat");
-            (*gmIt).transform.position = glm::vec3(5, 2, 5);
+            //gmIt = scene->NewGameObject("Crate");
+            //renderer = (*gmIt).AddComponent<DwarfQuest::GameComponents::Renderer>();
+            //renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestCrateModel.obj");
+            //renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestCrate.mat");
+            //(*gmIt).transform.position = glm::vec3(5, 2, 5);
 
-            gmIt = scene->NewGameObject("Voxel Terrain");
+            auto gmIt = scene->NewGameObject("Voxel Terrain");
             DwarfQuest::GameComponents::VoxelTerrain* voxelTerrain = (*gmIt).AddComponent<DwarfQuest::GameComponents::VoxelTerrain>();
 
             Logger::Info("Mock scene loaded");
