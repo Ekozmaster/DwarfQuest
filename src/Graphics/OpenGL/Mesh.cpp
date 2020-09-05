@@ -4,6 +4,9 @@
 namespace DwarfQuest {
     namespace Core {
 
+        Vertex::Vertex() : position({ 0.0 }), normal({ 0.0, 1.0, 0.0 }), uv({ 0.0, 0.0 }) {}
+        Vertex::Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 uv) : position(pos), normal(norm), uv(uv) {}
+
         Mesh::Mesh() {
             m_allocated = false;
             m_vao = m_vbo = m_ibo = 0;

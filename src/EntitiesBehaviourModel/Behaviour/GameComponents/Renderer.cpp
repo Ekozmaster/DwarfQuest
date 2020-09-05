@@ -5,7 +5,6 @@
 #include <src/EntitiesBehaviourModel/GameObject.h>
 #include <src/ResourceManagement/ResourceManager.h>
 #include <src/Graphics/OpenGL/Graphics.h>
-#include <src/Graphics/OpenGL/Camera.h>
 #include <src/Graphics/OpenGL/ShadersDefinitions.h>
 
 namespace DwarfQuest {

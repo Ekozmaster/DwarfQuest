@@ -11,6 +11,7 @@
 #include <src/Graphics/OpenGL/ShadersDefinitions.h>
 #include <src/ResourceManagement/ResourceManager.h>
 #include <src/EntitiesBehaviourModel/Behaviour/GameComponents/Renderer.h>
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/VoxelTerrain.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -99,6 +100,9 @@ namespace DwarfQuest {
             renderer->mesh = Core::ResourceManager::GetOrLoadMeshAsset("Assets/Models/TestCrateModel.obj");
             renderer->material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TestCrate.mat");
             (*gmIt).transform.position = glm::vec3(5, 2, 5);
+
+            gmIt = scene->NewGameObject("Voxel Terrain");
+            DwarfQuest::GameComponents::VoxelTerrain* voxelTerrain = (*gmIt).AddComponent<DwarfQuest::GameComponents::VoxelTerrain>();
 
             Logger::Info("Mock scene loaded");
 
