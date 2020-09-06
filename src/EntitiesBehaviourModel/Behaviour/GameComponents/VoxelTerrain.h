@@ -19,7 +19,8 @@ namespace DwarfQuest {
 
         class Chunk {
         public:
-            bool initialized = false;
+            bool blocksInitialized = false;
+            bool meshInitialized = false;
             glm::ivec2 id;
             Block* blocks = nullptr;
             Core::Mesh* mesh = nullptr;
@@ -38,7 +39,8 @@ namespace DwarfQuest {
             glm::ivec2 m_pivotChunk = glm::ivec2(0);
 
             void GenerateRenderingSpiral();
-            void InitializeChunk(Chunk* chunk);
+            void GenerateChunkBlocks(Chunk* chunk, int chunkIndex);
+            void GenerateChunkMesh(Chunk* chunk, int chunkIndex);
             void TriggerChunkMatrixTranslation(const glm::ivec2& delta);
 
         public:
