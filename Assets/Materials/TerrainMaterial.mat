@@ -1,3 +1,5 @@
-Assets/Shaders/TestLitShader.glsl
+Assets/Shaders/TerrainShader.glsl
 
-texture2D uTexture0 Assets/Textures/TestSceneGroundBake.jpg
+texture2D uTexture0 Assets/Textures/grass.jpg
+vec4 ambientLight 0.78823529411 0.8862745098 1.0 0
+float ambientLightIntensity 0.15

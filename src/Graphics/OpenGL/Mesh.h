@@ -6,16 +6,17 @@
 namespace DwarfQuest {
     namespace Core {
 
-#define FLOATS_PER_VERTEX 8
+#define FLOATS_PER_VERTEX 11
 
         class Vertex {
         public:
             glm::vec3 position;
             glm::vec3 normal;
             glm::vec2 uv;
+            glm::vec3 color;
 
             Vertex();
-            Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 uv);
+            Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 uv, glm::vec3 color);
         };
 
         class Mesh {

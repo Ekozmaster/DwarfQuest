@@ -5,7 +5,8 @@ namespace DwarfQuest {
     namespace Core {
 
         Vertex::Vertex() : position({ 0.0 }), normal({ 0.0, 1.0, 0.0 }), uv({ 0.0, 0.0 }) {}
-        Vertex::Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 uv) : position(pos), normal(norm), uv(uv) {}
+        Vertex::Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 uv, glm::vec3 color) 
+            : position(pos), normal(norm), uv(uv), color(color) {}
 
         Mesh::Mesh() {
             m_allocated = false;
@@ -38,9 +39,11 @@ namespace DwarfQuest {
             GLTrackCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, position))); // Position
             GLTrackCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, normal))); // Normal
             GLTrackCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, uv))); // UVs
+            GLTrackCall(glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, FLOATS_PER_VERTEX * sizeof(GLfloat), (void*)offsetof(Vertex, color))); // UVs
             GLTrackCall(glEnableVertexAttribArray(0));
             GLTrackCall(glEnableVertexAttribArray(1));
             GLTrackCall(glEnableVertexAttribArray(2));
+            GLTrackCall(glEnableVertexAttribArray(3));
 
             GLTrackCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
             GLTrackCall(glBindVertexArray(0));

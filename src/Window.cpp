@@ -12,6 +12,8 @@
 namespace DwarfQuest {
     namespace Core {
 
+        Window::Window(unsigned int width, unsigned int height) : m_width(width), m_height(height) {}
+
         bool Window::Init() {
             bool success = true;
 
@@ -35,7 +37,7 @@ namespace DwarfQuest {
                     Logger::Error("Window.Init: Window could not be created! SDL Error: " + std::string(SDL_GetError()));
                     success = false;
                 } else {
-                    success = Graphics::Init(m_gWindow);
+                    success = Graphics::Init(m_gWindow, m_width, m_height);
                     if (!success) {
                         Logger::Error("Window.Init: Could not initialize Graphics module");
                         SDL_DestroyWindow(m_gWindow);
@@ -61,6 +63,14 @@ namespace DwarfQuest {
             m_height = height;
             SDL_SetWindowSize(m_gWindow, m_width, m_height);
             Graphics::SetViewport(m_width, m_height);
+        }
+
+        unsigned int Window::Width() {
+            return m_width;
+        }
+
+        unsigned int Window::Height() {
+            return m_height;
         }
     }
 }

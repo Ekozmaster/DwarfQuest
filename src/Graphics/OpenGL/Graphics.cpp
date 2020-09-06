@@ -12,7 +12,7 @@
 namespace DwarfQuest {
     namespace Core {
 
-        bool Graphics::Init(SDL_Window* attachedWindow) {
+        bool Graphics::Init(SDL_Window* attachedWindow, unsigned int width, unsigned int height) {
             m_window = attachedWindow;
             bool success = true;
 
@@ -38,7 +38,7 @@ namespace DwarfQuest {
                 return false;
             }
 
-            SetViewport(640, 480);
+            SetViewport(width, height);
             GLTrackCall(glEnable(GL_DEPTH_TEST));
 
             // Initializing texture slots array.
@@ -63,7 +63,7 @@ namespace DwarfQuest {
         }
 
         void Graphics::SetViewport(int width, int height) {
-            GLTrackCall(glViewport(0, 0, 640, 480));
+            GLTrackCall(glViewport(0, 0, width, height));
         }
 
         void Graphics::SetShader(Shader* shader) {
@@ -114,7 +114,7 @@ namespace DwarfQuest {
         }
 
         void Graphics::ClearScreen() {
-            GLTrackCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+            GLTrackCall(glClearColor(201 / 255.0f, 226 / 255.0f, 255 / 255.0f, 1.0f));
             GLTrackCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
         }
 

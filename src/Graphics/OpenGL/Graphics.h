@@ -27,7 +27,7 @@ namespace DwarfQuest {
         public:
             static std::vector<std::string> graphicsUniformsNames;
 
-            static bool Init(SDL_Window* attachedWindow);
+            static bool Init(SDL_Window* attachedWindow, unsigned int width, unsigned int height);
             static void Destroy();
 
             static void SetViewport(int width, int height);

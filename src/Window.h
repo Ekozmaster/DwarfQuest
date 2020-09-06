@@ -11,10 +11,14 @@ namespace DwarfQuest {
             unsigned int m_height = 480;
 
         public:
+            Window(unsigned int width, unsigned int height);
+
             bool Init();
             void SwapBuffers();
             void Close();
             void SetSize(unsigned int width, unsigned int height);
+            unsigned int Width();
+            unsigned int Height();
         };
 
     }

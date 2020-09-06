@@ -42,6 +42,7 @@ namespace DwarfQuest {
             void GenerateChunkBlocks(Chunk* chunk, int chunkIndex);
             void GenerateChunkMesh(Chunk* chunk, int chunkIndex);
             void TriggerChunkMatrixTranslation(const glm::ivec2& delta);
+            Block* QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3 coord, int chunkIndex);
 
         public:
 

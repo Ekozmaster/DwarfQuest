@@ -66,6 +66,7 @@ namespace DwarfQuest {
                 finalMesh[i].position = vertices[verticesIndices[i] - 1];
                 finalMesh[i].normal = normals[normalsIndices[i] - 1];
                 finalMesh[i].uv = uvs[uvsIndices[i] - 1];
+                finalMesh[i].color = glm::vec3(1.0);
             }
             for (unsigned int i = 0; i < verticesIndices.size(); i++) verticesIndices[i] = i;
 

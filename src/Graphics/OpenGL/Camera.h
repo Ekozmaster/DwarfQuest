@@ -2,6 +2,7 @@
 
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
+#include<src/Window.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -27,14 +28,14 @@ namespace DwarfQuest {
                 return glm::lookAt(camera.position, camera.position + camera.direction, camera.up);
             }
 
-            inline Camera InitADefaultCamera() {
+            inline Camera InitADefaultCamera(Window* window) {
                 Camera camera;
                 camera.position = glm::vec3(-3.0, 4.0, -3.0);
                 camera.direction = glm::vec3(1.0, -1.0, 1.0);
                 camera.up = glm::vec3(0.0, 1.0, 0.0);
 
                 camera.fov = 45.0f;
-                camera.aspectRatio = 640.0 / 480.0;
+                camera.aspectRatio = window->Width() / window->Height();
                 camera.nearPlane = 0.3;
                 camera.farPlane = 1000.0;
                 return camera;

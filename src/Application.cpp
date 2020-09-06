@@ -61,7 +61,7 @@ namespace DwarfQuest {
 
         bool Application::Init() {
             Logger::SetLoggingLevel(Logger::LoggingLevelInfo);
-            window = new Window();
+            window = new Window(1024, 768);
             bool initStatus = window->Init();
             if (initStatus) {
                 // Initializing Input module with SDL's internal keys array.
@@ -90,7 +90,7 @@ namespace DwarfQuest {
 
             Logger::Info("Mock scene loaded");
 
-            camera = Camera::InitADefaultCamera();
+            camera = Camera::InitADefaultCamera(window);
             camera.position = glm::vec3(0, 35, 0);
 
             
