@@ -34,7 +34,7 @@ namespace DwarfQuest {
                 camera.direction = glm::vec3(1.0, -1.0, 1.0);
                 camera.up = glm::vec3(0.0, 1.0, 0.0);
 
-                camera.fov = 45.0f;
+                camera.fov = 65.0f;
                 camera.aspectRatio = window->Width() / window->Height();
                 camera.nearPlane = 0.3;
                 camera.farPlane = 1000.0;
