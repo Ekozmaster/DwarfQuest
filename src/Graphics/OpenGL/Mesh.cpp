@@ -73,6 +73,7 @@ namespace DwarfQuest {
         int Mesh::Use() {
             if (!m_allocated) return 1;
             GLTrackCall(glBindVertexArray(m_vao));
+            return 0;
         }
 
         void Mesh::Draw() {
