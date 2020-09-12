@@ -5,29 +5,10 @@
 #include <src/Graphics/OpenGL/Mesh.h>
 #include <src/Graphics/OpenGL/Material.h>
 #include <glm/glm.hpp>
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/VoxelMeshGenerator.h>
 
 namespace DwarfQuest {
     namespace GameComponents {
-
-
-#define CHUNK_WIDTH 16
-#define CHUNK_HEIGHT 256
-
-        typedef struct {
-            uint8_t id;
-        } Block;
-
-        class Chunk {
-        public:
-            bool blocksInitialized = false;
-            bool meshInitialized = false;
-            glm::ivec2 id;
-            Block* blocks = nullptr;
-            Core::Mesh* mesh = nullptr;
-
-            Chunk(glm::ivec2 id);
-            ~Chunk();
-        } ;
 
         class VoxelTerrain : public DwarfQuest::Core::Behaviour {
         private:
@@ -37,6 +18,7 @@ namespace DwarfQuest {
             // x and y encodes the x and z position/id of a chunk, z encodes it's index whithin the m_chunks matrix.
             std::vector<glm::ivec3> m_renderingSpiral;
             glm::ivec2 m_pivotChunk = glm::ivec2(0);
+            std::vector<ChunkMeshGeneratorThread> m_chunkMeshThreads;
 
             void GenerateRenderingSpiral();
             void GenerateChunkBlocks(Chunk* chunk, int chunkIndex);

@@ -35,6 +35,7 @@ add_custom_command(
 
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package (Threads)
 
 string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
 target_link_libraries(DwarfQuest
@@ -42,6 +43,7 @@ target_link_libraries(DwarfQuest
         ${SDL2_LIBRARIES}
         ${OPENGL_LIBRARIES}
         ${CMAKE_DL_LIBS}
+        ${CMAKE_THREAD_LIBS_INIT}
 )
 
 target_include_directories(DwarfQuest PRIVATE libs/glm)

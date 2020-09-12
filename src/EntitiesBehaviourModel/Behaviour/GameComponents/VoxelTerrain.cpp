@@ -16,8 +16,8 @@ namespace DwarfQuest {
 #define INDEX_TO_BLOCK_COORD(index) glm::ivec3(index % CHUNK_WIDTH, index / (CHUNK_WIDTH * CHUNK_WIDTH), (index % CHUNK_HEIGHT) / CHUNK_WIDTH)
 #define BLOCK_INDEX_UP(index) (index) + CHUNK_WIDTH * CHUNK_WIDTH
 #define BLOCK_INDEX_DOWN(index) (index) - CHUNK_WIDTH * CHUNK_WIDTH
-#define BLOCK_INDEX_WEST(index) (index) + 1
-#define BLOCK_INDEX_EAST(index) (index) - 1
+#define BLOCK_INDEX_WEST(index) (index) - 1
+#define BLOCK_INDEX_EAST(index) (index) + 1
 #define BLOCK_INDEX_NORTH(index) (index) + CHUNK_WIDTH
 #define BLOCK_INDEX_SOUTH(index) (index) - CHUNK_WIDTH
 
@@ -30,12 +30,12 @@ namespace DwarfQuest {
 
 #define CHUNK_INDEX_NORTH(index) (index) + 1
 #define CHUNK_INDEX_SOUTH(index) (index) - 1
-#define CHUNK_INDEX_WEST(index) (index) + m_renderDistance * 2
-#define CHUNK_INDEX_EAST(index) (index) - m_renderDistance * 2
-#define CHUNK_INDEX_NORTH_WEST(index) (index) + 1 + m_renderDistance * 2
-#define CHUNK_INDEX_NORTH_EAST(index) (index) + 1 - m_renderDistance * 2
-#define CHUNK_INDEX_SOUTH_WEST(index) (index) - 1 + m_renderDistance * 2
-#define CHUNK_INDEX_SOUTH_EAST(index) (index) - 1 - m_renderDistance * 2
+#define CHUNK_INDEX_WEST(index) (index) - m_renderDistance * 2
+#define CHUNK_INDEX_EAST(index) (index) + m_renderDistance * 2
+#define CHUNK_INDEX_NORTH_WEST(index) (index) + 1 - m_renderDistance * 2
+#define CHUNK_INDEX_NORTH_EAST(index) (index) + 1 + m_renderDistance * 2
+#define CHUNK_INDEX_SOUTH_WEST(index) (index) - 1 - m_renderDistance * 2
+#define CHUNK_INDEX_SOUTH_EAST(index) (index) - 1 + m_renderDistance * 2
 
         Block* VoxelTerrain::QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3 coord, int chunkIndex) {
             // This method receives a block's position in chunk's local coordinates, which might be 
@@ -46,10 +46,10 @@ namespace DwarfQuest {
             // result in out of bounds again, thus, unpredictable results.
             if (coord.y < 0 || coord.y >= CHUNK_HEIGHT) return nullptr;
             if (coord.x < 0) {
-                chunkIndex = CHUNK_INDEX_EAST(chunkIndex);
+                chunkIndex = CHUNK_INDEX_WEST(chunkIndex);
                 coord.x = CHUNK_WIDTH + coord.x;
             } else if (coord.x >= CHUNK_WIDTH) {
-                chunkIndex = CHUNK_INDEX_WEST(chunkIndex);
+                chunkIndex = CHUNK_INDEX_EAST(chunkIndex);
                 coord.x = coord.x - CHUNK_WIDTH;
             }
             if (coord.z < 0) {
@@ -124,63 +124,8 @@ namespace DwarfQuest {
                 glm::vec3 pos(x, y, z); // For floats usage.
                 if (chunk->blocks[index].id) {
                     // EAST
-                    if ((x != 0 && chunk->blocks[BLOCK_INDEX_EAST(index)].id == 0) ||
-                        (x == 0 && m_chunks[CHUNK_INDEX_EAST(chunkIndex)]->blocks[BLOCK_COORD_TO_INDEX(glm::ivec3(CHUNK_WIDTH - 1, y, z))].id == 0)) { 
-                        glm::vec3 faceNormal(-1.0, 0.0, 0.0);
-
-                        neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z + 1), chunkIndex);
-                        neighBlocks[1] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z), chunkIndex);
-                        neighBlocks[2] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z - 1), chunkIndex);
-                        neighBlocks[3] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y, z + 1), chunkIndex);
-                        neighBlocks[4] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y, z), chunkIndex);
-                        neighBlocks[5] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y, z - 1), chunkIndex);
-                        neighBlocks[6] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y - 1, z + 1), chunkIndex);
-                        neighBlocks[7] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y - 1, z), chunkIndex);
-                        neighBlocks[8] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y - 1, z - 1), chunkIndex);
-                        
-                        // Bottom Right Vertex.
-                        int vertexAOLight = 3;
-                        if (neighBlocks[5] && neighBlocks[5]->id != 0 && neighBlocks[7] && neighBlocks[7]->id != 0) vertexAOLight = 0;
-                        else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
-                            (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
-                            (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
-                        
-                        // Top Right Vertex.
-                        vertexAOLight = 3;
-                        if (neighBlocks[5] && neighBlocks[5]->id != 0 && neighBlocks[1] && neighBlocks[1]->id != 0) vertexAOLight = 0;
-                        else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
-                            (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
-                            (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
-
-                        // Top Left Vertex.
-                        vertexAOLight = 3;
-                        if (neighBlocks[1] && neighBlocks[1]->id != 0 && neighBlocks[3] && neighBlocks[3]->id != 0) vertexAOLight = 0;
-                        else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
-                            (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
-                            (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
-
-                        // Bottom Left Vertex.
-                        vertexAOLight = 3;
-                        if (neighBlocks[7] && neighBlocks[7]->id != 0 && neighBlocks[3] && neighBlocks[3]->id != 0) vertexAOLight = 0;
-                        else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
-                            (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
-                            (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
-                        
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 1);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex + 3);
-                        trisIndex += 4;
-                    }
-                    // WEST
-                    if ((x != CHUNK_WIDTH - 1 && chunk->blocks[BLOCK_INDEX_WEST(index)].id == 0) ||
-                        (x == CHUNK_WIDTH - 1 && m_chunks[CHUNK_INDEX_WEST(chunkIndex)]->blocks[BLOCK_COORD_TO_INDEX(glm::ivec3(0, y, z))].id == 0)) {
+                    if ((x != CHUNK_WIDTH - 1 && chunk->blocks[BLOCK_INDEX_EAST(index)].id == 0) ||
+                        (x == CHUNK_WIDTH - 1 && m_chunks[CHUNK_INDEX_EAST(chunkIndex)]->blocks[BLOCK_COORD_TO_INDEX(glm::ivec3(0, y, z))].id == 0)) {
                         glm::vec3 faceNormal(1.0, 0.0, 0.0);
 
                         neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x + 1, y + 1, z - 1), chunkIndex);
@@ -192,7 +137,7 @@ namespace DwarfQuest {
                         neighBlocks[6] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x + 1, y - 1, z - 1), chunkIndex);
                         neighBlocks[7] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x + 1, y - 1, z), chunkIndex);
                         neighBlocks[8] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x + 1, y - 1, z + 1), chunkIndex);
-
+                        
                         // Bottom Right Vertex.
                         int vertexAOLight = 3;
                         if (neighBlocks[5] && neighBlocks[5]->id != 0 && neighBlocks[7] && neighBlocks[7]->id != 0) vertexAOLight = 0;
@@ -200,7 +145,7 @@ namespace DwarfQuest {
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
                         vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
-
+                        
                         // Top Right Vertex.
                         vertexAOLight = 3;
                         if (neighBlocks[5] && neighBlocks[5]->id != 0 && neighBlocks[1] && neighBlocks[1]->id != 0) vertexAOLight = 0;
@@ -224,6 +169,61 @@ namespace DwarfQuest {
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
                         vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        
+                        triangles.push_back(trisIndex);
+                        triangles.push_back(trisIndex + 1);
+                        triangles.push_back(trisIndex + 2);
+                        triangles.push_back(trisIndex);
+                        triangles.push_back(trisIndex + 2);
+                        triangles.push_back(trisIndex + 3);
+                        trisIndex += 4;
+                    }
+                    // WEST
+                    if ((x != 0 && chunk->blocks[BLOCK_INDEX_WEST(index)].id == 0) ||
+                        (x == 0 && m_chunks[CHUNK_INDEX_WEST(chunkIndex)]->blocks[BLOCK_COORD_TO_INDEX(glm::ivec3(CHUNK_WIDTH - 1, y, z))].id == 0)) {
+                        glm::vec3 faceNormal(-1.0, 0.0, 0.0);
+
+                        neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z + 1), chunkIndex);
+                        neighBlocks[1] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z), chunkIndex);
+                        neighBlocks[2] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z - 1), chunkIndex);
+                        neighBlocks[3] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y, z + 1), chunkIndex);
+                        neighBlocks[4] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y, z), chunkIndex);
+                        neighBlocks[5] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y, z - 1), chunkIndex);
+                        neighBlocks[6] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y - 1, z + 1), chunkIndex);
+                        neighBlocks[7] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y - 1, z), chunkIndex);
+                        neighBlocks[8] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y - 1, z - 1), chunkIndex);
+
+                        // Bottom Right Vertex.
+                        int vertexAOLight = 3;
+                        if (neighBlocks[5] && neighBlocks[5]->id != 0 && neighBlocks[7] && neighBlocks[7]->id != 0) vertexAOLight = 0;
+                        else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
+                            (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
+                            (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
+                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+
+                        // Top Right Vertex.
+                        vertexAOLight = 3;
+                        if (neighBlocks[5] && neighBlocks[5]->id != 0 && neighBlocks[1] && neighBlocks[1]->id != 0) vertexAOLight = 0;
+                        else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
+                            (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
+                            (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
+                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+
+                        // Top Left Vertex.
+                        vertexAOLight = 3;
+                        if (neighBlocks[1] && neighBlocks[1]->id != 0 && neighBlocks[3] && neighBlocks[3]->id != 0) vertexAOLight = 0;
+                        else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
+                            (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
+                            (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
+                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+
+                        // Bottom Left Vertex.
+                        vertexAOLight = 3;
+                        if (neighBlocks[7] && neighBlocks[7]->id != 0 && neighBlocks[3] && neighBlocks[3]->id != 0) vertexAOLight = 0;
+                        else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
+                            (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
+                            (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
+                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
 
                         triangles.push_back(trisIndex);
                         triangles.push_back(trisIndex + 1);
@@ -464,6 +464,7 @@ namespace DwarfQuest {
         }
 
         void VoxelTerrain::TriggerChunkMatrixTranslation(const glm::ivec2& delta) {
+            // This method cannot run while there are threads running.
             int chunksCount = m_renderDistance * m_renderDistance * 4;
             Chunk** newChunks = new Chunk * [chunksCount];
             for (int i = 0; i < chunksCount; i++) newChunks[i] = nullptr;
@@ -507,6 +508,10 @@ namespace DwarfQuest {
         }
 
         void VoxelTerrain::Init() {
+            unsigned int cpuThreadsCount = std::thread::hardware_concurrency();
+            if (cpuThreadsCount == 0) cpuThreadsCount = 1;
+            for (int i = 0; i < cpuThreadsCount - 1; i++) m_chunkMeshThreads.push_back(ChunkMeshGeneratorThread());
+
             GenerateRenderingSpiral();
             m_chunks = new Chunk * [m_renderDistance * m_renderDistance * 4];
 
@@ -530,8 +535,8 @@ namespace DwarfQuest {
                 } else if (!m_chunks[it->z]->meshInitialized) {
                     // Cheking if all chunks in a neighbourhood of 3x3 have their blocks already initialized,
                     // so that the mesh generation algorithm don't have to worry about that for each block.
-                    if (it->x != m_renderDistance - 1 && m_chunks[CHUNK_INDEX_WEST(it->z)]->blocksInitialized &&
-                        it->x != -m_renderDistance && m_chunks[CHUNK_INDEX_EAST(it->z)]->blocksInitialized &&
+                    if (it->x != -m_renderDistance && m_chunks[CHUNK_INDEX_WEST(it->z)]->blocksInitialized &&
+                        it->x != m_renderDistance - 1 && m_chunks[CHUNK_INDEX_EAST(it->z)]->blocksInitialized &&
                         it->y != m_renderDistance - 1 && m_chunks[CHUNK_INDEX_NORTH(it->z)]->blocksInitialized &&
                         it->y != -m_renderDistance && m_chunks[CHUNK_INDEX_SOUTH(it->z)]->blocksInitialized &&
                         m_chunks[CHUNK_INDEX_NORTH_WEST(it->z)]->blocksInitialized &&
