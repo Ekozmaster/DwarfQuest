@@ -62,15 +62,6 @@ namespace DwarfQuest {
             return &(m_chunks[chunkIndex]->blocks[BLOCK_COORD_TO_INDEX(coord)]);
         }
 
-        Chunk::Chunk(glm::ivec2 id) : id(id) {
-            blocks = new Block[CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT];
-        }
-
-        Chunk::~Chunk() {
-            if (blocks != nullptr) delete[] blocks;
-            if (mesh != nullptr) delete mesh;
-        }
-
         void VoxelTerrain::GenerateRenderingSpiral() {
             m_renderingSpiral.clear();
             int chunkCount = m_renderDistance * m_renderDistance * 4;
@@ -98,7 +89,9 @@ namespace DwarfQuest {
             glm::vec3 position;
             FOR_BLOCK() {
                 position = glm::vec3(x, y, z) + chunkPos;
-                if (position.y > (glm::sin(position.x * 0.05f) + glm::sin(position.z * 0.072f)) * 5 + 10)
+                int height1 = (glm::sin(position.x * 0.05f) + glm::sin(position.z * 0.072f)) * 5 + 10;
+                int height2 = (glm::sin(position.x * 0.0075f) + glm::sin(position.z * 0.0052f)) * 30 + 30;
+                if (position.y > height1 + height2)
                     chunk->blocks[index].id = 0;
                 else chunk->blocks[index].id = 1;
             }
@@ -108,10 +101,6 @@ namespace DwarfQuest {
 
         void VoxelTerrain::GenerateChunkMesh(Chunk* chunk, int chunkIndex) {
             int trisIndex = 0;
-            std::vector<Core::Vertex> vertices;
-            vertices.reserve(3000);
-            std::vector<unsigned int> triangles;
-            triangles.reserve(4500);
 
             Block* neighBlocks[9];
             glm::vec2 uvBR(1.0f, 0.0f);
@@ -144,7 +133,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
                         
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -152,7 +141,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -160,7 +149,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -168,14 +157,14 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
                         
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 1);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex + 3);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 1);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex + 3);
                         trisIndex += 4;
                     }
                     // WEST
@@ -199,7 +188,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -207,7 +196,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -215,7 +204,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -223,14 +212,14 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
 
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 1);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex + 3);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 1);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex + 3);
                         trisIndex += 4;
                     }
                     // SOUTH
@@ -254,7 +243,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -262,7 +251,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -270,7 +259,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -278,14 +267,14 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
 
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 1);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex + 3);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 1);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex + 3);
                         trisIndex += 4;
                     }
                     // NORTH
@@ -309,7 +298,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -317,7 +306,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -325,7 +314,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -333,14 +322,14 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
 
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 1);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex + 3);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 1);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex + 3);
                         trisIndex += 4;
                     }
                     // DOWN
@@ -363,7 +352,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -371,7 +360,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -379,7 +368,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -387,14 +376,14 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
 
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 1);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex + 3);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 1);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex + 3);
                         trisIndex += 4;
                     }
                     // UP
@@ -417,7 +406,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -425,7 +414,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -433,7 +422,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -441,30 +430,30 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
 
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 1);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex);
-                        triangles.push_back(trisIndex + 2);
-                        triangles.push_back(trisIndex + 3);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 1);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex);
+                        m_triangles.push_back(trisIndex + 2);
+                        m_triangles.push_back(trisIndex + 3);
                         trisIndex += 4;
                     }
                 }
             }
-            if (vertices.size() > 0) {
-                chunk->mesh = new Core::Mesh();
-                chunk->mesh->Create((GLfloat*)&vertices[0], vertices.size(), (GLuint*)&triangles[0], triangles.size());
-                vertices.clear();
-                triangles.clear();
+            if (m_vertices.size() > 0) {
+                Core::Mesh* mesh = new Core::Mesh();
+                mesh->Create((GLfloat*)&m_vertices[0], m_vertices.size(), (GLuint*)&m_triangles[0], m_triangles.size());
+                chunk->SetMesh(mesh);
+                m_vertices.clear();
+                m_triangles.clear();
+            } else {
+                chunk->SetMesh(nullptr);
             }
-
-            chunk->meshInitialized = true;
         }
 
         void VoxelTerrain::TriggerChunkMatrixTranslation(const glm::ivec2& delta) {
-            // This method cannot run while there are threads running.
             int chunksCount = m_renderDistance * m_renderDistance * 4;
             Chunk** newChunks = new Chunk * [chunksCount];
             for (int i = 0; i < chunksCount; i++) newChunks[i] = nullptr;
@@ -508,10 +497,8 @@ namespace DwarfQuest {
         }
 
         void VoxelTerrain::Init() {
-            unsigned int cpuThreadsCount = std::thread::hardware_concurrency();
-            if (cpuThreadsCount == 0) cpuThreadsCount = 1;
-            for (int i = 0; i < cpuThreadsCount - 1; i++) m_chunkMeshThreads.push_back(ChunkMeshGeneratorThread());
-
+            m_vertices.reserve(3000);
+            m_triangles.reserve(4500);
             GenerateRenderingSpiral();
             m_chunks = new Chunk * [m_renderDistance * m_renderDistance * 4];
 
@@ -526,13 +513,13 @@ namespace DwarfQuest {
         }
 
         void VoxelTerrain::Update() {
-            double totalFrameTime = 0;
-            auto startTime = std::chrono::high_resolution_clock::now();
-
-            for (auto it = m_renderingSpiral.begin(); it != m_renderingSpiral.end() && totalFrameTime < 0.16; ++it) {
+            double elapsedTime = 0.0;
+            for (auto it = m_renderingSpiral.begin(); it != m_renderingSpiral.end() && elapsedTime < 0.016; ++it) {
+                auto startTime = std::chrono::high_resolution_clock::now();
                 if (!m_chunks[it->z]->blocksInitialized) {
                     GenerateChunkBlocks(m_chunks[it->z], it->z);
-                } else if (!m_chunks[it->z]->meshInitialized) {
+                } 
+                if (!m_chunks[it->z]->meshInitialized) {
                     // Cheking if all chunks in a neighbourhood of 3x3 have their blocks already initialized,
                     // so that the mesh generation algorithm don't have to worry about that for each block.
                     if (it->x != -m_renderDistance && m_chunks[CHUNK_INDEX_WEST(it->z)]->blocksInitialized &&
@@ -549,7 +536,7 @@ namespace DwarfQuest {
 
                 auto endTime = std::chrono::high_resolution_clock::now();
                 std::chrono::duration<double> diff = endTime - startTime;
-                totalFrameTime += diff.count();
+                elapsedTime += diff.count();
             }
         }
 
@@ -560,8 +547,8 @@ namespace DwarfQuest {
 
             int chunkCount = m_renderDistance * m_renderDistance * 4;
             for (int chunkIndex = 0; chunkIndex < chunkCount; chunkIndex++) {
-                if (m_chunks[chunkIndex]->mesh != nullptr) {
-                    Core::Graphics::SetMesh(m_chunks[chunkIndex]->mesh);
+                if (m_chunks[chunkIndex]->GetMesh() != nullptr) {
+                    Core::Graphics::SetMesh(m_chunks[chunkIndex]->GetMesh());
                     glm::vec3 chunkPos = glm::vec3(m_chunks[chunkIndex]->id.x, 0, m_chunks[chunkIndex]->id.y) * (float)CHUNK_WIDTH;
                     glm::mat4 chunkMat = glm::translate(model, chunkPos);
                     Core::Graphics::SetShaderMatrix(SHADERS_MODEL_MATRIX, glm::value_ptr(chunkMat));

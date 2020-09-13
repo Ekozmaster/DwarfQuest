@@ -12,19 +12,21 @@ namespace DwarfQuest {
 
         class VoxelTerrain : public DwarfQuest::Core::Behaviour {
         private:
+            int foo = 0;
             int m_renderDistance = 16;
             Chunk** m_chunks;
             Core::Material* m_material;
             // x and y encodes the x and z position/id of a chunk, z encodes it's index whithin the m_chunks matrix.
             std::vector<glm::ivec3> m_renderingSpiral;
             glm::ivec2 m_pivotChunk = glm::ivec2(0);
-            std::vector<ChunkMeshGeneratorThread> m_chunkMeshThreads;
+            std::vector<Core::Vertex> m_vertices;
+            std::vector<unsigned int> m_triangles;
 
             void GenerateRenderingSpiral();
             void GenerateChunkBlocks(Chunk* chunk, int chunkIndex);
             void GenerateChunkMesh(Chunk* chunk, int chunkIndex);
             void TriggerChunkMatrixTranslation(const glm::ivec2& delta);
-            Block* QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3 coord, int chunkIndex);
+            inline Block* QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3 coord, int chunkIndex);
 
         public:
 

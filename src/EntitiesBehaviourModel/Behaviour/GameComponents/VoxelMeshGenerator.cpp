@@ -1,4 +1,5 @@
 #include <src/EntitiesBehaviourModel/Behaviour/GameComponents/VoxelMeshGenerator.h>
+#include <src/Utils/Logger.h>
 
 namespace DwarfQuest {
     namespace GameComponents {
@@ -27,40 +28,87 @@ namespace DwarfQuest {
         // Iterates correctly in the layout the blocks are allocated in memory to increase cache hits.
 #define FOR_BLOCK() FOR_BLOCK_Y() FOR_BLOCK_Z() FOR_BLOCK_X()
 
+        Chunk::Chunk(glm::ivec2 id) : id(id) {
+            blocks = new Block[CHUNK_WIDTH * CHUNK_WIDTH * CHUNK_HEIGHT];
+        }
+
+        Chunk::~Chunk() {
+            if (blocks != nullptr) delete[] blocks;
+            if (m_mesh != nullptr) delete m_mesh;
+        }
+
+        void Chunk::SetMesh(Core::Mesh* mesh) {
+            if (m_mesh != nullptr) delete m_mesh;
+            m_mesh = mesh;
+            meshInitialized = true;
+        }
+
+        Core::Mesh* Chunk::GetMesh() {
+            return m_mesh;
+        }
+
         ChunkMeshGeneratorThread::ChunkMeshGeneratorThread() {
-            m_chunks = new Chunk * [9];
+            m_mutexLock = new std::mutex();
+            m_thread = new std::thread();
             m_vertices.reserve(3000);
             m_triangles.reserve(4500);
         }
 
         ChunkMeshGeneratorThread::~ChunkMeshGeneratorThread() {
-            if (m_thread.joinable()) {
-                m_thread.join();
+            if (m_thread != nullptr && m_thread->joinable()) {
+                m_thread->join();
+                delete m_thread;
             }
-            delete[] m_chunks;
+            
+            delete m_mutexLock;
         }
 
         void ChunkMeshGeneratorThread::InitChunk(Chunk** chunks) {
-            m_mesh = nullptr;
             memcpy(m_chunks, chunks, sizeof(Chunk*) * 9);
+            m_chunks[4]->threadsRefCount++;
         }
 
         void ChunkMeshGeneratorThread::Start() {
-            m_thread = std::thread(&ChunkMeshGeneratorThread::Generate, this);
+            if (m_thread != nullptr) {
+                if (m_thread->joinable()) m_thread->join();
+                delete m_thread;
+            }
+            m_thread = new std::thread(&ChunkMeshGeneratorThread::Generate, this);
+        }
+
+        void ChunkMeshGeneratorThread::Finish() {
+            if (IsReady()) {
+                Core::Mesh* mesh = new Core::Mesh();
+                mesh->Create((GLfloat*)&m_vertices[0], m_vertices.size(), (GLuint*)&m_triangles[0], m_triangles.size());
+                m_chunks[4]->SetMesh(mesh);
+            }
+        }
+
+        void ChunkMeshGeneratorThread::ResetStatus() {
+            if (m_thread != nullptr && m_thread->joinable()) m_thread->join();
+            if (m_finished) m_chunks[4]->threadsRefCount--;
+            m_finished = false;
         }
 
         bool ChunkMeshGeneratorThread::IsRunning() {
-            if (m_mutexLock.try_lock()) {
-                m_mutexLock.unlock();
+            if (m_mutexLock->try_lock()) {
+                m_mutexLock->unlock();
                 return false;
             }
             return true;
         }
 
-        Core::Mesh* ChunkMeshGeneratorThread::GetFinalMesh() {
-            if (!IsRunning() && m_mesh != nullptr) {
-                return m_mesh;
-            }
+        bool ChunkMeshGeneratorThread::IsReady() {
+            if (IsRunning()) return false;
+            return m_finished;
+        }
+
+        void ChunkMeshGeneratorThread::Join() {
+            if (m_thread != nullptr && m_thread->joinable()) m_thread->join();
+        }
+
+        Chunk* ChunkMeshGeneratorThread::GetChunk() {
+            return m_chunks[4];
         }
 
         Block* ChunkMeshGeneratorThread::GetBlock(glm::ivec3 coord) {
@@ -84,7 +132,9 @@ namespace DwarfQuest {
         }
 
         void ChunkMeshGeneratorThread::Generate() {
-            m_mutexLock.lock();
+            m_mutexLock->lock();
+            m_finished = false;
+
             m_vertices.clear();
             m_triangles.clear();
 
@@ -433,11 +483,9 @@ namespace DwarfQuest {
                 }
             }
             if (m_vertices.size() > 0) {
-                m_mesh = new Core::Mesh();
-                m_mesh->Create((GLfloat*)&m_vertices[0], m_vertices.size(), (GLuint*)&m_vertices[0], m_triangles.size());
+                m_finished = true;
             }
-
-            m_mutexLock.unlock();
+            m_mutexLock->unlock();
         }
     }
 }
