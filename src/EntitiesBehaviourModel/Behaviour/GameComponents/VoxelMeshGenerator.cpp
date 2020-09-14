@@ -1,4 +1,6 @@
 #include <src/EntitiesBehaviourModel/Behaviour/GameComponents/VoxelMeshGenerator.h>
+
+#include <cstring>
 #include <src/Utils/Logger.h>
 
 namespace DwarfQuest {
