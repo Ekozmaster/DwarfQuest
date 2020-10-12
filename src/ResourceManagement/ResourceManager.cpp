@@ -34,6 +34,11 @@ namespace DwarfQuest {
             return m_materialsAssetMap.find(path) != m_materialsAssetMap.end();
         }
 
+        // Create
+        void ResourceManager::CreateTextureAsset(const char* path, Texture* texture) {
+            m_texturesAssetMap[path] = texture;
+        }
+
         // Get
         Texture* ResourceManager::GetOrLoadTextureAsset(const char* path) {
             auto it = m_texturesAssetMap.find(path);

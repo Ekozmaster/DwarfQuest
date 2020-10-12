@@ -91,7 +91,7 @@ namespace DwarfQuest {
             Logger::Info("Mock scene loaded");
 
             camera = Camera::InitADefaultCamera(window);
-            camera.position = glm::vec3(0, 35, 0);
+            camera.position = glm::vec3(0, 55, 0);
 
             
             // </TESTING>

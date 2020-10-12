@@ -1,4 +1,5 @@
 #include <chrono>
+#include <stdlib.h>
 #include <src/EntitiesBehaviourModel/Behaviour/GameComponents/VoxelTerrain.h>
 #include <src/EntitiesBehaviourModel/GameObject.h>
 #include <src/ResourceManagement/ResourceManager.h>
@@ -8,6 +9,9 @@
 #include <src/Graphics/OpenGL/Graphics.h>
 #include <glm/glm.hpp>
 #include <src/Utils/Logger.h>
+#include <iostream>
+#include <filesystem>
+#include <src/ResourceManagement/ImageLoader.h>
 
 namespace DwarfQuest {
     namespace GameComponents {
@@ -84,6 +88,54 @@ namespace DwarfQuest {
             }
         }
 
+        void VoxelTerrain::GenerateTerrainTexture() {
+            std::string texturesPath = "Assets/Textures/Terrain";
+            std::vector<std::string> grassTop;
+            std::vector<std::string> grassSide;
+            std::vector<std::string> grassBottom;
+            std::vector<std::string> dirtTop;
+            std::vector<std::string> dirtSide;
+            std::vector<std::string> dirtBottom;
+            std::vector<std::string> allTextures;
+
+            for (const auto & entry : std::filesystem::directory_iterator(texturesPath)) {
+                std::string filename = entry.path();
+                // Grass.
+                if (filename.find("grass_top") != std::string::npos) grassTop.push_back(filename);
+                else if (filename.find("grass_side") != std::string::npos) grassSide.push_back(filename);
+                else if (filename.find("grass_bottom") != std::string::npos) grassBottom.push_back(filename);
+
+                // Dirt.
+                else if (filename.find("dirt_top") != std::string::npos) dirtTop.push_back(filename);
+                else if (filename.find("dirt_side") != std::string::npos) dirtSide.push_back(filename);
+                else if (filename.find("dirt_bottom") != std::string::npos) dirtBottom.push_back(filename);
+
+                allTextures.push_back(filename);
+            }
+            Core::TextureAtlas* terrainAtlas = Core::LoadTextureAtlas(allTextures);
+            Core::ResourceManager::CreateTextureAsset("TerrainTextureAtlas", terrainAtlas->texture);
+
+            BlockTexturesInfo blocksInfos[TOTAL_BLOCKS_IN_GAME];
+
+            // Grass.
+            BlockTexturesInfo grassVariations;
+            for(auto& texName : grassTop) grassVariations.top_variations.push_back(terrainAtlas->coordinates[texName]);
+            for(auto& texName : grassSide) grassVariations.side_variations.push_back(terrainAtlas->coordinates[texName]);
+            for(auto& texName : grassBottom) grassVariations.bottom_variations.push_back(terrainAtlas->coordinates[texName]);
+            blocksInfos[GRASS_BLOCK_ID] = grassVariations;
+            
+            // Dirt.
+            BlockTexturesInfo dirtVariations;
+            for(auto& texName : dirtTop) dirtVariations.top_variations.push_back(terrainAtlas->coordinates[texName]);
+            for(auto& texName : dirtSide) dirtVariations.side_variations.push_back(terrainAtlas->coordinates[texName]);
+            for(auto& texName : dirtBottom) dirtVariations.bottom_variations.push_back(terrainAtlas->coordinates[texName]);
+            blocksInfos[DIRT_BLOCK_ID] = dirtVariations;
+
+            blocksTexturesInfos.assign(blocksInfos, blocksInfos + TOTAL_BLOCKS_IN_GAME);
+
+            delete terrainAtlas;
+        }
+
         void VoxelTerrain::GenerateChunkBlocks(Chunk* chunk, int chunkIndex) {
             glm::vec3 chunkPos = glm::vec3(chunk->id.x, 0, chunk->id.y) * (float)CHUNK_WIDTH;
             glm::vec3 position;
@@ -91,9 +143,9 @@ namespace DwarfQuest {
                 position = glm::vec3(x, y, z) + chunkPos;
                 int height1 = (glm::sin(position.x * 0.05f) + glm::sin(position.z * 0.072f)) * 5 + 10;
                 int height2 = (glm::sin(position.x * 0.0075f) + glm::sin(position.z * 0.0052f)) * 30 + 30;
-                if (position.y > height1 + height2)
-                    chunk->blocks[index].id = 0;
-                else chunk->blocks[index].id = 1;
+                if (position.y > height1 + height2) chunk->blocks[index].id = 0;
+                else if (position.y == height1 + height2) chunk->blocks[index].id = 1;
+                else chunk->blocks[index].id = 2;
             }
 
             chunk->blocksInitialized = true;
@@ -103,11 +155,8 @@ namespace DwarfQuest {
             int trisIndex = 0;
 
             Block* neighBlocks[9];
-            glm::vec2 uvBR(1.0f, 0.0f);
-            glm::vec2 uvTR(1.0f, 1.0f);
-            glm::vec2 uvTL(0.0f, 1.0f);
-            glm::vec2 uvBL(0.0f, 0.0f);
-
+            srand((unsigned int)(chunk->id.x * chunk->id.y));
+            
             FOR_BLOCK() {
                 glm::ivec3 position(x, y, z); // For integer usage.
                 glm::vec3 pos(x, y, z); // For floats usage.
@@ -116,6 +165,16 @@ namespace DwarfQuest {
                     if ((x != CHUNK_WIDTH - 1 && chunk->blocks[BLOCK_INDEX_EAST(index)].id == 0) ||
                         (x == CHUNK_WIDTH - 1 && m_chunks[CHUNK_INDEX_EAST(chunkIndex)]->blocks[BLOCK_COORD_TO_INDEX(glm::ivec3(0, y, z))].id == 0)) {
                         glm::vec3 faceNormal(1.0, 0.0, 0.0);
+
+                        // Getting texture coordinates.
+                        Core::TextureCoordinate texCoords;
+                        if (blocksTexturesInfos[chunk->blocks[index].id].side_variations.size() > 0) {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].side_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].side_variations[varIdx];
+                        } else {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].top_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].top_variations[varIdx];
+                        }
 
                         neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x + 1, y + 1, z - 1), chunkIndex);
                         neighBlocks[1] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x + 1, y + 1, z), chunkIndex);
@@ -133,7 +192,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, texCoords.bottom_right, glm::vec3(vertexAOLight / 3.0f)));
                         
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -141,7 +200,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, texCoords.top_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -149,7 +208,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, texCoords.top_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -157,7 +216,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, texCoords.bottom_left, glm::vec3(vertexAOLight / 3.0f)));
                         
                         m_triangles.push_back(trisIndex);
                         m_triangles.push_back(trisIndex + 1);
@@ -171,6 +230,16 @@ namespace DwarfQuest {
                     if ((x != 0 && chunk->blocks[BLOCK_INDEX_WEST(index)].id == 0) ||
                         (x == 0 && m_chunks[CHUNK_INDEX_WEST(chunkIndex)]->blocks[BLOCK_COORD_TO_INDEX(glm::ivec3(CHUNK_WIDTH - 1, y, z))].id == 0)) {
                         glm::vec3 faceNormal(-1.0, 0.0, 0.0);
+
+                        // Getting texture coordinates.
+                        Core::TextureCoordinate texCoords;
+                        if (blocksTexturesInfos[chunk->blocks[index].id].side_variations.size() > 0) {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].side_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].side_variations[varIdx];
+                        } else {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].top_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].top_variations[varIdx];
+                        }
 
                         neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z + 1), chunkIndex);
                         neighBlocks[1] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z), chunkIndex);
@@ -188,7 +257,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, texCoords.bottom_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -196,7 +265,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, texCoords.top_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -204,7 +273,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, texCoords.top_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -212,7 +281,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, texCoords.bottom_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         m_triangles.push_back(trisIndex);
                         m_triangles.push_back(trisIndex + 1);
@@ -226,6 +295,16 @@ namespace DwarfQuest {
                     if ((z != 0 && chunk->blocks[BLOCK_INDEX_SOUTH(index)].id == 0) ||
                         (z == 0 && m_chunks[CHUNK_INDEX_SOUTH(chunkIndex)]->blocks[BLOCK_COORD_TO_INDEX(glm::ivec3(x, y, CHUNK_WIDTH - 1))].id == 0)) {
                         glm::vec3 faceNormal(0.0, 0.0, -1.0);
+
+                        // Getting texture coordinates.
+                        Core::TextureCoordinate texCoords;
+                        if (blocksTexturesInfos[chunk->blocks[index].id].side_variations.size() > 0) {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].side_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].side_variations[varIdx];
+                        } else {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].top_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].top_variations[varIdx];
+                        }
 
                         neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z - 1), chunkIndex);
                         neighBlocks[1] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x, y + 1, z - 1), chunkIndex);
@@ -243,7 +322,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, texCoords.bottom_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -251,7 +330,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, texCoords.top_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -259,7 +338,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, texCoords.top_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -267,7 +346,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, texCoords.bottom_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         m_triangles.push_back(trisIndex);
                         m_triangles.push_back(trisIndex + 1);
@@ -281,6 +360,16 @@ namespace DwarfQuest {
                     if ((z != CHUNK_WIDTH - 1 && chunk->blocks[BLOCK_INDEX_NORTH(index)].id == 0) ||
                         (z == CHUNK_WIDTH - 1 && m_chunks[CHUNK_INDEX_NORTH(chunkIndex)]->blocks[BLOCK_COORD_TO_INDEX(glm::ivec3(x, y, 0))].id == 0)) {
                         glm::vec3 faceNormal(0.0, 0.0, 1.0);
+
+                        // Getting texture coordinates.
+                        Core::TextureCoordinate texCoords;
+                        if (blocksTexturesInfos[chunk->blocks[index].id].side_variations.size() > 0) {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].side_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].side_variations[varIdx];
+                        } else {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].top_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].top_variations[varIdx];
+                        }
                         
                         neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x + 1, y + 1, z + 1), chunkIndex);
                         neighBlocks[1] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x, y + 1, z + 1), chunkIndex);
@@ -298,7 +387,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, texCoords.bottom_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -306,7 +395,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, texCoords.top_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -314,7 +403,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, texCoords.top_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -322,7 +411,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, texCoords.bottom_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         m_triangles.push_back(trisIndex);
                         m_triangles.push_back(trisIndex + 1);
@@ -333,8 +422,18 @@ namespace DwarfQuest {
                         trisIndex += 4;
                     }
                     // DOWN
-                    if (y == 0 || chunk->blocks[BLOCK_INDEX_DOWN(index)].id == 0) { 
+                    if (y > 0 && chunk->blocks[BLOCK_INDEX_DOWN(index)].id == 0) { 
                         glm::vec3 faceNormal(0.0, -1.0, 0.0);
+
+                        // Getting texture coordinates.
+                        Core::TextureCoordinate texCoords;
+                        if (blocksTexturesInfos[chunk->blocks[index].id].bottom_variations.size() > 0) {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].bottom_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].bottom_variations[varIdx];
+                        } else {
+                            int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].top_variations.size();
+                            texCoords = blocksTexturesInfos[chunk->blocks[index].id].top_variations[varIdx];
+                        }
                         
                         neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x + 1, y - 1, z + 1), chunkIndex);
                         neighBlocks[1] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x, y - 1, z + 1), chunkIndex);
@@ -352,7 +451,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, -0.5f), faceNormal, texCoords.bottom_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -360,7 +459,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, -0.5f, 0.5f), faceNormal, texCoords.top_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -368,7 +467,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, 0.5f), faceNormal, texCoords.top_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -376,7 +475,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, -0.5f, -0.5f), faceNormal, texCoords.bottom_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         m_triangles.push_back(trisIndex);
                         m_triangles.push_back(trisIndex + 1);
@@ -389,6 +488,11 @@ namespace DwarfQuest {
                     // UP
                     if (y == CHUNK_HEIGHT - 1 || chunk->blocks[BLOCK_INDEX_UP(index)].id == 0) { 
                         glm::vec3 faceNormal(0.0, 1.0, 0.0);
+
+                        // Getting texture coordinates.
+                        Core::TextureCoordinate texCoords;
+                        int varIdx = rand() % blocksTexturesInfos[chunk->blocks[index].id].top_variations.size();
+                        texCoords = blocksTexturesInfos[chunk->blocks[index].id].top_variations[varIdx];
                         
                         neighBlocks[0] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x - 1, y + 1, z + 1), chunkIndex);
                         neighBlocks[1] = QueryNeighbourChunkBlockFromLocalCoords(glm::ivec3(x, y + 1, z + 1), chunkIndex);
@@ -406,7 +510,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[8] && neighBlocks[8]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, uvBR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, -0.5f), faceNormal, texCoords.bottom_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Right Vertex.
                         vertexAOLight = 3;
@@ -414,7 +518,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[5] && neighBlocks[5]->id != 0) +
                             (int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[2] && neighBlocks[2]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, uvTR, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(0.5f, 0.5f, 0.5f), faceNormal, texCoords.top_right, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Top Left Vertex.
                         vertexAOLight = 3;
@@ -422,7 +526,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[1] && neighBlocks[1]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[0] && neighBlocks[0]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, uvTL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, 0.5f), faceNormal, texCoords.top_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         // Bottom Left Vertex.
                         vertexAOLight = 3;
@@ -430,7 +534,7 @@ namespace DwarfQuest {
                         else vertexAOLight = 3 - ((int)(neighBlocks[7] && neighBlocks[7]->id != 0) +
                             (int)(neighBlocks[3] && neighBlocks[3]->id != 0) +
                             (int)(neighBlocks[6] && neighBlocks[6]->id != 0));
-                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, uvBL, glm::vec3(vertexAOLight / 3.0f)));
+                        m_vertices.push_back(Core::Vertex(pos + glm::vec3(-0.5f, 0.5f, -0.5f), faceNormal, texCoords.bottom_left, glm::vec3(vertexAOLight / 3.0f)));
 
                         m_triangles.push_back(trisIndex);
                         m_triangles.push_back(trisIndex + 1);
@@ -509,6 +613,8 @@ namespace DwarfQuest {
                     chunkIndex++;
                 }
             }
+
+            GenerateTerrainTexture();
             m_material = Core::ResourceManager::GetOrLoadMaterialAsset("Assets/Materials/TerrainMaterial.mat");
         }
 

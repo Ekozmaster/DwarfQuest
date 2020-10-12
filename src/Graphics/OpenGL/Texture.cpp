@@ -16,7 +16,7 @@ namespace DwarfQuest {
             Destroy();
         }
 
-        void Texture::Create(unsigned char* data, unsigned int width, unsigned int height, GLenum channels) {
+        void Texture::Create(unsigned char* data, unsigned int width, unsigned int height, GLenum channels, GLenum samplingMode) {
             Destroy();
 
             GLTrackCall(glGenTextures(1, &m_id));
@@ -24,8 +24,8 @@ namespace DwarfQuest {
 
             GLTrackCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
             GLTrackCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-            GLTrackCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-            GLTrackCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+            GLTrackCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, samplingMode));
+            GLTrackCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, samplingMode));
 
             GLTrackCall(glTexImage2D(GL_TEXTURE_2D, 0, channels, width, height, 0, channels, GL_UNSIGNED_BYTE, data));
             GLTrackCall(glGenerateMipmap(GL_TEXTURE_2D));

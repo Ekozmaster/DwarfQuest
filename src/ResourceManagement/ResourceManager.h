@@ -25,6 +25,9 @@ namespace DwarfQuest {
             static bool IsShaderAssetLoaded(const char* path);
             static bool IsMaterialAssetLoaded(const char* path);
 
+            // Create
+            static void CreateTextureAsset(const char* path, Texture* texture);
+
             // Get
             static Texture* GetOrLoadTextureAsset(const char* path);
             static Mesh* GetOrLoadMeshAsset(const char* path);

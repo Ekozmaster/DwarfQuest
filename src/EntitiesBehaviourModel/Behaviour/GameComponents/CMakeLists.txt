@@ -11,5 +11,6 @@ target_sources(DwarfQuest
         ${CMAKE_CURRENT_LIST_DIR}/Renderer.h
         ${CMAKE_CURRENT_LIST_DIR}/VoxelTerrain.h
         ${CMAKE_CURRENT_LIST_DIR}/VoxelMeshGenerator.h
+        ${CMAKE_CURRENT_LIST_DIR}/BlocksDefinitions.h
         
 )
