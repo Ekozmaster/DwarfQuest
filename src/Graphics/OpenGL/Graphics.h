@@ -5,6 +5,7 @@
 #include<SDL2/SDL.h>
 #include<vector>
 #include<string>
+#include<glm/glm.hpp>
 
 #include "Mesh.h"
 #include "Shader.h"
@@ -23,6 +24,7 @@ namespace DwarfQuest {
             static Texture** m_activeTextures;
             static GLint m_maxTexturesSlots;
             static Camera::Camera* m_currentCamera;
+            static glm::ivec2 m_cachedScreenResolution;
 
         public:
             static std::vector<std::string> graphicsUniformsNames;
@@ -33,6 +35,7 @@ namespace DwarfQuest {
             static void SetViewport(int width, int height);
             static void SetShader(Shader* shader);
             static void SetShaderMatrix(const char* matrixName, const GLfloat* values);
+            static void SetShaderIVector2(const char* vectorName, const GLint* values);
             static void SetMesh(Mesh* mesh);
             static void RenderMesh();
             static void SetTexture(Texture* texture, unsigned int slot);

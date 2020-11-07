@@ -12,9 +12,10 @@ namespace DwarfQuest {
         Material::Material(Shader* shader): m_shader(shader) {
             // Getting relevant/non-global uniforms for the material.
             std::vector<ShaderUniform> shaderUniforms = m_shader->GetShaderUniforms();
-            std::vector<std::string> unrelevantUniforms = Graphics::graphicsUniformsNames;
+            std::vector<std::string> globalUniforms = Graphics::graphicsUniformsNames;
             for (auto it = shaderUniforms.begin(); it != shaderUniforms.end(); ++it) {
-                if (std::find(unrelevantUniforms.begin(), unrelevantUniforms.end(), it->name) == unrelevantUniforms.end()) {
+                bool isGlobalUniform = std::find(globalUniforms.begin(), globalUniforms.end(), it->name) != globalUniforms.end();
+                if (!isGlobalUniform) {
                     uniforms.push_back(*it);
                 }
             }

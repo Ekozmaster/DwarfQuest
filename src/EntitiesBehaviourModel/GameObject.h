@@ -12,6 +12,9 @@ namespace DwarfQuest {
 
         class GameObject {
         private:
+            // This index is used when iterating over the components, and one of the components
+            // needs to modify the m_components vector.
+            uint32_t m_curComponentIndex = 0;
             std::vector<Behaviour*> m_components;
             bool m_destroyed;
 
@@ -52,12 +55,16 @@ namespace DwarfQuest {
             // REMOVE
             template<class T>
             void RemoveComponent() {
-                for (auto it = m_components.begin(); it != m_components.end(); ++it) {
-                    if (dynamic_cast<T*>(*it) != NULL) {
-                        delete (*it);
-                        m_components.erase(it);
+                for (uint32_t index = 0; index < m_components.size(); index++) {
+                    Behaviour* component = m_components[index];
+                    if (dynamic_cast<T*>component != NULL) {
+                        delete component;
+                        m_components.erase(m_components.begin() + index);
+                        // To support gm's own components modifying m_components vector.
+                        if (index <= m_curComponentIndex) m_curComponentIndex--;
                         return;
                     }
+                    index++;
                 }
             }
 
@@ -69,6 +76,8 @@ namespace DwarfQuest {
                         m_components.erase(it--);
                     }
                 }
+                // To support gm's own components modifying m_components vector.
+                m_curComponentIndex = 0;
             }
 
             // GET

@@ -39,6 +39,7 @@ namespace DwarfQuest {
             }
 
             SetViewport(width, height);
+            m_cachedScreenResolution = glm::ivec2(width, height);
             GLTrackCall(glEnable(GL_DEPTH_TEST));
 
             // Initializing texture slots array.
@@ -51,6 +52,7 @@ namespace DwarfQuest {
             graphicsUniformsNames.push_back(SHADERS_PERSPECTIVE_MATRIX);
             graphicsUniformsNames.push_back(SHADERS_VIEW_MATRIX);
             graphicsUniformsNames.push_back(SHADERS_MODEL_MATRIX);
+            graphicsUniformsNames.push_back(SHADERS_SCREEN_RESOLUTION);
 
             return true;
         }
@@ -64,6 +66,7 @@ namespace DwarfQuest {
 
         void Graphics::SetViewport(int width, int height) {
             GLTrackCall(glViewport(0, 0, width, height));
+            m_cachedScreenResolution = glm::ivec2(width, height);
         }
 
         void Graphics::SetShader(Shader* shader) {
@@ -73,18 +76,37 @@ namespace DwarfQuest {
             }
             m_currentShader = shader;
             m_currentShader->Use();
-            glm::mat4 persp = Camera::CameraPerspectiveMatrix(*m_currentCamera);
-            glm::mat4 look = Camera::CameraLookMatrix(*m_currentCamera);
-            Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
-            Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
+
+            // Checking if shader uses view and perspective matrices before setting them.
+            std::vector<ShaderUniform> shaderUniforms = m_currentShader->GetShaderUniforms();
+            for (auto it = shaderUniforms.begin(); it != shaderUniforms.end(); ++it) {
+                ShaderUniform uniform = *it;
+                if (uniform.name == SHADERS_VIEW_MATRIX) {
+                    glm::mat4 look = Camera::CameraLookMatrix(*m_currentCamera);
+                    Graphics::SetShaderMatrix(SHADERS_VIEW_MATRIX, glm::value_ptr(look));
+                } else if (uniform.name == SHADERS_PERSPECTIVE_MATRIX) {
+                    glm::mat4 persp = Camera::CameraPerspectiveMatrix(*m_currentCamera);
+                    Graphics::SetShaderMatrix(SHADERS_PERSPECTIVE_MATRIX, glm::value_ptr(persp));
+                } else if (uniform.name == SHADERS_SCREEN_RESOLUTION) {
+                    Graphics::SetShaderIVector2(SHADERS_SCREEN_RESOLUTION, glm::value_ptr(m_cachedScreenResolution));
+                }
+            }
         }
 
         void Graphics::SetShaderMatrix(const char* matrixName, const GLfloat* values) {
             if (!m_currentShader) {
-                Logger::Error("Graphics.SetShaderMatrices - Trying to bind matrix with no shader attached.");
+                Logger::Error("Graphics.SetShaderMatrix - Trying to bind matrix with no shader attached.");
                 return;
             }
             m_currentShader->Set4x4MatrixUniform(matrixName, values);
+        }
+
+        void Graphics::SetShaderIVector2(const char* vectorName, const GLint* values) {
+            if (!m_currentShader) {
+                Logger::Error("Graphics.SetShaderIVector2 - Trying to bind IVector2 with no shader attached.");
+                return;
+            }
+            m_currentShader->SetIVec2Uniform(vectorName, values);
         }
 
         void Graphics::SetMesh(Mesh* mesh) {
@@ -129,6 +151,7 @@ namespace DwarfQuest {
         Texture** Graphics::m_activeTextures = nullptr;
         GLint Graphics::m_maxTexturesSlots = 0;
         Camera::Camera* Graphics::m_currentCamera = nullptr;
+        glm::ivec2 Graphics::m_cachedScreenResolution = glm::ivec2(1024, 768);
         std::vector<std::string> Graphics::graphicsUniformsNames = std::vector<std::string>();
 
     }

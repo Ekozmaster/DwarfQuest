@@ -99,7 +99,7 @@ namespace DwarfQuest {
             std::vector<std::string> allTextures;
 
             for (const auto & entry : std::filesystem::directory_iterator(texturesPath)) {
-                std::string filename = entry.path();
+                std::string filename = entry.path().string();
                 // Grass.
                 if (filename.find("grass_top") != std::string::npos) grassTop.push_back(filename);
                 else if (filename.find("grass_side") != std::string::npos) grassSide.push_back(filename);
@@ -593,7 +593,7 @@ namespace DwarfQuest {
         }
 
         void VoxelTerrain::SetPivotChunk(const glm::ivec2& newPivot) {
-            if (newPivot != m_pivotChunk) {
+            if (m_initialized && newPivot != m_pivotChunk) {
                 glm::ivec2 delta = newPivot - m_pivotChunk;
                 m_pivotChunk = newPivot;
                 TriggerChunkMatrixTranslation(delta);

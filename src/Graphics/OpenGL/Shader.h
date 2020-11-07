@@ -34,8 +34,11 @@ namespace DwarfQuest {
 
             void SetFloatUniform(const char* uniformName, const GLfloat value);
             void SetVec2Uniform(const char* uniformName, const GLfloat* values);
+            void SetIVec2Uniform(const char* uniformName, const GLint* values);
             void SetVec3Uniform(const char* uniformName, const GLfloat* values);
+            void SetIVec3Uniform(const char* uniformName, const GLint* values);
             void SetVec4Uniform(const char* uniformName, const GLfloat* values);
+            void SetIVec4Uniform(const char* uniformName, const GLint* values);
             void SetIntUniform(const char* uniformName, const GLint value);
             void SetUintUniform(const char* uniformName, const GLuint value);
             void SetBoolUniform(const char* uniformName, const GLboolean value);

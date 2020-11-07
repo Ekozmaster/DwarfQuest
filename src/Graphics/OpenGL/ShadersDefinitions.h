@@ -5,5 +5,7 @@ namespace DwarfQuest {
 #define SHADERS_VIEW_MATRIX "viewMatrix"
 #define SHADERS_PERSPECTIVE_MATRIX "perspectiveMatrix"
 
+#define SHADERS_SCREEN_RESOLUTION "screenResolution"
+
     }
 }

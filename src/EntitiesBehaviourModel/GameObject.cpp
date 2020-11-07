@@ -40,8 +40,8 @@ namespace DwarfQuest {
 
         void GameObject::Init() {
             if (!enabled) return;
-            for (auto it = m_components.begin(); it != m_components.end(); ++it) {
-                Behaviour* component = *it;
+            for (m_curComponentIndex = 0; m_curComponentIndex < m_components.size(); m_curComponentIndex++) {
+                Behaviour* component = m_components[m_curComponentIndex];
                 if (component->enabled) {
                     if (!component->IsInitialized()) {
                         component->Init();
@@ -54,8 +54,9 @@ namespace DwarfQuest {
 
         void GameObject::Update() {
             if (!enabled || !initialized) return;
-            for (auto it = m_components.begin(); it != m_components.end(); ++it) {
-                Behaviour* component = *it;
+
+            for (m_curComponentIndex = 0; m_curComponentIndex < m_components.size(); m_curComponentIndex++) {
+                Behaviour* component = m_components[m_curComponentIndex];
                 if (component->enabled) {
                     if (!component->IsInitialized()) {
                         component->Init();
@@ -68,8 +69,8 @@ namespace DwarfQuest {
 
         void GameObject::Render() {
             if (!enabled || !initialized) return;
-            for (auto it = m_components.begin(); it != m_components.end(); ++it) {
-                Behaviour* component = *it;
+            for (m_curComponentIndex = 0; m_curComponentIndex < m_components.size(); m_curComponentIndex++) {
+                Behaviour* component = m_components[m_curComponentIndex];
                 if (component->enabled) {
                     if (!component->IsInitialized()) {
                         component->Init();
@@ -83,9 +84,10 @@ namespace DwarfQuest {
         void GameObject::Destroy() {
             if (m_destroyed) return;
 
-            for (auto it = m_components.begin(); it != m_components.end(); ++it) {
-                (*it)->Destroy();
-                delete (*it);
+            for (m_curComponentIndex = 0; m_curComponentIndex < m_components.size(); m_curComponentIndex++) {
+                Behaviour* component = m_components[m_curComponentIndex];
+                component->Destroy();
+                delete component;
             }
             m_components.clear();
             m_destroyed = true;

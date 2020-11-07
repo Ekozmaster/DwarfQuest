@@ -3,7 +3,7 @@
 namespace DwarfQuest {
     namespace Core {
         class Behaviour {
-        private:
+        protected:
             bool m_initialized;
 
         public:

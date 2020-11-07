@@ -146,6 +146,18 @@ namespace DwarfQuest {
             glUniform2fv(uniformLocation, 1, values);
         }
 
+        void Shader::SetIVec2Uniform(const char* uniformName, const GLint* values) {
+            GLint uniformLocation = glGetUniformLocation(m_shaderProgram, uniformName);
+
+            if (uniformLocation == -1) {
+                std::stringstream log;
+                log << "Shader.SetIVec2Uniform - Shader has no uniform named '" << uniformName << "'";
+                Logger::Error(log.str().c_str());
+                return;
+            }
+            glUniform2iv(uniformLocation, 1, values);
+        }
+
         void Shader::SetVec3Uniform(const char* uniformName, const GLfloat* values) {
             GLint uniformLocation = glGetUniformLocation(m_shaderProgram, uniformName);
 
@@ -158,6 +170,18 @@ namespace DwarfQuest {
             glUniform3fv(uniformLocation, 1, values);
         }
 
+        void Shader::SetIVec3Uniform(const char* uniformName, const GLint* values) {
+            GLint uniformLocation = glGetUniformLocation(m_shaderProgram, uniformName);
+
+            if (uniformLocation == -1) {
+                std::stringstream log;
+                log << "Shader.SetIVec3Uniform - Shader has no uniform named '" << uniformName << "'";
+                Logger::Error(log.str().c_str());
+                return;
+            }
+            glUniform3iv(uniformLocation, 1, values);
+        }
+
         void Shader::SetVec4Uniform(const char* uniformName, const GLfloat* values) {
             GLint uniformLocation = glGetUniformLocation(m_shaderProgram, uniformName);
 
@@ -168,6 +192,18 @@ namespace DwarfQuest {
                 return;
             }
             glUniform4fv(uniformLocation, 1, values);
+        }
+
+        void Shader::SetIVec4Uniform(const char* uniformName, const GLint* values) {
+            GLint uniformLocation = glGetUniformLocation(m_shaderProgram, uniformName);
+
+            if (uniformLocation == -1) {
+                std::stringstream log;
+                log << "Shader.SetIVec4Uniform - Shader has no uniform named '" << uniformName << "'";
+                Logger::Error(log.str().c_str());
+                return;
+            }
+            glUniform4iv(uniformLocation, 1, values);
         }
 
         void Shader::SetIntUniform(const char* uniformName, const GLint value) {

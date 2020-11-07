@@ -11,6 +11,7 @@
 #include <src/Graphics/OpenGL/ShadersDefinitions.h>
 #include <src/ResourceManagement/ResourceManager.h>
 #include <src/EntitiesBehaviourModel/Behaviour/GameComponents/Renderer.h>
+#include <src/EntitiesBehaviourModel/Behaviour/GameComponents/Minimap.h>
 
 namespace DwarfQuest {
     namespace Core {
@@ -85,15 +86,18 @@ namespace DwarfQuest {
             scene->Init();
 
             // Test Scene
+            camera = Camera::InitADefaultCamera(window);
+            camera.position = glm::vec3(100000, 55, 0);
+
             auto gmIt = scene->NewGameObject("Voxel Terrain");
             terrain = (*gmIt).AddComponent<GameComponents::VoxelTerrain>();
 
-            Logger::Info("Mock scene loaded");
-
-            camera = Camera::InitADefaultCamera(window);
-            camera.position = glm::vec3(0, 55, 0);
+            gmIt = scene->NewGameObject("Minimap");
+            GameComponents::Minimap* minimap = (*gmIt).AddComponent<GameComponents::Minimap>();
+            minimap->cameraRef = &camera;
 
             
+            Logger::Info("Mock scene loaded");
             // </TESTING>
 
 
