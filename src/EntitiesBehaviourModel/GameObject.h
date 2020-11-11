@@ -57,7 +57,7 @@ namespace DwarfQuest {
             void RemoveComponent() {
                 for (uint32_t index = 0; index < m_components.size(); index++) {
                     Behaviour* component = m_components[index];
-                    if (dynamic_cast<T*>component != NULL) {
+                    if (dynamic_cast<T*>(component) != NULL) {
                         delete component;
                         m_components.erase(m_components.begin() + index);
                         // To support gm's own components modifying m_components vector.
