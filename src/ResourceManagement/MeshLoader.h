@@ -2,9 +2,7 @@
 
 #include <src/Graphics/OpenGL/Mesh.h>
 
-namespace DwarfQuest {
-    namespace Core {
+namespace Core {
 
-        Mesh* LoadMesh(const char* path);
-    }
+    Mesh* LoadMesh(const char* path);
 }

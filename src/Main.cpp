@@ -11,11 +11,10 @@
 int main(int argc, char* args[]) {
 #ifdef DWARFQUEST_TESTING
     SetupSystemTests();
-    DwarfQuest::Testing::RunAllTestContexts();
+    Testing::RunAllTestContexts();
 #else
 
-    namespace DQCore = DwarfQuest::Core;
-    DQCore::Application app = DwarfQuest::Core::Application();
+    Core::Application app = Core::Application();
 
     int appInitialized = app.Init();
     if (!appInitialized) {

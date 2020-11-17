@@ -1,5 +1,4 @@
-namespace DwarfQuest {
-    namespace Core {
+namespace Core {
 
 #define SHADERS_MODEL_MATRIX "modelMatrix"
 #define SHADERS_VIEW_MATRIX "viewMatrix"
@@ -7,5 +6,4 @@ namespace DwarfQuest {
 
 #define SHADERS_SCREEN_RESOLUTION "screenResolution"
 
-    }
 }

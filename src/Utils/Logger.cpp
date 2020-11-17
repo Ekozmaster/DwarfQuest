@@ -2,7 +2,7 @@
 
 #include "Logger.h"
 
-using namespace DwarfQuest::Core;
+using namespace Core;
 
 void Logger::SetLoggingLevel(unsigned int loggingLevel) {
     m_loggingLevel = loggingLevel;

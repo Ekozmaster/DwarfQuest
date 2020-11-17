@@ -5,27 +5,25 @@
 #include <src/Graphics/OpenGL/Camera.h>
 #include <src/EntitiesBehaviourModel/Behaviour/GameComponents/VoxelTerrain.h>
 
-namespace DwarfQuest {
-    namespace Core {
+namespace Core {
 
-        class Application {
-        private:
-            Window* window;
-            SDL_Event event;
-            bool running = false;
-            GameComponents::VoxelTerrain* terrain;
+    class Application {
+    private:
+        Window* window;
+        SDL_Event event;
+        bool running = false;
+        GameComponents::VoxelTerrain* terrain;
 
-            Scene* scene;
+        Scene* scene;
 
-            void FrameSetupStage();
-            void FrameMainStage();
-            void FrameFinishStage();
-            void FrameRenderStage();
-        public:
-            bool Init();
-            int Run();
-            void Destroy();
-            void DispatchEvents();
-        };
-    }
+        void FrameSetupStage();
+        void FrameMainStage();
+        void FrameFinishStage();
+        void FrameRenderStage();
+    public:
+        bool Init();
+        int Run();
+        void Destroy();
+        void DispatchEvents();
+    };
 }

@@ -7,9 +7,8 @@
 #include <vector>
 #include <string>
 
-namespace DwarfQuest {
-    namespace Core {
-        Texture* LoadTexture(const char* path);
-        TextureAtlas* LoadTextureAtlas(std::vector<std::string> texturesPaths);
-    }
+namespace Core {
+    Texture* LoadTexture(const char* path);
+    TextureAtlas* LoadTextureAtlas(std::vector<std::string> texturesPaths);
 }
+

@@ -4,10 +4,10 @@
 #include <src/Utils/Testing.h>
 #include <src/DataStructures/Tree.h>
 
-namespace DQTesting = DwarfQuest::Testing;
-namespace DQDS = DwarfQuest::DataStructures;
+namespace Testing = Testing;
+namespace DS = DataStructures;
 
-DQDS::Tree<int>* unittest_Tree = new DQDS::Tree<int>();
+DS::Tree<int>* unittest_Tree = new DS::Tree<int>();
 
 void Test_Tree_Setup() {
     unittest_Tree = new DQDS::Tree<int>();
@@ -17,7 +17,7 @@ void Test_Tree_TearDown() {
     if (unittest_Tree) delete unittest_Tree;
     unittest_Tree = NULL;
 
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("Tree::Node"), 0);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("Tree::Node"), 0);
 }
 
 // TREE PUSH
@@ -269,7 +269,7 @@ void Test_Tree_Destroy() {
 
     unittest_Tree->Destroy();
     ASSERT_EQUALS(unittest_Tree->Size(), 0);
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("Tree::Node"), 0);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("Tree::Node"), 0);
 }
 
 
@@ -313,7 +313,7 @@ void Test_Tree_Iterator_TearDown() {
     if (unittest_Tree) delete unittest_Tree;
     unittest_Tree = NULL;
 
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("Tree::Node"), 0);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("Tree::Node"), 0);
 }
 
 void Test_Tree_Iterator_Tree_Navigation() {

@@ -2,17 +2,16 @@
 
 #include <src/EntitiesBehaviourModel/Behaviour/Behaviour.h>
 
-namespace DwarfQuest {
-    namespace GameComponents {
+namespace GameComponents {
 
-        class TestBehaviour : public DwarfQuest::Core::Behaviour {
-        private:
-            char name = 'A';
-        public:
-            void Init() override;
-            void Update() override;
-            void Render() override;
-            void Destroy() override;
-        };
-    }
+    class TestBehaviour : public Core::Behaviour {
+    private:
+        char name = 'A';
+    public:
+        void Init() override;
+        void Update() override;
+        void Render() override;
+        void Destroy() override;
+    };
 }
+

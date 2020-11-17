@@ -4,21 +4,21 @@
 #include <src/SceneManagement/Scene.h>
 #include <src/EntitiesBehaviourModel/GameObject.h>
 
-namespace DQCore = DwarfQuest::Core;
-namespace DQTesting = DwarfQuest::Testing;
+namespace Core = Core;
+namespace Testing = Testing;
 
-DQCore::Scene* unittest_scene;
+Core::Scene* unittest_scene;
 
 void Test_Scene_Setup() {
-    unittest_scene = new DQCore::Scene();
+    unittest_scene = new Core::Scene();
 }
 
 void Test_Scene_TearDown() {
     delete unittest_scene;
     unittest_scene = NULL;
 
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("Tree::Node"), 0);
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 0);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("Tree::Node"), 0);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("GameObject"), 0);
 }
 
 // Scene.NewGameObject();
@@ -346,7 +346,7 @@ void Test_Scene_DestroyGameObject_By_Iterator_Beginning() {
     
     auto parentResult = unittest_scene->DestroyGameObject(it);
     ASSERT_EQUALS(parentResult, unittest_scene->End());
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 2);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("GameObject"), 2);
     ASSERT_TRUTHY((*unittest_scene->Begin()).name == "B");
 }
 
@@ -358,7 +358,7 @@ void Test_Scene_DestroyGameObject_By_Iterator_Middle() {
 
     auto parentResult = unittest_scene->DestroyGameObject(it);
     ASSERT_EQUALS(parentResult, unittest_scene->End());
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 2);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("GameObject"), 2);
     ASSERT_TRUTHY((*unittest_scene->Begin()).name == "A");
     ASSERT_TRUTHY((*unittest_scene->Back()).name == "C");
 }
@@ -371,7 +371,7 @@ void Test_Scene_DestroyGameObject_By_Iterator_End() {
 
     auto parentResult = unittest_scene->DestroyGameObject(it);
     ASSERT_EQUALS(parentResult, unittest_scene->End());
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 2);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("GameObject"), 2);
     ASSERT_TRUTHY((*unittest_scene->Begin()).name == "A");
     ASSERT_TRUTHY((*unittest_scene->Back()).name == "B");
 }
@@ -384,7 +384,7 @@ void Test_Scene_DestroyGameObject_By_Iterator_Not_Found() {
 
     auto parentResult = unittest_scene->DestroyGameObject(it);
     ASSERT_EQUALS(parentResult, unittest_scene->End());
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 3);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("GameObject"), 3);
     ASSERT_TRUTHY((*unittest_scene->Begin()).name == "A");
     ASSERT_TRUTHY((*unittest_scene->Back()).name == "C");
 }
@@ -402,7 +402,7 @@ void Test_Scene_DestroyGameObject_By_Iterator_Children_Beginning() {
     auto it = unittest_scene->Find("D");
     auto parentResult = unittest_scene->DestroyGameObject(it);
     ASSERT_EQUALS(parentResult, unittest_scene->Back());
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 5);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("GameObject"), 5);
     ASSERT_TRUTHY((*unittest_scene->Begin()).name == "A");
     ASSERT_TRUTHY((*unittest_scene->Back()).name == "C");
     ASSERT_EQUALS(unittest_scene->Back().ChildCount(), 2);
@@ -421,7 +421,7 @@ void Test_Scene_DestroyGameObject_By_Iterator_Children_Middle() {
     auto it = unittest_scene->Find("E");
     auto parentResult = unittest_scene->DestroyGameObject(it);
     ASSERT_EQUALS(parentResult, unittest_scene->Back());
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 5);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("GameObject"), 5);
     ASSERT_TRUTHY((*unittest_scene->Begin()).name == "A");
     ASSERT_TRUTHY((*unittest_scene->Back()).name == "C");
     ASSERT_EQUALS(unittest_scene->Back().ChildCount(), 2);
@@ -440,7 +440,7 @@ void Test_Scene_DestroyGameObject_By_Iterator_Children_End() {
     auto it = unittest_scene->Find("F");
     auto parentResult = unittest_scene->DestroyGameObject(it);
     ASSERT_EQUALS(parentResult, unittest_scene->Back());
-    ASSERT_EQUALS(DQTesting::GetAllocatedObjectCount("GameObject"), 5);
+    ASSERT_EQUALS(Testing::GetAllocatedObjectCount("GameObject"), 5);
     ASSERT_TRUTHY((*unittest_scene->Begin()).name == "A");
     ASSERT_TRUTHY((*unittest_scene->Back()).name == "C");
     ASSERT_EQUALS(unittest_scene->Back().ChildCount(), 2);

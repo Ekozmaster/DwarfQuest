@@ -2,9 +2,7 @@
 
 #include <src/Graphics/OpenGL/Material.h>
 
-namespace DwarfQuest {
-    namespace Core {
+namespace Core {
 
-        Material* LoadMaterial(const char* path);
-    }
+    Material* LoadMaterial(const char* path);
 }
